@@ -5,7 +5,7 @@ class NotificationService {
 
   static Future<void> init() async {
     await _plugin.initialize(
-      const InitializationSettings(
+      settings: InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
         iOS: DarwinInitializationSettings(),
       ),
@@ -14,11 +14,11 @@ class NotificationService {
 
   static Future<void> scheduleDailyReminder() async {
     await _plugin.periodicallyShow(
-      0,
-      '💸 SpendSense',
-      'Don\'t forget to log today\'s expenses!',
-      RepeatInterval.daily,
-      const NotificationDetails(
+      id: 0,
+      title: '💸 SpendSense',
+      body: 'Don\'t forget to log today\'s expenses!',
+      repeatInterval: RepeatInterval.daily,
+      notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
           'daily',
           'Daily Reminder',
@@ -27,6 +27,7 @@ class NotificationService {
         ),
         iOS: DarwinNotificationDetails(),
       ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
   }
 

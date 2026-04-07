@@ -1,6 +1,9 @@
 import 'package:expensetracker/common/app_theme.dart';
+import 'package:expensetracker/common/services/ads_service.dart';
+import 'package:expensetracker/common/services/premium_service.dart';
 import 'package:expensetracker/expense/models/expense.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 
 // ── AppCard ───────────────────────────────────────────────────────────────────
@@ -11,18 +14,30 @@ class AppCard extends StatelessWidget {
   const AppCard({super.key, required this.child, this.padding, this.onTap});
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-    onTap: onTap,
-    child: Container(
-      padding: padding ?? const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: kCard,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: kBorder, width: 1),
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: padding ?? const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: c.card,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: c.border),
+          boxShadow: context.isDark
+              ? null
+              : [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 12,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+        ),
+        child: child,
       ),
-      child: child,
-    ),
-  );
+    );
+  }
 }
 
 // ── MetricCard ────────────────────────────────────────────────────────────────
@@ -45,18 +60,14 @@ class MetricCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(9),
-                ),
-                child: Icon(icon, size: 15, color: color),
-              ),
-            ],
+          Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(9),
+            ),
+            child: Icon(icon, size: 15, color: color),
           ),
           const SizedBox(height: 12),
           Text(
@@ -71,9 +82,9 @@ class MetricCard extends StatelessWidget {
           const SizedBox(height: 3),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 10,
-              color: kTextMuted,
+              color: context.c.textMuted,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -96,26 +107,29 @@ class CategoryPill extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-    onTap: onTap,
-    child: AnimatedContainer(
-      duration: const Duration(milliseconds: 180),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: selected ? kPrimary : kCard,
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: selected ? kPrimary : kBorder),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: selected ? Colors.white : kTextSub,
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected ? kPrimary : c.card,
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: selected ? kPrimary : c.border),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: selected ? Colors.white : c.textSub,
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 // ── ExpenseTile ───────────────────────────────────────────────────────────────
@@ -148,7 +162,20 @@ class ExpenseTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
       child: Row(
         children: [
-          _CatIcon(category: e.category, color: color),
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Text(
+                kCatEmoji[e.category] ?? '📦',
+                style: const TextStyle(fontSize: 17),
+              ),
+            ),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -166,7 +193,7 @@ class ExpenseTile extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   '${e.category} · ${DateFormat('MMM d').format(e.date)}',
-                  style: const TextStyle(fontSize: 11, color: kTextMuted),
+                  style: TextStyle(fontSize: 11, color: context.c.textMuted),
                 ),
               ],
             ),
@@ -186,28 +213,6 @@ class ExpenseTile extends StatelessWidget {
   );
 }
 
-class _CatIcon extends StatelessWidget {
-  final String category;
-  final Color color;
-  const _CatIcon({required this.category, required this.color});
-
-  @override
-  Widget build(BuildContext context) => Container(
-    width: 40,
-    height: 40,
-    decoration: BoxDecoration(
-      color: color.withOpacity(0.12),
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: Center(
-      child: Text(
-        kCatEmoji[category] ?? '📦',
-        style: const TextStyle(fontSize: 17),
-      ),
-    ),
-  );
-}
-
 // ── SectionLabel ──────────────────────────────────────────────────────────────
 class SectionLabel extends StatelessWidget {
   final String text;
@@ -220,11 +225,7 @@ class SectionLabel extends StatelessWidget {
     children: [
       Text(
         text,
-        style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
-        ),
+        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
       ),
       if (trailing != null) trailing!,
     ],
@@ -283,31 +284,42 @@ class InputField extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => TextField(
-    controller: controller,
-    keyboardType: keyboard,
-    style: style ?? const TextStyle(color: Colors.white, fontSize: 14),
-    decoration: InputDecoration(
-      hintText: hint,
-      hintStyle: const TextStyle(color: kTextMuted, fontSize: 14),
-      prefixIcon: prefix,
-      filled: true,
-      fillColor: kCard,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: kBorder),
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return TextField(
+      controller: controller,
+      keyboardType: keyboard,
+      style:
+          style ??
+          TextStyle(
+            color: context.isDark ? Colors.white : const Color(0xFF1A1A2E),
+            fontSize: 14,
+          ),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(color: c.textMuted, fontSize: 14),
+        prefixIcon: prefix,
+        filled: true,
+        fillColor: c.card,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 13,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: c.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: c.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: kPrimary, width: 1.5),
+        ),
       ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: kBorder),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: kPrimary, width: 1.5),
-      ),
-    ),
-  );
+    );
+  }
 }
 
 // ── StreakBadge ───────────────────────────────────────────────────────────────
@@ -361,7 +373,7 @@ class BudgetBar extends StatelessWidget {
           children: [
             Text(
               'Budget used',
-              style: const TextStyle(fontSize: 11, color: kTextMuted),
+              style: TextStyle(fontSize: 11, color: context.c.textMuted),
             ),
             Text(
               '${(percent * 100).toInt()}%',
@@ -379,7 +391,7 @@ class BudgetBar extends StatelessWidget {
           child: LinearProgressIndicator(
             value: percent,
             minHeight: 5,
-            backgroundColor: kBorder,
+            backgroundColor: context.c.border,
             valueColor: AlwaysStoppedAnimation(color),
           ),
         ),
@@ -388,7 +400,7 @@ class BudgetBar extends StatelessWidget {
   }
 }
 
-// ── WeekCompare ───────────────────────────────────────────────────────────────
+// ── WeekCompareBar ────────────────────────────────────────────────────────────
 class WeekCompareBar extends StatelessWidget {
   final double thisWeek, lastWeek;
   const WeekCompareBar({
@@ -404,7 +416,7 @@ class WeekCompareBar extends StatelessWidget {
       children: [
         _Bar('This week', thisWeek, thisWeek / max, kPrimary),
         const SizedBox(width: 12),
-        _Bar('Last week', lastWeek, lastWeek / max, kTextMuted),
+        _Bar('Last week', lastWeek, lastWeek / max, context.c.textMuted),
       ],
     );
   }
@@ -426,7 +438,7 @@ class _Bar extends StatelessWidget {
           child: LinearProgressIndicator(
             value: frac,
             minHeight: 8,
-            backgroundColor: kBorder,
+            backgroundColor: context.c.border,
             valueColor: AlwaysStoppedAnimation(color),
           ),
         ),
@@ -439,13 +451,13 @@ class _Bar extends StatelessWidget {
             color: color,
           ),
         ),
-        Text(label, style: const TextStyle(fontSize: 10, color: kTextMuted)),
+        Text(label, style: TextStyle(fontSize: 10, color: context.c.textMuted)),
       ],
     ),
   );
 }
 
-// ── ShareCard (for screenshot) ────────────────────────────────────────────────
+// ── ShareCard ─────────────────────────────────────────────────────────────────
 class ShareCard extends StatelessWidget {
   final double total, saved;
   final String topCat, message;
@@ -502,7 +514,7 @@ class ShareCard extends StatelessWidget {
         ),
         const Text(
           'spent this month',
-          style: TextStyle(fontSize: 12, color: kTextMuted),
+          style: TextStyle(fontSize: 12, color: Colors.white60),
         ),
         const SizedBox(height: 16),
         Container(
@@ -520,19 +532,88 @@ class ShareCard extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 14),
-        Row(
-          children: [
-            _ShareStat('Top spend', topCat),
-            const SizedBox(width: 12),
-            _ShareStat('Saved', '₹${saved.toStringAsFixed(0)}'),
-          ],
-        ),
-        const SizedBox(height: 16),
-        const Center(
-          child: Text(
-            'Track yours at SpendSense 📊',
-            style: TextStyle(fontSize: 10, color: kTextMuted),
+      ],
+    ),
+  );
+}
+
+// ── BannerAdWidget ────────────────────────────────────────────────────────────
+class BannerAdWidget extends StatefulWidget {
+  const BannerAdWidget({super.key});
+  @override
+  State<BannerAdWidget> createState() => _BannerAdWidgetState();
+}
+
+class _BannerAdWidgetState extends State<BannerAdWidget> {
+  BannerAd? _ad;
+  bool _loaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _ad = BannerAd(
+      adUnitId: AdService.createBanner().adUnitId,
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          if (mounted) setState(() => _loaded = true);
+        },
+        onAdFailedToLoad: (ad, _) {
+          ad.dispose();
+        },
+      ),
+    )..load();
+  }
+
+  @override
+  void dispose() {
+    _ad?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (PremiumService.isPremium || !_loaded || _ad == null) {
+      return const SizedBox.shrink();
+    }
+    return Container(
+      alignment: Alignment.center,
+      width: _ad!.size.width.toDouble(),
+      height: _ad!.size.height.toDouble(),
+      decoration: BoxDecoration(
+        color: context.c.surface,
+        border: Border(top: BorderSide(color: context.c.border)),
+      ),
+      child: AdWidget(ad: _ad!),
+    );
+  }
+}
+
+// ── PremiumBadge ──────────────────────────────────────────────────────────────
+class PremiumBadge extends StatelessWidget {
+  const PremiumBadge({super.key});
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+    decoration: BoxDecoration(
+      gradient: const LinearGradient(
+        colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+      ),
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: const Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text('⭐', style: TextStyle(fontSize: 11)),
+        SizedBox(width: 4),
+        Text(
+          'PRO',
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
           ),
         ),
       ],
@@ -540,34 +621,132 @@ class ShareCard extends StatelessWidget {
   );
 }
 
-class _ShareStat extends StatelessWidget {
-  final String label, value;
-  const _ShareStat(this.label, this.value);
+// ── LockedInsightCard ─────────────────────────────────────────────────────────
+class LockedInsightCard extends StatelessWidget {
+  final String title;
+  final Widget content;
+  final VoidCallback onUnlock;
+  final bool unlocked;
+  const LockedInsightCard({
+    super.key,
+    required this.title,
+    required this.content,
+    required this.onUnlock,
+    required this.unlocked,
+  });
 
   @override
-  Widget build(BuildContext context) => Expanded(
-    child: Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: kCard,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: kBorder),
-      ),
+  Widget build(BuildContext context) {
+    if (PremiumService.isPremium || unlocked) {
+      return AppCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [SectionLabel(title), const SizedBox(height: 14), content],
+        ),
+      );
+    }
+    return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(fontSize: 10, color: kTextMuted)),
-          const SizedBox(height: 2),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
+          SectionLabel(title),
+          const SizedBox(height: 14),
+          Stack(
+            children: [
+              ColorFiltered(
+                colorFilter: ColorFilter.mode(
+                  context.c.card.withOpacity(0.85),
+                  BlendMode.srcOver,
+                ),
+                child: content,
+              ),
+              Positioned.fill(
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: context.c.bg.withOpacity(0.95),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: context.c.border),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('🔒', style: TextStyle(fontSize: 24)),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Advanced Insight',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Watch a short ad to unlock',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: context.c.textMuted,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: 160,
+                          child: ElevatedButton.icon(
+                            onPressed: () =>
+                                AdService.showRewarded(onRewarded: onUnlock),
+                            icon: const Icon(
+                              Icons.play_circle_outline,
+                              size: 16,
+                            ),
+                            label: const Text(
+                              'Watch Ad',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: kPrimary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              elevation: 0,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
+    );
+  }
+}
+
+// ── PremiumFeatureRow ─────────────────────────────────────────────────────────
+class PremiumFeatureRow extends StatelessWidget {
+  final String emoji, label;
+  const PremiumFeatureRow(this.emoji, this.label, {super.key});
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 6),
+    child: Row(
+      children: [
+        Text(emoji, style: const TextStyle(fontSize: 18)),
+        const SizedBox(width: 12),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+        ),
+      ],
     ),
   );
 }

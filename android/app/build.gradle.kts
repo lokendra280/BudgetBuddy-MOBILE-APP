@@ -25,7 +25,7 @@ android {
         isCoreLibraryDesugaringEnabled = true
     }
 
-    // ✅ FIXED Kotlin version (was 11 ❌)
+
     kotlinOptions {
         jvmTarget = "17"
     }
@@ -50,8 +50,8 @@ android {
 
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
+            isShrinkResources = false
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -75,7 +75,7 @@ flutter {
 dependencies {
     // ✅ Required for notifications & modern Java APIs
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
-implementation("com.google.android.play:core:1.10.3")
+
     // Multidex support
     implementation("androidx.multidex:multidex:2.0.1")
 }

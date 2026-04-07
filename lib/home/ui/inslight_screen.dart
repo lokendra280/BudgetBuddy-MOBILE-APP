@@ -1,5 +1,7 @@
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
+import 'package:expensetracker/common/services/ads_service.dart';
+import 'package:expensetracker/common/services/premium_service.dart';
 import 'package:expensetracker/expense/models/expense.dart';
 import 'package:expensetracker/expense/services/expenses_service.dart';
 import 'package:flutter/material.dart';
@@ -19,14 +21,18 @@ class InsightsScreen extends StatefulWidget {
 
 class _State extends State<InsightsScreen> {
   final _screenshotCtrl = ScreenshotController();
-  int _period = 0; // 0=month, 1=week
+  int _period = 0;
   int _touchedPie = -1;
+  bool _advancedUnlocked = false;
 
   @override
   void initState() {
     super.initState();
-    if (widget.showShare)
+    _advancedUnlocked = PremiumService.isPremium;
+    AdService.preloadRewarded();
+    if (widget.showShare) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _share());
+    }
   }
 
   Future<void> _share() async {
@@ -68,11 +74,12 @@ class _State extends State<InsightsScreen> {
       final daily = ExpenseService.last7DayTotals();
       final budget = ExpenseService.budget;
       final (thisW, lastW) = ExpenseService.weekComparison();
+      final c = context.c;
 
       return Scaffold(
-        backgroundColor: kBg,
+        backgroundColor: c.bg,
         appBar: AppBar(
-          backgroundColor: kSurface,
+          backgroundColor: c.surface,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
@@ -99,14 +106,12 @@ class _State extends State<InsightsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Period toggle
               _PeriodToggle(
                 value: _period,
                 onChanged: (v) => setState(() => _period = v),
               ),
               const SizedBox(height: 18),
 
-              // ── Total + waste message
               AppCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,16 +125,12 @@ class _State extends State<InsightsScreen> {
                     ),
                     Text(
                       _period == 0 ? 'this month' : 'this week',
-                      style: const TextStyle(fontSize: 12, color: kTextMuted),
+                      style: TextStyle(fontSize: 12, color: c.textMuted),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       ExpenseService.wasteMessage(thisW, lastW),
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Colors.white,
-                        height: 1.4,
-                      ),
+                      style: const TextStyle(fontSize: 13, height: 1.4),
                     ),
                     if (cats.isNotEmpty) ...[
                       const SizedBox(height: 6),
@@ -142,9 +143,9 @@ class _State extends State<InsightsScreen> {
                 ),
               ),
 
-              const SizedBox(height: 18),
+              const SizedBox(height: 16),
 
-              // ── Pie chart
+              // ── Standard pie chart (free) ──
               if (cats.isNotEmpty) ...[
                 const SectionLabel('By category'),
                 const SizedBox(height: 12),
@@ -156,47 +157,36 @@ class _State extends State<InsightsScreen> {
                     onTouch: (i) => setState(() => _touchedPie = i),
                   ),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 16),
               ],
 
-              // ── Bar chart
+              // ── Bar chart (free) ──
               const SectionLabel('Last 7 days'),
               const SizedBox(height: 12),
               AppCard(child: _BarChart(daily: daily)),
-              const SizedBox(height: 18),
+              const SizedBox(height: 16),
 
-              // ── Week compare
-              const SectionLabel('Week comparison'),
-              const SizedBox(height: 12),
-              AppCard(
-                child: WeekCompareBar(thisWeek: thisW, lastWeek: lastW),
-              ),
-              const SizedBox(height: 18),
-
-              // ── Budget
-              const SectionLabel('Budget'),
-              const SizedBox(height: 12),
-              AppCard(
-                child: Column(
+              // ── LOCKED: Advanced insights (rewarded ad or premium) ──
+              LockedInsightCard(
+                title: 'Advanced insights',
+                unlocked: _advancedUnlocked,
+                onUnlock: () => setState(() => _advancedUnlocked = true),
+                content: Column(
                   children: [
+                    WeekCompareBar(thisWeek: thisW, lastWeek: lastW),
+                    const SizedBox(height: 14),
                     BudgetBar(percent: ExpenseService.budgetUsedPercent()),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 14),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           '₹${total.toStringAsFixed(0)} spent',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: kTextMuted,
-                          ),
+                          style: TextStyle(fontSize: 12, color: c.textMuted),
                         ),
                         Text(
                           '₹${budget.monthlyLimit.toStringAsFixed(0)} limit',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: kTextMuted,
-                          ),
+                          style: TextStyle(fontSize: 12, color: c.textMuted),
                         ),
                       ],
                     ),
@@ -204,12 +194,11 @@ class _State extends State<InsightsScreen> {
                 ),
               ),
 
-              const SizedBox(height: 18),
+              const SizedBox(height: 16),
               AppButton(
                 label: 'Share my report',
                 onTap: _share,
                 icon: Icons.share_rounded,
-                color: kPrimary,
               ),
             ],
           ),
@@ -225,20 +214,22 @@ class _PeriodToggle extends StatelessWidget {
   const _PeriodToggle({required this.value, required this.onChanged});
 
   @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(4),
-    decoration: BoxDecoration(
-      color: kCard,
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: kBorder),
-    ),
-    child: Row(
-      children: [
-        _Tab('This month', 0, value, onChanged),
-        _Tab('This week', 1, value, onChanged),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return Container(
+      padding: EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: c.border, width: 1.5),
+      ),
+      child: Row(
+        children: [
+          _Tab('This month', 0, value, onChanged),
+          _Tab('This week', 1, value, onChanged),
+        ],
+      ),
+    );
+  }
 }
 
 class _Tab extends StatelessWidget {
@@ -264,7 +255,7 @@ class _Tab extends StatelessWidget {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: current == idx ? Colors.white : kTextMuted,
+            color: current == idx ? Colors.white : context.c.textMuted,
           ),
         ),
       ),
@@ -286,6 +277,8 @@ class _PieChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.c;
+
     final entries = cats.entries.toList();
     return Column(
       children: [
@@ -324,36 +317,26 @@ class _PieChart extends StatelessWidget {
           runSpacing: 6,
           children: entries.asMap().entries.map((e) {
             final col = kCatColors[e.key % kCatColors.length];
-            return _Legend(e.value.key, e.value.value, total, col);
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(color: col, shape: BoxShape.circle),
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  '${e.value.key} ${(e.value.value / total * 100).toInt()}%',
+                  style: TextStyle(fontSize: 11, color: c.textMuted),
+                ),
+              ],
+            );
           }).toList(),
         ),
       ],
     );
   }
-}
-
-class _Legend extends StatelessWidget {
-  final String cat;
-  final double amt, total;
-  final Color color;
-  const _Legend(this.cat, this.amt, this.total, this.color);
-
-  @override
-  Widget build(BuildContext context) => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Container(
-        width: 8,
-        height: 8,
-        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      ),
-      const SizedBox(width: 5),
-      Text(
-        '$cat ${(amt / total * 100).toInt()}%',
-        style: const TextStyle(fontSize: 11, color: kTextSub),
-      ),
-    ],
-  );
 }
 
 class _BarChart extends StatelessWidget {
@@ -362,8 +345,10 @@ class _BarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.c;
+
     final max = daily.reduce((a, b) => a > b ? a : b);
-    final days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     return SizedBox(
       height: 130,
       child: BarChart(
@@ -387,7 +372,7 @@ class _BarChart extends StatelessWidget {
                 reservedSize: 22,
                 getTitlesWidget: (v, _) => Text(
                   days[v.toInt()],
-                  style: const TextStyle(fontSize: 11, color: kTextMuted),
+                  style: TextStyle(fontSize: 11, color: c.textMuted),
                 ),
               ),
             ),
