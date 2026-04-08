@@ -1,8 +1,7 @@
+import 'package:expensetracker/ai_screen/pages/ai_screen.dart';
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
-import 'package:expensetracker/common/paywall_screen.dart';
 import 'package:expensetracker/common/services/ads_service.dart';
-import 'package:expensetracker/common/services/premium_service.dart';
 import 'package:expensetracker/expense/models/expense.dart';
 import 'package:expensetracker/expense/services/expenses_service.dart';
 import 'package:expensetracker/expense/ui/add_expense_screen.dart';
@@ -23,7 +22,6 @@ class HomeScreen extends StatelessWidget {
       final total = ExpenseService.totalFor(expenses);
       final budget = ExpenseService.budget;
       final (thisW, lastW) = ExpenseService.weekComparison();
-      final c = context.c;
 
       return Scaffold(
         body: Column(
@@ -42,19 +40,15 @@ class HomeScreen extends StatelessWidget {
                           budget: budget,
                         ),
                         const SizedBox(height: 16),
-                        _WasteInsight(thisW: thisW, lastW: lastW),
+                        _InsightCard(thisW: thisW, lastW: lastW),
                         const SizedBox(height: 16),
-                        _WeekSection(thisW: thisW, lastW: lastW),
+                        _WeekCard(thisW: thisW, lastW: lastW),
                         const SizedBox(height: 16),
                         SectionLabel(
                           'Recent',
                           trailing: TextButton(
-                            onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const InsightsScreen(),
-                              ),
-                            ),
+                            onPressed: () =>
+                                _push(context, const InsightsScreen()),
                             child: const Text(
                               'See all →',
                               style: TextStyle(fontSize: 12, color: kPrimary),
@@ -86,76 +80,82 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
-            // ── Banner ad sits just above the nav bar ──
             const BannerAdWidget(),
           ],
         ),
-        bottomNavigationBar: _BottomBar(context),
+        bottomNavigationBar: _NavBar(context),
       );
     },
   );
+
+  void _push(BuildContext ctx, Widget screen) =>
+      Navigator.push(ctx, MaterialPageRoute(builder: (_) => screen));
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
 class _Header extends StatelessWidget {
   final double total;
   final Budget budget;
   const _Header({required this.total, required this.budget});
 
   @override
-  Widget build(BuildContext context) => SliverToBoxAdapter(
-    child: Container(
-      padding: EdgeInsets.fromLTRB(
-        20,
-        MediaQuery.of(context).padding.top + 18,
-        20,
-        22,
-      ),
-      color: context.c.surface,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Good day 👋',
-                    style: TextStyle(fontSize: 12, color: context.c.textMuted),
-                  ),
-                  const SizedBox(height: 2),
-                  const Text(
-                    'SpendSense',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
-                  ),
-                ],
-              ),
-              const Spacer(),
-              if (PremiumService.isPremium)
-                const PremiumBadge()
-              else
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return SliverToBoxAdapter(
+      child: Container(
+        padding: EdgeInsets.fromLTRB(
+          20,
+          MediaQuery.of(context).padding.top + 18,
+          20,
+          22,
+        ),
+        color: c.surface,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Good day 👋',
+                      style: TextStyle(fontSize: 12, color: c.textMuted),
+                    ),
+                    const SizedBox(height: 2),
+                    const Text(
+                      'SpendSense',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+                const Spacer(),
                 StreakBadge(days: budget.streakDays),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Text(
-            '₹${total.toStringAsFixed(0)}',
-            style: const TextStyle(
-              fontSize: 42,
-              fontWeight: FontWeight.w800,
-              height: 1,
+              ],
             ),
-          ),
-          Text(
-            'spent this month',
-            style: TextStyle(fontSize: 12, color: context.c.textMuted),
-          ),
-          const SizedBox(height: 14),
-          BudgetBar(percent: ExpenseService.budgetUsedPercent()),
-        ],
+            const SizedBox(height: 20),
+            Text(
+              '₹${total.toStringAsFixed(0)}',
+              style: const TextStyle(
+                fontSize: 42,
+                fontWeight: FontWeight.w800,
+                height: 1,
+              ),
+            ),
+            Text(
+              'spent this month',
+              style: TextStyle(fontSize: 12, color: c.textMuted),
+            ),
+            const SizedBox(height: 14),
+            BudgetBar(percent: ExpenseService.budgetUsedPercent()),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _MetricsRow extends StatelessWidget {
@@ -192,9 +192,9 @@ class _MetricsRow extends StatelessWidget {
   );
 }
 
-class _WasteInsight extends StatelessWidget {
+class _InsightCard extends StatelessWidget {
   final double thisW, lastW;
-  const _WasteInsight({required this.thisW, required this.lastW});
+  const _InsightCard({required this.thisW, required this.lastW});
 
   @override
   Widget build(BuildContext context) => AppCard(
@@ -228,9 +228,9 @@ class _WasteInsight extends StatelessWidget {
   );
 }
 
-class _WeekSection extends StatelessWidget {
+class _WeekCard extends StatelessWidget {
   final double thisW, lastW;
-  const _WeekSection({required this.thisW, required this.lastW});
+  const _WeekCard({required this.thisW, required this.lastW});
 
   @override
   Widget build(BuildContext context) => AppCard(
@@ -247,40 +247,42 @@ class _WeekSection extends StatelessWidget {
 
 class _Empty extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    final c = context.c;
-    return AppCard(
-      padding: const EdgeInsets.symmetric(vertical: 36),
-      child: Column(
-        children: [
-          Text('💸', style: TextStyle(fontSize: 36)),
-          SizedBox(height: 10),
-          Text(
-            'No expenses yet',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-          ),
-          SizedBox(height: 4),
-          Text(
-            'Tap + to start tracking',
-            style: TextStyle(fontSize: 12, color: context.c.textMuted),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => AppCard(
+    padding: const EdgeInsets.symmetric(vertical: 36),
+    child: Column(
+      children: [
+        const Text('💸', style: TextStyle(fontSize: 36)),
+        const SizedBox(height: 10),
+        const Text(
+          'No expenses yet',
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Tap + to start tracking',
+          style: TextStyle(fontSize: 12, color: context.c.textMuted),
+        ),
+      ],
+    ),
+  );
 }
 
-class _BottomBar extends StatelessWidget {
+// ── Bottom Nav ────────────────────────────────────────────────────────────────
+class _NavBar extends StatelessWidget {
   final BuildContext ctx;
-  const _BottomBar(this.ctx);
+  const _NavBar(this.ctx);
+
+  void _go(Widget screen) =>
+      Navigator.push(ctx, MaterialPageRoute(builder: (_) => screen));
 
   @override
   Widget build(BuildContext _) {
+    final c = ctx.c;
     return Container(
-      padding: EdgeInsets.fromLTRB(20, 10, 20, 24),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
       decoration: BoxDecoration(
-        color: ctx.c.surface,
-        border: Border(top: BorderSide(color: ctx.c.border)),
+        color: c.card,
+        border: Border(top: BorderSide(color: c.border)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -290,65 +292,53 @@ class _BottomBar extends StatelessWidget {
             Icons.bar_chart_rounded,
             'Insights',
             false,
-            () => Navigator.push(
+            () => _go(const InsightsScreen()),
+          ),
+          // ── FAB ──────────────────────────────────────────────────────────────
+          GestureDetector(
+            onTap: () => Navigator.push(
               ctx,
-              MaterialPageRoute(builder: (_) => const InsightsScreen()),
+              MaterialPageRoute(builder: (_) => const AddExpenseScreen()),
+            ).then((_) => AdService.trackAction()),
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [kPrimary, Color(0xFF9D8FFF)],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: kPrimary.withOpacity(0.4),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.add_rounded,
+                color: Colors.white,
+                size: 26,
+              ),
             ),
           ),
-          _AddBtn(ctx),
           _NavBtn(
-            Icons.star_outline_rounded,
-            'Premium',
+            Icons.auto_awesome_rounded,
+            'AI',
             false,
-            () => Navigator.push(
-              ctx,
-              MaterialPageRoute(builder: (_) => const PaywallScreen()),
-            ),
+            () => _go(const AiScreen()),
           ),
           _NavBtn(
             Icons.settings_outlined,
             'Settings',
             false,
-            () => Navigator.push(
-              ctx,
-              MaterialPageRoute(builder: (_) => const SettingsScreen()),
-            ),
+            () => _go(const SettingsScreen()),
           ),
         ],
       ),
     );
   }
-}
-
-class _AddBtn extends StatelessWidget {
-  final BuildContext ctx;
-  const _AddBtn(this.ctx);
-
-  @override
-  Widget build(BuildContext context) => GestureDetector(
-    onTap: () {
-      Navigator.push(
-        ctx,
-        MaterialPageRoute(builder: (_) => const AddExpenseScreen()),
-      ).then((_) => AdService.trackAction());
-    },
-    child: Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [kPrimary, Color(0xFF9D8FFF)]),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: kPrimary.withOpacity(0.4),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
-    ),
-  );
 }
 
 class _NavBtn extends StatelessWidget {

@@ -1,0 +1,13 @@
+{
+  "appName": "Expense Tracker",
+  "home": "Home",
+  "insights": "Insights",
+  "ai": "AI",
+  "settings": "Settings",
+  "appearance": "Appearance",
+  "dark": "Dark",
+  "light": "Light",
+  "system": "System",
+  "language": "Language",
+  "monthlybudget": "Monthly Budget"
+}
