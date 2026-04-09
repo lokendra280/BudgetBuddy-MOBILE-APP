@@ -15,15 +15,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-// ── Replace with your actual Supabase project values ─────────────────────────
-// Dashboard → Settings → API → Project URL & anon key
-const _supabaseUrl = 'https://rafrmkwgmogdeklthzds.supabase.co';
-const _supabaseAnonKey = 'sb_publishable_-y06lzlmNsthl0DCtHBT4Q_35WGwIn1';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // ── Supabase (must be first) ──────────────────────────────────────────────
+  await dotenv.load(fileName: ".env");
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,

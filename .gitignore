@@ -7,7 +7,7 @@
 .atom/
 .build/
 .buildlog/
-.history
+.historyub
 .svn/
 .env
 .swiftpm/
