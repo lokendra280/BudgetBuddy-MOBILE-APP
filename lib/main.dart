@@ -4,10 +4,12 @@ import 'package:expensetracker/common/services/ads_service.dart';
 import 'package:expensetracker/common/services/lang_provider.dart';
 import 'package:expensetracker/common/services/notification_service.dart';
 import 'package:expensetracker/common/theme_provider.dart';
+import 'package:expensetracker/common/wrapper/update_wrapper.dart';
 import 'package:expensetracker/expense/models/expense.dart';
 import 'package:expensetracker/home/ui/home_screen.dart';
 import 'package:expensetracker/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,10 +25,8 @@ void main() async {
 
   // ── Supabase (must be first) ──────────────────────────────────────────────
   await Supabase.initialize(
-    url: _supabaseUrl,
-    anonKey: _supabaseAnonKey,
-    // Deep-link redirect for email magic link fallback (optional)
-    // authFlowType: AuthFlowType.pkce,
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
   // ── Local storage ─────────────────────────────────────────────────────────
@@ -82,7 +82,9 @@ class SpendSenseApp extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
 
-        home: onboarded ? const HomeScreen() : const OnboardScreen(),
+        home: onboarded
+            ? UpdateWrapper(child: const HomeScreen())
+            : const OnboardScreen(),
       ),
     ),
   );
