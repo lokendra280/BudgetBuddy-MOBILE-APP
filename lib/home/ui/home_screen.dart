@@ -1,17 +1,41 @@
 import 'package:expensetracker/ai_screen/pages/ai_screen.dart';
+import 'package:expensetracker/auth/services/auth_service.dart';
+import 'package:expensetracker/auth/ui/login_screen.dart';
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
 import 'package:expensetracker/common/services/ads_service.dart';
 import 'package:expensetracker/expense/models/expense.dart';
 import 'package:expensetracker/expense/services/expenses_service.dart';
 import 'package:expensetracker/expense/ui/add_expense_screen.dart';
+import 'package:expensetracker/home/services/sync_services.dart';
 import 'package:expensetracker/home/ui/inslight_screen.dart';
+import 'package:expensetracker/profile/ui/profile_screen.dart';
 import 'package:expensetracker/profile/ui/setting_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+  @override
+  State<HomeScreen> createState() => _HomeState();
+}
+
+class _HomeState extends State<HomeScreen> {
+  SyncResult? _syncResult;
+
+  @override
+  void initState() {
+    super.initState();
+    // Auto-sync on open if logged in
+    if (AuthService.isLoggedIn) {
+      SyncService.sync().then((r) {
+        if (mounted) setState(() => _syncResult = r);
+      });
+    }
+  }
+
+  void _push(Widget screen) =>
+      Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
 
   @override
   Widget build(BuildContext context) => ValueListenableBuilder(
@@ -29,7 +53,16 @@ class HomeScreen extends StatelessWidget {
             Expanded(
               child: CustomScrollView(
                 slivers: [
-                  _Header(total: total, budget: budget),
+                  _Header(
+                    total: total,
+                    budget: budget,
+                    syncResult: _syncResult,
+                    onProfileTap: () => _push(
+                      AuthService.isLoggedIn
+                          ? const ProfileScreen()
+                          : const LoginScreen(),
+                    ),
+                  ),
                   SliverPadding(
                     padding: const EdgeInsets.fromLTRB(18, 0, 18, 20),
                     sliver: SliverList(
@@ -47,8 +80,7 @@ class HomeScreen extends StatelessWidget {
                         SectionLabel(
                           'Recent',
                           trailing: TextButton(
-                            onPressed: () =>
-                                _push(context, const InsightsScreen()),
+                            onPressed: () => _push(const InsightsScreen()),
                             child: const Text(
                               'See all →',
                               style: TextStyle(fontSize: 12, color: kPrimary),
@@ -67,8 +99,8 @@ class HomeScreen extends StatelessWidget {
                                   kCatColors[idx < 0
                                       ? 0
                                       : idx % kCatColors.length],
-                              onDelete: () {
-                                e.delete();
+                              onDelete: () async {
+                                await SyncService.deleteExpense(e);
                                 AdService.trackAction();
                               },
                             ),
@@ -83,24 +115,48 @@ class HomeScreen extends StatelessWidget {
             const BannerAdWidget(),
           ],
         ),
-        bottomNavigationBar: _NavBar(context),
+        bottomNavigationBar: _NavBar(
+          onAdd: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AddExpenseScreen()),
+          ).then((_) => AdService.trackAction()),
+          onInsights: () => _push(const InsightsScreen()),
+          onAI: () => _push(const AiScreen()),
+          onSettings: () => _push(const SettingsScreen()),
+        ),
       );
     },
   );
-
-  void _push(BuildContext ctx, Widget screen) =>
-      Navigator.push(ctx, MaterialPageRoute(builder: (_) => screen));
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 class _Header extends StatelessWidget {
   final double total;
   final Budget budget;
-  const _Header({required this.total, required this.budget});
+  final SyncResult? syncResult;
+  final VoidCallback onProfileTap;
+  const _Header({
+    required this.total,
+    required this.budget,
+    required this.syncResult,
+    required this.onProfileTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final isLoggedIn = AuthService.isLoggedIn;
+    final name = AuthService.userName;
+    final initials = isLoggedIn && name.isNotEmpty
+        ? name
+              .trim()
+              .split(' ')
+              .map((w) => w.isNotEmpty ? w[0] : '')
+              .take(2)
+              .join()
+              .toUpperCase()
+        : null;
+
     return SliverToBoxAdapter(
       child: Container(
         padding: EdgeInsets.fromLTRB(
@@ -133,7 +189,55 @@ class _Header extends StatelessWidget {
                   ],
                 ),
                 const Spacer(),
-                StreakBadge(days: budget.streakDays),
+                // Sync indicator
+                if (syncResult == SyncResult.success)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: Icon(
+                      Icons.cloud_done_rounded,
+                      size: 16,
+                      color: kGreen,
+                    ),
+                  )
+                else if (syncResult == SyncResult.offline)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: Icon(
+                      Icons.cloud_off_rounded,
+                      size: 16,
+                      color: c.textMuted,
+                    ),
+                  ),
+                // Profile avatar / streak badge
+                GestureDetector(
+                  onTap: onProfileTap,
+                  child: isLoggedIn
+                      ? Container(
+                          width: 38,
+                          height: 38,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: const LinearGradient(
+                              colors: [kPrimary, Color(0xFF9D8FFF)],
+                            ),
+                            border: Border.all(
+                              color: kPrimary.withOpacity(0.4),
+                              width: 2,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              initials ?? '?',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        )
+                      : StreakBadge(days: budget.streakDays),
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -269,15 +373,17 @@ class _Empty extends StatelessWidget {
 
 // ── Bottom Nav ────────────────────────────────────────────────────────────────
 class _NavBar extends StatelessWidget {
-  final BuildContext ctx;
-  const _NavBar(this.ctx);
-
-  void _go(Widget screen) =>
-      Navigator.push(ctx, MaterialPageRoute(builder: (_) => screen));
+  final VoidCallback onAdd, onInsights, onAI, onSettings;
+  const _NavBar({
+    required this.onAdd,
+    required this.onInsights,
+    required this.onAI,
+    required this.onSettings,
+  });
 
   @override
-  Widget build(BuildContext _) {
-    final c = ctx.c;
+  Widget build(BuildContext context) {
+    final c = context.c;
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
       decoration: BoxDecoration(
@@ -287,19 +393,10 @@ class _NavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _NavBtn(Icons.home_rounded, 'Home', true, () {}),
-          _NavBtn(
-            Icons.bar_chart_rounded,
-            'Insights',
-            false,
-            () => _go(const InsightsScreen()),
-          ),
-          // ── FAB ──────────────────────────────────────────────────────────────
+          _Btn(Icons.home_rounded, 'Home', true, () {}),
+          _Btn(Icons.bar_chart_rounded, 'Insights', false, onInsights),
           GestureDetector(
-            onTap: () => Navigator.push(
-              ctx,
-              MaterialPageRoute(builder: (_) => const AddExpenseScreen()),
-            ).then((_) => AdService.trackAction()),
+            onTap: onAdd,
             child: Container(
               width: 50,
               height: 50,
@@ -323,30 +420,20 @@ class _NavBar extends StatelessWidget {
               ),
             ),
           ),
-          _NavBtn(
-            Icons.auto_awesome_rounded,
-            'AI',
-            false,
-            () => _go(const AiScreen()),
-          ),
-          _NavBtn(
-            Icons.settings_outlined,
-            'Settings',
-            false,
-            () => _go(const SettingsScreen()),
-          ),
+          _Btn(Icons.auto_awesome_rounded, 'AI', false, onAI),
+          _Btn(Icons.settings_outlined, 'Settings', false, onSettings),
         ],
       ),
     );
   }
 }
 
-class _NavBtn extends StatelessWidget {
+class _Btn extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool active;
   final VoidCallback onTap;
-  const _NavBtn(this.icon, this.label, this.active, this.onTap);
+  const _Btn(this.icon, this.label, this.active, this.onTap);
 
   @override
   Widget build(BuildContext context) => GestureDetector(
