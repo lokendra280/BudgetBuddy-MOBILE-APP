@@ -129,26 +129,52 @@ class _State extends State<AddExpenseScreen> {
       ),
     ),
   );
-
   Future<void> _scan({required bool fromCamera}) async {
     setState(() => _scanning = true);
+
     try {
       final result = await BillScannerService.scan(fromCamera: fromCamera);
-      if (result == null || !mounted) return;
+
+      if (!mounted) return;
+
+      if (result == null) {
+        _snack('Scan cancelled.', kAccent);
+        return;
+      }
 
       if (result.hasItems || result.totalAmount != null) {
-        // Show item review sheet
+        debugPrint("Items detected: ${result.items.length}");
         await _showScanReview(result);
       } else {
         _snack('No items detected. Try a clearer photo.', kAmber);
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         _snack('Scan failed: ${e.toString().split('\n').first}', kAccent);
+      }
     } finally {
       if (mounted) setState(() => _scanning = false);
     }
   }
+  // Future<void> _scan({required bool fromCamera}) async {
+  //   setState(() => _scanning = true);
+  //   try {
+  //     final result = await BillScannerService.scan(fromCamera: fromCamera);
+  //     if (result == null || !mounted) return;
+
+  //     if (result.hasItems || result.totalAmount != null) {
+  //       // Show item review sheet
+  //       await _showScanReview(result);
+  //     } else {
+  //       _snack('No items detected. Try a clearer photo.', kAmber);
+  //     }
+  //   } catch (e) {
+  //     if (mounted)
+  //       _snack('Scan failed: ${e.toString().split('\n').first}', kAccent);
+  //   } finally {
+  //     if (mounted) setState(() => _scanning = false);
+  //   }
+  // }
 
   Future<void> _showScanReview(BillScanResult result) async {
     final sym = currencyOf(result.detectedCurrency).symbol;

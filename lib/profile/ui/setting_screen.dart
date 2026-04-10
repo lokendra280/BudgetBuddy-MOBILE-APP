@@ -7,6 +7,7 @@ import 'package:expensetracker/common/services/notification_service.dart';
 import 'package:expensetracker/common/theme_provider.dart';
 import 'package:expensetracker/expense/models/expense.dart';
 import 'package:expensetracker/expense/services/expenses_service.dart';
+import 'package:expensetracker/profile/ui/about_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -82,48 +83,50 @@ class _State extends State<SettingsScreen> {
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     builder: (_) => SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 8),
-          Container(
-            width: 36,
-            height: 4,
-            decoration: BoxDecoration(
-              color: context.c.border,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(height: 14),
-          const Text(
-            'Select Currency',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 8),
-          ...kCurrencies.map((cur) {
-            final selected = cur.code == ExpenseService.currency;
-            return ListTile(
-              leading: Text(cur.flag, style: const TextStyle(fontSize: 24)),
-              title: Text(
-                '${cur.name} (${cur.code})',
-                style: const TextStyle(fontWeight: FontWeight.w600),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: context.c.border,
+                borderRadius: BorderRadius.circular(2),
               ),
-              subtitle: Text('Symbol: ${cur.symbol}'),
-              trailing: selected
-                  ? const Icon(Icons.check_circle_rounded, color: kPrimary)
-                  : null,
-              onTap: () async {
-                final b = ExpenseService.budget..currency = cur.code;
-                await b.save();
-                if (mounted) {
-                  setState(() {});
-                  Navigator.pop(context);
-                }
-              },
-            );
-          }),
-          const SizedBox(height: 8),
-        ],
+            ),
+            const SizedBox(height: 14),
+            const Text(
+              'Select Currency',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            ...kCurrencies.map((cur) {
+              final selected = cur.code == ExpenseService.currency;
+              return ListTile(
+                leading: Text(cur.flag, style: const TextStyle(fontSize: 24)),
+                title: Text(
+                  '${cur.name} (${cur.code})',
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                subtitle: Text('Symbol: ${cur.symbol}'),
+                trailing: selected
+                    ? const Icon(Icons.check_circle_rounded, color: kPrimary)
+                    : null,
+                onTap: () async {
+                  final b = ExpenseService.budget..currency = cur.code;
+                  await b.save();
+                  if (mounted) {
+                    setState(() {});
+                    Navigator.pop(context);
+                  }
+                },
+              );
+            }),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     ),
   );
@@ -446,6 +449,58 @@ class _State extends State<SettingsScreen> {
                   ],
                 ),
               ),
+              const SizedBox(height: 20),
+
+              // ── About ────────────────────────────────────────────────────────
+              _T('About'), const SizedBox(height: 10),
+              AppCard(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AboutScreen()),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: kPrimary.withOpacity(0.10),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.info_outline_rounded,
+                        color: kPrimary,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'About SpendSense',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            'Version, markets, legal',
+                            style: TextStyle(fontSize: 11, color: c.textMuted),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: c.textMuted,
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ),
+
               const SizedBox(height: 40),
             ],
           ),

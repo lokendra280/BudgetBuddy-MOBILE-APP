@@ -19,7 +19,6 @@ class _UpdateWrapperState extends State<UpdateWrapper> {
   }
 
   void _checkInApp() async {
-    // Skip in-app update check during development
     if (kDebugMode) {
       debugPrint('⚠️ Skipping in-app update (debug mode)');
       return;
@@ -29,11 +28,17 @@ class _UpdateWrapperState extends State<UpdateWrapper> {
       final info = await InAppUpdate.checkForUpdate();
 
       if (info.updateAvailability == UpdateAvailability.updateAvailable) {
-        await InAppUpdate.performImmediateUpdate();
+        if (info.flexibleUpdateAllowed) {
+          await InAppUpdate.startFlexibleUpdate();
+          await InAppUpdate.completeFlexibleUpdate();
+        }
+        // 🔹 Only fallback to immediate if required
+        else if (info.immediateUpdateAllowed) {
+          await InAppUpdate.performImmediateUpdate();
+        }
       }
     } catch (e) {
-      // Silently catch error (app not from Play Store during testing)
-      debugPrint('In-app update not available: $e');
+      debugPrint('In-app update error: $e');
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:expensetracker/auth/ui/login_screen.dart';
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
 import 'package:expensetracker/common/services/ads_service.dart';
+import 'package:expensetracker/common/shimmer_widget.dart';
 import 'package:expensetracker/expense/models/expense.dart';
 import 'package:expensetracker/expense/services/expenses_service.dart';
 import 'package:expensetracker/expense/ui/add_expense_screen.dart';
@@ -24,11 +25,15 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeState extends State<HomeScreen> {
   SyncResult? _syncResult;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     ExpenseService.updateStreak();
+    Future.delayed(const Duration(milliseconds: 700), () {
+      if (mounted) setState(() => _isLoading = false);
+    });
     if (AuthService.isLoggedIn) {
       SyncService.sync().then((r) {
         if (mounted) setState(() => _syncResult = r);
@@ -36,8 +41,8 @@ class _HomeState extends State<HomeScreen> {
     }
   }
 
-  Future<T?> _push<T>(Widget s) =>
-      Navigator.push<T>(context, MaterialPageRoute(builder: (_) => s));
+  _push(Widget s) =>
+      Navigator.push(context, MaterialPageRoute(builder: (_) => s));
 
   @override
   Widget build(BuildContext context) => ValueListenableBuilder(
@@ -50,6 +55,14 @@ class _HomeState extends State<HomeScreen> {
       final budget = ExpenseService.budget;
       final (thisW, lastW) = ExpenseService.weekComparison();
       final dailyData = ExpenseService.dailyTotals(days: 7);
+
+      // Show shimmer skeleton on first load
+      if (_isLoading) {
+        return Scaffold(
+          backgroundColor: context.c.bg,
+          body: const SafeArea(child: HomeShimmer()),
+        );
+      }
 
       return Scaffold(
         body: Column(
@@ -258,10 +271,11 @@ class _HomeState extends State<HomeScreen> {
           ],
         ),
         bottomNavigationBar: _NavBar(
-          onAdd: () =>
-              _push(AddExpenseScreen()).then((_) => AdService.trackAction()),
+          onAdd: () => _push(
+            const AddExpenseScreen(),
+          ).then((_) => AdService.trackAction()),
           onStatements: () => _push(const StatementsScreen()),
-          onSocial: () => _push(const SocialScreen()),
+          onSocial: () => _push(const SettingsScreen()),
           onAI: () => _push(const AiScreen()),
           onSettings: () => _push(const SettingsScreen()),
         ),
@@ -652,8 +666,9 @@ class _NavBar extends StatelessWidget {
           _Btn(Icons.home_rounded, 'Home', true, () {}),
           _Btn(Icons.receipt_long_rounded, 'Statements', false, onStatements),
           _Fab(onAdd),
-          _Btn(Icons.people_rounded, 'Social', false, onSocial),
+
           _Btn(Icons.auto_awesome_rounded, 'AI', false, onAI),
+          _Btn(Icons.people_rounded, 'Settings', false, onSocial),
         ],
       ),
     );

@@ -8,6 +8,8 @@ import 'package:expensetracker/common/theme_provider.dart';
 import 'package:expensetracker/common/wrapper/update_wrapper.dart';
 import 'package:expensetracker/expense/models/expense.dart';
 import 'package:expensetracker/home/ui/home_screen.dart';
+import 'package:expensetracker/l10n/app_localizations.dart';
+import 'package:expensetracker/splash/ui/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -34,6 +36,9 @@ void main() async {
   AdService.preloadInterstitial();
   AdService.preloadRewarded();
 
+  // preferences
+  await ThemeProvider.init();
+  await LangProvider.init();
   final prefs = await SharedPreferences.getInstance();
   final onboarded = prefs.getBool('onboarded') ?? false;
 
@@ -58,15 +63,12 @@ class SpendSenseApp extends StatelessWidget {
         locale: locale,
         supportedLocales: LangProvider.supported,
         localizationsDelegates: const [
+          AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        home: UpdateWrapper(
-          child: LockScreen(
-            child: onboarded ? const HomeScreen() : const OnboardScreen(),
-          ),
-        ),
+        home: UpdateWrapper(child: const SplashScreen()),
       ),
     ),
   );

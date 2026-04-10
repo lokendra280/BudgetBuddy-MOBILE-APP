@@ -95,7 +95,7 @@ ThemeData buildTheme(bool dark) {
                     secondary: kAccent,
                   ))
             .copyWith(surface: c.surface),
-    textTheme: GoogleFonts.interTextTheme(base.textTheme).apply(
+    textTheme: GoogleFonts.poppinsTextTheme(base.textTheme).apply(
       bodyColor: dark ? Colors.white : const Color(0xFF0F0F1A),
       displayColor: dark ? Colors.white : const Color(0xFF0F0F1A),
     ),

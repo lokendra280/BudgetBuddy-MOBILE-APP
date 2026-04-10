@@ -1,61 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:google_sign_in/google_sign_in.dart';
-// import 'package:supabase_flutter/supabase_flutter.dart';
-
-// // ── Supabase client shorthand ─────────────────────────────────────────────────
-// SupabaseClient get _sb => Supabase.instance.client;
-
-// class AuthService {
-//   // ── Current user ─────────────────────────────────────────────────────────────
-//   static User? get currentUser => _sb.auth.currentUser;
-//   static bool get isLoggedIn => currentUser != null;
-//   static Stream<AuthState> get authStream => _sb.auth.onAuthStateChange;
-
-//   // ─────────────────────────────────────────────────────────────────────────────
-//   // EMAIL OTP FLOW
-//   // Step 1: sendOtp(email)     → Supabase emails a 6-digit OTP
-//   // Step 2: verifyOtp(email, token) → exchanges token for session
-//   // ─────────────────────────────────────────────────────────────────────────────
-
-//   static Future<void> sendOtp(String email) async {
-//     await _sb.auth.signInWithOtp(
-//       email: email.trim().toLowerCase(),
-//       shouldCreateUser: true, // auto-create account if new user
-//       emailRedirectTo: null, // use OTP, not magic link
-//     );
-//   }
-
-//   static Future<AuthResponse> verifyOtp(String email, String token) async {
-//     return _sb.auth.verifyOTP(
-//       email: email.trim().toLowerCase(),
-//       token: token.trim(),
-//       type: OtpType.email,
-//     );
-//   }
-//     /// Email sign up
-//     ///
-
-//   // ─────────────────────────────────────────────────────────────────────────────
-//   // GOOGLE SIGN-IN
-//   // ─────────────────────────────────────────────────────────────────────────────
-
-//   // ─────────────────────────────────────────────────────────────────────────────
-//   // SIGN OUT
-//   // ─────────────────────────────────────────────────────────────────────────────
-
-//   // ─────────────────────────────────────────────────────────────────────────────
-//   // USER INFO HELPERS
-//   // ─────────────────────────────────────────────────────────────────────────────
-
-//   static String get userEmail => currentUser?.email ?? '';
-//   static String get userAvatarUrl =>
-//       currentUser?.userMetadata?['avatar_url'] ?? '';
-//   static String get userName =>
-//       currentUser?.userMetadata?['full_name'] ??
-//       currentUser?.userMetadata?['name'] ??
-//       userEmail.split('@').first;
-// }
-
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -69,27 +11,74 @@ class AuthService {
 
   static const _webClientId =
       '818667313685-phdmniunn776scacsik3pgs0jh8evosv.apps.googleusercontent.com';
+  static Future<AuthResponse> signUp(String email, String password) async {
+    try {
+      final res = await _sb.auth.signUp(
+        email: email.trim().toLowerCase(),
+        password: password,
+        emailRedirectTo: null, // optional (web only)
+      );
 
-  // ── Email + Password Sign Up ──────────────────────────────────────────────
-  static Future<AuthResponse> signUp(String email, String password) =>
-      _sb.auth.signUp(email: email.trim().toLowerCase(), password: password);
+      if (res.user == null) {
+        throw Exception('Signup failed. Please try again.');
+      }
 
-  // ── Email + Password Sign In ──────────────────────────────────────────────
-  static Future<AuthResponse> signIn(String email, String password) =>
-      _sb.auth.signInWithPassword(
+      return res;
+    } catch (e) {
+      throw Exception(_handleError(e));
+    }
+  }
+
+  // ── SIGN IN ─────────────────────────────────────────────
+  static Future<AuthResponse> signIn(String email, String password) async {
+    try {
+      final res = await _sb.auth.signInWithPassword(
         email: email.trim().toLowerCase(),
         password: password,
       );
 
+      if (res.session == null) {
+        throw Exception('Invalid login credentials');
+      }
+
+      return res;
+    } catch (e) {
+      throw Exception(_handleError(e));
+    }
+  }
+
+  // ── SEND OTP (EMAIL VERIFICATION / MAGIC LINK STYLE) ─────
+  static Future<void> sendOtp(String email) async {
+    try {
+      await _sb.auth.signInWithOtp(
+        email: email.trim().toLowerCase(),
+        emailRedirectTo: null,
+      );
+    } catch (e) {
+      throw Exception(_handleError(e));
+    }
+  }
+
+  // ── ERROR HANDLER ───────────────────────────────────────
+  static String _handleError(dynamic e) {
+    final msg = e.toString().toLowerCase();
+
+    if (msg.contains('invalid login')) {
+      return 'Invalid email or password';
+    }
+    if (msg.contains('user already registered')) {
+      return 'User already exists';
+    }
+    if (msg.contains('email not confirmed')) {
+      return 'Please verify your email first';
+    }
+
+    return 'Something went wrong. Try again.';
+  }
+
   // ── Password Reset (sends reset email) ────────────────────────────────────
   static Future<void> resetPassword(String email) =>
       _sb.auth.resetPasswordForEmail(email.trim().toLowerCase());
-
-  // ── Email OTP (passwordless) ──────────────────────────────────────────────
-  static Future<void> sendOtp(String email) => _sb.auth.signInWithOtp(
-    email: email.trim().toLowerCase(),
-    shouldCreateUser: true,
-  );
 
   static Future<AuthResponse> verifyOtp(String email, String token) =>
       _sb.auth.verifyOTP(
