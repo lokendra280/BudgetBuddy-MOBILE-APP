@@ -2,82 +2,77 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// ── Shared accents (same in both modes) ──────────────────────────────────────
-const kPrimary = Color(0xFF7B6EF6);
-const kAccent = Color(0xFFFF6B81);
-const kGreen = Color(0xFF34D399);
-const kAmber = Color(0xFFFBBF24);
+// ── Brand palette ─────────────────────────────────────────────────────────────
+const kPrimary = Color(0xFF6366F1); // indigo
+const kAccent = Color(0xFFF43F5E); // rose
+const kGreen = Color(0xFF10B981); // emerald
+const kAmber = Color(0xFFF59E0B); // amber
+const kBlue = Color(0xFF3B82F6); // blue
 
 final kCatColors = [
-  const Color(0xFF7B6EF6),
-  const Color(0xFFFF6B81),
-  const Color(0xFF34D399),
-  const Color(0xFFFBBF24),
-  const Color(0xFF60A5FA),
-  const Color(0xFFFC8181),
-  const Color(0xFF34D399),
-  const Color(0xFFF472B6),
+  const Color(0xFF6366F1),
+  const Color(0xFFF43F5E),
+  const Color(0xFF10B981),
+  const Color(0xFFF59E0B),
+  const Color(0xFF3B82F6),
+  const Color(0xFFEC4899),
+  const Color(0xFF8B5CF6),
+  const Color(0xFF14B8A6),
 ];
 
-const kCategories = [
-  'Food',
-  'Transport',
-  'Shopping',
-  'Health',
-  'Bills',
-  'Entertainment',
-  'Other',
-];
-const kCatEmoji = {
-  'Food': '🍜',
-  'Transport': '🚗',
-  'Shopping': '🛍',
-  'Health': '💊',
-  'Bills': '⚡',
-  'Entertainment': '🎬',
-  'Other': '📦',
-};
-
-// ── AppColors — resolved at runtime ──────────────────────────────────────────
+// ── AppColors ─────────────────────────────────────────────────────────────────
 class AppColors {
-  final Color bg, surface, card, border, textMuted, textSub;
+  final Color bg,
+      surface,
+      card,
+      cardElevated,
+      border,
+      borderStrong,
+      textMuted,
+      textSub;
   const AppColors({
     required this.bg,
     required this.surface,
     required this.card,
+    required this.cardElevated,
     required this.border,
+    required this.borderStrong,
     required this.textMuted,
     required this.textSub,
   });
 
   static const dark = AppColors(
-    bg: Color(0xFF090912),
-    surface: Color(0xFF111120),
-    card: Color(0xFF16162A),
-    border: Color(0xFF1E1E38),
-    textMuted: Color(0xFF5A5A7A),
-    textSub: Color(0xFF8A8AAA),
+    bg: Color(0xFF0A0A0F),
+    surface: Color(0xFF101018),
+    card: Color(0xFF14141E),
+    cardElevated: Color(0xFF1C1C2A),
+    border: Color(0xFF1E1E30),
+    borderStrong: Color(0xFF2A2A40),
+    textMuted: Color(0xFF52526E),
+    textSub: Color(0xFF8080A0),
   );
 
   static const light = AppColors(
-    bg: Color(0xFFF4F4FA),
+    bg: Color(0xFFF1F2F8),
     surface: Color(0xFFFFFFFF),
     card: Color(0xFFFFFFFF),
-    border: Color(0xFFE4E4EF),
-    textMuted: Color(0xFF9898B0),
-    textSub: Color(0xFF6B6B85),
+    cardElevated: Color(0xFFF8F8FF),
+    border: Color(0xFFE8E8F0),
+    borderStrong: Color(0xFFD0D0E0),
+    textMuted: Color(0xFF9090B0),
+    textSub: Color(0xFF606080),
   );
 }
 
-// ── Convenience extension ─────────────────────────────────────────────────────
 extension AppColorsX on BuildContext {
   AppColors get c => Theme.of(this).brightness == Brightness.dark
       ? AppColors.dark
       : AppColors.light;
   bool get isDark => Theme.of(this).brightness == Brightness.dark;
+  Color get textPrimary => isDark ? Colors.white : const Color(0xFF0F0F1A);
 }
 
-// ── Theme builders ────────────────────────────────────────────────────────────
+// ── Theme builder ─────────────────────────────────────────────────────────────
 ThemeData buildTheme(bool dark) {
   final c = dark ? AppColors.dark : AppColors.light;
   final base = dark ? ThemeData.dark() : ThemeData.light();
@@ -100,25 +95,31 @@ ThemeData buildTheme(bool dark) {
                     secondary: kAccent,
                   ))
             .copyWith(surface: c.surface),
-    textTheme: GoogleFonts.poppinsTextTheme(base.textTheme).apply(
-      bodyColor: dark ? Colors.white : const Color(0xFF1A1A2E),
-      displayColor: dark ? Colors.white : const Color(0xFF1A1A2E),
+    textTheme: GoogleFonts.interTextTheme(base.textTheme).apply(
+      bodyColor: dark ? Colors.white : const Color(0xFF0F0F1A),
+      displayColor: dark ? Colors.white : const Color(0xFF0F0F1A),
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: c.surface,
       elevation: 0,
-      foregroundColor: dark ? Colors.white : const Color(0xFF1A1A2E),
+      foregroundColor: dark ? Colors.white : const Color(0xFF0F0F1A),
+      surfaceTintColor: Colors.transparent,
+    ),
+    cardTheme: CardThemeData(
+      color: c.card,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
     switchTheme: SwitchThemeData(
       thumbColor: WidgetStateProperty.resolveWith(
         (s) => s.contains(WidgetState.selected)
             ? kPrimary
-            : (dark ? const Color(0xFF3A3A5A) : Colors.white),
+            : (dark ? const Color(0xFF3A3A50) : Colors.white),
       ),
       trackColor: WidgetStateProperty.resolveWith(
         (s) => s.contains(WidgetState.selected)
-            ? kPrimary.withOpacity(0.4)
-            : (dark ? const Color(0xFF2A2A40) : const Color(0xFFDDDDEE)),
+            ? kPrimary.withOpacity(0.35)
+            : (dark ? const Color(0xFF252538) : const Color(0xFFDDDDEE)),
       ),
     ),
     pageTransitionsTheme: const PageTransitionsTheme(

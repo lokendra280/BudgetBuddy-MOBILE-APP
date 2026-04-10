@@ -71,7 +71,7 @@ class _State extends State<InsightsScreen> {
           : ExpenseService.forWeek(weekStart);
       final total = ExpenseService.totalFor(expenses);
       final cats = ExpenseService.byCategory(expenses);
-      final daily = ExpenseService.last7DayTotals();
+      // final daily = ExpenseService.last7DayTotals();
       final budget = ExpenseService.budget;
       final (thisW, lastW) = ExpenseService.weekComparison();
       final c = context.c;
@@ -163,37 +163,36 @@ class _State extends State<InsightsScreen> {
               // ── Bar chart (free) ──
               const SectionLabel('Last 7 days'),
               const SizedBox(height: 12),
-              AppCard(child: _BarChart(daily: daily)),
+              // AppCard(child: _BarChart(daily: daily)),
               const SizedBox(height: 16),
 
               // ── LOCKED: Advanced insights (rewarded ad or premium) ──
-              LockedInsightCard(
-                title: 'Advanced insights',
-                unlocked: _advancedUnlocked,
-                onUnlock: () => setState(() => _advancedUnlocked = true),
-                content: Column(
-                  children: [
-                    WeekCompareBar(thisWeek: thisW, lastWeek: lastW),
-                    const SizedBox(height: 14),
-                    BudgetBar(percent: ExpenseService.budgetUsedPercent()),
-                    const SizedBox(height: 14),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '₹${total.toStringAsFixed(0)} spent',
-                          style: TextStyle(fontSize: 12, color: c.textMuted),
-                        ),
-                        Text(
-                          '₹${budget.monthlyLimit.toStringAsFixed(0)} limit',
-                          style: TextStyle(fontSize: 12, color: c.textMuted),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
+              // LockedInsightCard(
+              //   title: 'Advanced insights',
+              //   unlocked: _advancedUnlocked,
+              //   onUnlock: () => setState(() => _advancedUnlocked = true),
+              //   content: Column(
+              //     children: [
+              //       WeekCompareBar(thisWeek: thisW, lastWeek: lastW),
+              //       const SizedBox(height: 14),
+              //       BudgetBar(percent: ExpenseService.budgetUsedPercent()),
+              //       const SizedBox(height: 14),
+              //       Row(
+              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //         children: [
+              //           Text(
+              //             '₹${total.toStringAsFixed(0)} spent',
+              //             style: TextStyle(fontSize: 12, color: c.textMuted),
+              //           ),
+              //           Text(
+              //             '₹${budget.monthlyLimit.toStringAsFixed(0)} limit',
+              //             style: TextStyle(fontSize: 12, color: c.textMuted),
+              //           ),
+              //         ],
+              //       ),
+              //     ],
+              //   ),
+              // ),
               const SizedBox(height: 16),
               AppButton(
                 label: 'Share my report',

@@ -22,13 +22,15 @@ class ExpenseAdapter extends TypeAdapter<Expense> {
       amount: fields[2] as double,
       category: fields[3] as String,
       date: fields[4] as DateTime,
+      isIncome: fields[5] as bool,
+      currency: fields[6] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Expense obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,7 +40,11 @@ class ExpenseAdapter extends TypeAdapter<Expense> {
       ..writeByte(3)
       ..write(obj.category)
       ..writeByte(4)
-      ..write(obj.date);
+      ..write(obj.date)
+      ..writeByte(5)
+      ..write(obj.isIncome)
+      ..writeByte(6)
+      ..write(obj.currency);
   }
 
   @override
@@ -66,19 +72,28 @@ class BudgetAdapter extends TypeAdapter<Budget> {
       monthlyLimit: fields[0] as double,
       streakDays: fields[1] as int,
       lastActiveDate: fields[2] as String,
+      referralCode: fields[3] as String?,
+      referralCount: fields[4] as int,
+      currency: fields[5] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Budget obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.monthlyLimit)
       ..writeByte(1)
       ..write(obj.streakDays)
       ..writeByte(2)
-      ..write(obj.lastActiveDate);
+      ..write(obj.lastActiveDate)
+      ..writeByte(3)
+      ..write(obj.referralCode)
+      ..writeByte(4)
+      ..write(obj.referralCount)
+      ..writeByte(5)
+      ..write(obj.currency);
   }
 
   @override

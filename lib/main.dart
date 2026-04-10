@@ -1,3 +1,4 @@
+import 'package:expensetracker/auth/ui/lock_screen.dart';
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/onboard_screen.dart';
 import 'package:expensetracker/common/services/ads_service.dart';
@@ -7,7 +8,6 @@ import 'package:expensetracker/common/theme_provider.dart';
 import 'package:expensetracker/common/wrapper/update_wrapper.dart';
 import 'package:expensetracker/expense/models/expense.dart';
 import 'package:expensetracker/home/ui/home_screen.dart';
-import 'package:expensetracker/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -22,25 +22,18 @@ void main() async {
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
-
-  // ── Local storage ─────────────────────────────────────────────────────────
   await Hive.initFlutter();
   Hive.registerAdapter(ExpenseAdapter());
   Hive.registerAdapter(BudgetAdapter());
   await Hive.openBox<Expense>('expenses');
   await Hive.openBox<Budget>('budget');
 
-  // ── Preferences ───────────────────────────────────────────────────────────
-  await ThemeProvider.init();
-  await LangProvider.init();
-
-  // ── Ads + Notifications ───────────────────────────────────────────────────
+  // Ads + notifications
   await AdService.init();
   await NotificationService.init();
   AdService.preloadInterstitial();
   AdService.preloadRewarded();
 
-  // ── Onboarding flag ───────────────────────────────────────────────────────
   final prefs = await SharedPreferences.getInstance();
   final onboarded = prefs.getBool('onboarded') ?? false;
 
@@ -59,26 +52,21 @@ class SpendSenseApp extends StatelessWidget {
       builder: (_, locale, __) => MaterialApp(
         title: 'SpendSense',
         debugShowCheckedModeBanner: false,
-
-        // Theme
         themeMode: themeMode,
         theme: buildTheme(false),
         darkTheme: buildTheme(true),
-
-        // Localization
         locale: locale,
         supportedLocales: LangProvider.supported,
         localizationsDelegates: const [
-          AppLocalizations.delegate,
-
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-
-        home: onboarded
-            ? UpdateWrapper(child: const HomeScreen())
-            : const OnboardScreen(),
+        home: UpdateWrapper(
+          child: LockScreen(
+            child: onboarded ? const HomeScreen() : const OnboardScreen(),
+          ),
+        ),
       ),
     ),
   );

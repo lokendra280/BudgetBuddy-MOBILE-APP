@@ -1,6 +1,6 @@
-import 'package:expensetracker/expense/models/expense.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
+import '../models/expense.dart';
 
 class ExpenseService {
   static Box<Expense> get box => Hive.box<Expense>('expenses');
@@ -11,6 +11,9 @@ class ExpenseService {
     return budgetBox.getAt(0)!;
   }
 
+  static String get currency => budget.currency;
+  static String get symbol => currencyOf(currency).symbol;
+
   static List<Expense> get all =>
       box.values.toList()..sort((a, b) => b.date.compareTo(a.date));
 
@@ -18,15 +21,20 @@ class ExpenseService {
       .where((e) => e.date.month == m.month && e.date.year == m.year)
       .toList();
 
-  static List<Expense> forWeek(DateTime weekStart) {
-    final end = weekStart.add(const Duration(days: 7));
+  static List<Expense> forWeek(DateTime start) {
+    final end = start.add(const Duration(days: 7));
     return all
-        .where((e) => e.date.isAfter(weekStart) && e.date.isBefore(end))
+        .where((e) => e.date.isAfter(start) && e.date.isBefore(end))
         .toList();
   }
 
   static double totalFor(List<Expense> list) =>
-      list.fold(0, (s, e) => s + e.amount);
+      list.fold(0.0, (s, e) => s + e.amount);
+
+  static double incomeFor(List<Expense> list) =>
+      totalFor(list.where((e) => e.isIncome).toList());
+  static double expenseFor(List<Expense> list) =>
+      totalFor(list.where((e) => !e.isIncome).toList());
 
   static Map<String, double> byCategory(List<Expense> list) {
     final m = <String, double>{};
@@ -36,44 +44,57 @@ class ExpenseService {
     );
   }
 
-  // Returns daily totals for the past 7 days
-  static List<double> last7DayTotals() {
+  // Daily income & expense for past N days
+  static List<({double income, double expense})> dailyTotals({int days = 7}) {
     final now = DateTime.now();
-    return List.generate(7, (i) {
-      final day = now.subtract(Duration(days: 6 - i));
-      return totalFor(
-        all
-            .where(
-              (e) =>
-                  e.date.year == day.year &&
-                  e.date.month == day.month &&
-                  e.date.day == day.day,
-            )
-            .toList(),
+    return List.generate(days, (i) {
+      final day = now.subtract(Duration(days: days - 1 - i));
+      final dayItems = all.where(
+        (e) =>
+            e.date.year == day.year &&
+            e.date.month == day.month &&
+            e.date.day == day.day,
+      );
+      return (
+        income: dayItems
+            .where((e) => e.isIncome)
+            .fold(0.0, (s, e) => s + e.amount),
+        expense: dayItems
+            .where((e) => !e.isIncome)
+            .fold(0.0, (s, e) => s + e.amount),
       );
     });
   }
 
+  // Daily expense only (for bar chart)
+  static List<double> last7DayExpenses() =>
+      dailyTotals(days: 7).map((d) => d.expense).toList();
+
+  static String fmt(double amount) {
+    final sym = symbol;
+    if (amount >= 1000000)
+      return '$sym${(amount / 1000000).toStringAsFixed(1)}M';
+    if (amount >= 1000) return '$sym${(amount / 1000).toStringAsFixed(1)}K';
+    return '$sym${amount.toStringAsFixed(0)}';
+  }
+
   static String wasteMessage(double thisWeek, double lastWeek) {
     if (thisWeek == 0) return "You haven't spent anything yet 🧘";
-    if (lastWeek == 0)
-      return "₹${thisWeek.toStringAsFixed(0)} spent this week 💸";
+    if (lastWeek == 0) return "${fmt(thisWeek)} spent this week 💸";
     final diff = thisWeek - lastWeek;
-    if (diff > 500)
-      return "You wasted ₹${diff.toStringAsFixed(0)} MORE than last week 😳";
-    if (diff < -500)
-      return "You saved ₹${(-diff).toStringAsFixed(0)} vs last week 🎉";
+    if (diff > 0) return "You spent ${fmt(diff)} MORE than last week 😳";
+    if (diff < 0) return "You saved ${fmt(-diff)} vs last week 🎉";
     return "Spending about the same as last week 😌";
   }
 
   static String topWasteCategory(List<Expense> list) {
-    final cats = byCategory(list);
+    final expenses = list.where((e) => !e.isIncome).toList();
+    final cats = byCategory(expenses);
     if (cats.isEmpty) return '';
     final top = cats.entries.first;
-    return 'You spent too much on ${top.key} (₹${top.value.toStringAsFixed(0)}) 🚨';
+    return 'Top spend: ${top.key} at ${fmt(top.value)} 🚨';
   }
 
-  // Streak logic
   static void updateStreak() {
     final b = budget;
     final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
@@ -87,15 +108,16 @@ class ExpenseService {
   }
 
   static double budgetUsedPercent() {
-    final spent = totalFor(forMonth(DateTime.now()));
-    return (spent / budget.monthlyLimit).clamp(0, 1);
+    final spent = expenseFor(forMonth(DateTime.now()));
+    final limit = budget.monthlyLimit;
+    if (limit <= 0) return 0;
+    return (spent / limit).clamp(0.0, 1.0);
   }
 
-  // Week-over-week comparison
   static (double, double) weekComparison() {
     final now = DateTime.now();
-    final thisWeekStart = now.subtract(Duration(days: now.weekday - 1));
-    final lastWeekStart = thisWeekStart.subtract(const Duration(days: 7));
-    return (totalFor(forWeek(thisWeekStart)), totalFor(forWeek(lastWeekStart)));
+    final thisStart = now.subtract(Duration(days: now.weekday - 1));
+    final lastStart = thisStart.subtract(const Duration(days: 7));
+    return (expenseFor(forWeek(thisStart)), expenseFor(forWeek(lastStart)));
   }
 }
