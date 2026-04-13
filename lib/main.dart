@@ -7,6 +7,8 @@ import 'package:expensetracker/common/services/notification_service.dart';
 import 'package:expensetracker/common/theme_provider.dart';
 import 'package:expensetracker/common/wrapper/update_wrapper.dart';
 import 'package:expensetracker/expense/models/expense.dart';
+import 'package:expensetracker/expense/services/category_services.dart';
+import 'package:expensetracker/expense/services/hive_migrate_service.dart';
 import 'package:expensetracker/home/ui/home_screen.dart';
 import 'package:expensetracker/l10n/app_localizations.dart';
 import 'package:expensetracker/splash/ui/splash_page.dart';
@@ -29,7 +31,10 @@ void main() async {
   Hive.registerAdapter(BudgetAdapter());
   await Hive.openBox<Expense>('expenses');
   await Hive.openBox<Budget>('budget');
-
+  // Safe Hive init with schema migration — FIXES Play Store crash
+  await HiveMigrationService.initSafely();
+  // category fetch + cache
+  await CategoryService.init();
   // Ads + notifications
   await AdService.init();
   await NotificationService.init();

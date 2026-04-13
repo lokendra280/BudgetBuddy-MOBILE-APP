@@ -72,50 +72,49 @@ class _State extends State<SplashScreen> with SingleTickerProviderStateMixin {
             // Place your animation at: assets/lottie/splash.json
             // Recommended free animations from lottiefiles.com:
             //   - "Money wallet" or "Finance growth" animations work great
-            SizedBox(
-              width: 220,
-              height: 220,
-              child: Lottie.asset(
-                'assets/lottie/splash.json',
-                controller: _ctrl,
-                onLoaded: (comp) {
-                  _ctrl
-                    ..duration = comp.duration
-                    ..forward();
-                },
-                // Fallback if animation file not found
-                errorBuilder: (_, __, ___) => Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [kPrimary, Color(0xFF818CF8)],
-                    ),
-                    borderRadius: BorderRadius.circular(32),
-                    boxShadow: [
-                      BoxShadow(
-                        color: kPrimary.withOpacity(0.4),
-                        blurRadius: 32,
-                        offset: const Offset(0, 12),
-                      ),
-                    ],
-                  ),
-                  child: const Center(
-                    child: Text('💸', style: TextStyle(fontSize: 52)),
-                  ),
-                ),
-              ),
-            ),
-
+            // SizedBox(
+            //   width: 220,
+            //   height: 220,
+            //   child: Lottie.asset(
+            //     'assets/lottie/splash.json',
+            //     controller: _ctrl,
+            //     onLoaded: (comp) {
+            //       _ctrl
+            //         ..duration = comp.duration
+            //         ..forward();
+            //     },
+            //     // Fallback if animation file not found
+            //     errorBuilder: (_, __, ___) => Container(
+            //       width: 120,
+            //       height: 120,
+            //       decoration: BoxDecoration(
+            //         gradient: const LinearGradient(
+            //           begin: Alignment.topLeft,
+            //           end: Alignment.bottomRight,
+            //           colors: [kPrimary, Color(0xFF818CF8)],
+            //         ),
+            //         borderRadius: BorderRadius.circular(32),
+            //         boxShadow: [
+            //           BoxShadow(
+            //             color: kPrimary.withOpacity(0.4),
+            //             blurRadius: 32,
+            //             offset: const Offset(0, 12),
+            //           ),
+            //         ],
+            //       ),
+            //       child: const Center(
+            //         child: Text('💸', style: TextStyle(fontSize: 52)),
+            //       ),
+            //     ),
+            //   ),
+            // ),
             const SizedBox(height: 32),
 
             // ── App name with typewriter effect ──────────────────────────────
             AnimatedTextKit(
               animatedTexts: [
                 TypewriterAnimatedText(
-                  'SpendSense',
+                  'Budget Buddy',
                   textStyle: TextStyle(
                     fontSize: 34,
                     fontWeight: FontWeight.w800,

@@ -26,10 +26,6 @@ android {
     }
 
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
     defaultConfig {
         applicationId = "com.hamrobudget"
         minSdk = flutter.minSdkVersion
@@ -50,20 +46,14 @@ android {
 
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
-            isShrinkResources = false
+            isMinifyEnabled = true
+            isShrinkResources = true
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-
             signingConfig = signingConfigs.getByName("release")
-        }
-
-        getByName("debug") {
-            isMinifyEnabled = false
-            isShrinkResources = false
         }
     }
 }
@@ -79,4 +69,11 @@ dependencies {
     // Multidex support
     implementation("androidx.multidex:multidex:2.0.1")
 
+}
+kotlin {
+    jvmToolchain(17)
+
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
 }

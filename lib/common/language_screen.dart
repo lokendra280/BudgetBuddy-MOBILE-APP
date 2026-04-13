@@ -1,6 +1,7 @@
 import 'package:expensetracker/common/app_theme.dart';
+import 'package:expensetracker/common/common_widget.dart';
 import 'package:expensetracker/common/services/lang_provider.dart';
-import 'package:expensetracker/home/ui/home_screen.dart';
+import 'package:expensetracker/profile/ui/currency_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -10,16 +11,37 @@ class LanguageScreen extends StatefulWidget {
   State<LanguageScreen> createState() => _State();
 }
 
-class _State extends State<LanguageScreen> {
-  String _selected = 'en';
+class _LangOption {
+  final String code, flag, native, english, defaultCurrency;
+  const _LangOption(
+    this.code,
+    this.flag,
+    this.native,
+    this.english,
+    this.defaultCurrency,
+  );
+}
 
-  Future<void> _confirm() async {
+const _langs = [
+  _LangOption('ne', '🇳🇵', 'नेपाली', 'Nepali', 'NPR'),
+  _LangOption('en', '🇺🇸', 'English', 'English (US)', 'USD'),
+  _LangOption('hi', '🇮🇳', 'हिन्दी', 'Hindi', 'INR'),
+  _LangOption('en', '🇬🇧', 'English (UK)', 'English (UK)', 'GBP'),
+];
+
+class _State extends State<LanguageScreen> {
+  int _sel = 0; // index into _langs
+
+  Future<void> _next() async {
     HapticFeedback.mediumImpact();
-    await LangProvider.set(Locale(_selected));
+    final lang = _langs[_sel];
+    await LangProvider.set(Locale(lang.code));
     if (!mounted) return;
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => const HomeScreen()),
+      MaterialPageRoute(
+        builder: (_) => CurrencyScreen(suggestedCurrency: lang.defaultCurrency),
+      ),
     );
   }
 
@@ -30,18 +52,21 @@ class _State extends State<LanguageScreen> {
       backgroundColor: c.bg,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Header ─────────────────────────────────────────────────────────
-              const SizedBox(height: 24),
-              const Text('🌐', style: TextStyle(fontSize: 44)),
+              // Progress indicator (step 1 of 2)
               const SizedBox(height: 20),
+              _StepIndicator(step: 1, total: 2),
+              const SizedBox(height: 32),
+
+              const Text('🌐', style: TextStyle(fontSize: 44)),
+              const SizedBox(height: 16),
               const Text(
-                'Select your\nlanguage',
+                'Pick your language',
                 style: TextStyle(
-                  fontSize: 30,
+                  fontSize: 28,
                   fontWeight: FontWeight.w800,
                   height: 1.2,
                 ),
@@ -52,32 +77,28 @@ class _State extends State<LanguageScreen> {
                 style: TextStyle(fontSize: 14, color: c.textMuted),
               ),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 32),
 
-              // ── Language options ───────────────────────────────────────────────
-              ...LangProvider.supported.map((locale) {
-                final code = locale.languageCode;
-                final (native, english) = LangProvider.labels[code]!;
-                final flag = LangProvider.flags[code]!;
-                final selected = _selected == code;
-
+              ..._langs.asMap().entries.map((e) {
+                final lang = e.value;
+                final sel = _sel == e.key;
                 return GestureDetector(
                   onTap: () {
                     HapticFeedback.selectionClick();
-                    setState(() => _selected = code);
+                    setState(() => _sel = e.key);
                   },
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: selected ? kPrimary.withOpacity(0.08) : c.card,
+                      color: sel ? kPrimary.withOpacity(0.08) : c.card,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: selected ? kPrimary : c.border,
-                        width: selected ? 1.5 : 1,
+                        color: sel ? kPrimary : c.border,
+                        width: sel ? 1.5 : 1,
                       ),
-                      boxShadow: !context.isDark && !selected
+                      boxShadow: !context.isDark && !sel
                           ? [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.04),
@@ -89,26 +110,22 @@ class _State extends State<LanguageScreen> {
                     ),
                     child: Row(
                       children: [
-                        Text(flag, style: const TextStyle(fontSize: 28)),
+                        Text(lang.flag, style: const TextStyle(fontSize: 28)),
                         const SizedBox(width: 14),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                native,
+                                lang.native,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
-                                  color: selected
-                                      ? kPrimary
-                                      : (context.isDark
-                                            ? Colors.white
-                                            : const Color(0xFF1A1A2E)),
+                                  color: sel ? kPrimary : context.textPrimary,
                                 ),
                               ),
                               Text(
-                                english,
+                                lang.english,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: c.textMuted,
@@ -117,7 +134,7 @@ class _State extends State<LanguageScreen> {
                             ],
                           ),
                         ),
-                        if (selected)
+                        if (sel)
                           Container(
                             width: 22,
                             height: 22,
@@ -148,30 +165,54 @@ class _State extends State<LanguageScreen> {
 
               const Spacer(),
 
-              // ── Continue button ────────────────────────────────────────────────
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton(
-                  onPressed: _confirm,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: kPrimary,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: const Text(
-                    'Continue',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-                  ),
-                ),
+              AppButton(
+                label: 'Next — Select Currency',
+                onTap: _next,
+                icon: Icons.arrow_forward_rounded,
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _StepIndicator extends StatelessWidget {
+  final int step, total;
+  const _StepIndicator({required this.step, required this.total});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: List.generate(
+            total,
+            (i) => Expanded(
+              child: Container(
+                height: 3,
+                margin: EdgeInsets.only(right: i < total - 1 ? 6 : 0),
+                decoration: BoxDecoration(
+                  color: i < step ? kPrimary : c.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Step $step of $total',
+          style: TextStyle(
+            fontSize: 11,
+            color: c.textMuted,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -1,54 +1,454 @@
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
-import 'package:expensetracker/expense/models/expense.dart';
-
 import 'package:expensetracker/expense/services/bill_scaning_service.dart';
+import 'package:expensetracker/expense/services/category_services.dart';
 import 'package:expensetracker/expense/services/expenses_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
+import '../models/expense.dart';
+
+// ── Single entry row model ────────────────────────────────────────────────────
+class _Row {
+  final tc = TextEditingController(); // title
+  final ac = TextEditingController(); // amount
+  String catName;
+  _Row(this.catName);
+  void dispose() {
+    tc.dispose();
+    ac.dispose();
+  }
+
+  bool get valid =>
+      tc.text.trim().isNotEmpty &&
+      (double.tryParse(ac.text.replaceAll(',', '')) ?? 0) > 0;
+  double get parsedAmount => double.tryParse(ac.text.replaceAll(',', '')) ?? 0;
+}
 
 class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({super.key});
   @override
-  State<AddExpenseScreen> createState() => _State();
+  State<AddExpenseScreen> createState() => _S();
 }
 
-class _State extends State<AddExpenseScreen> {
-  final _amount = TextEditingController();
-  final _title = TextEditingController();
-  String _cat = kCategories.first;
+class _S extends State<AddExpenseScreen> {
   bool _isIncome = false;
   bool _scanning = false;
+  List<AppCategory> _cats = [];
+  AppCategory? _selCat;
+  final List<_Row> _rows = [];
 
-  List<String> get _cats => _isIncome ? kIncomeCategories : kCategories;
+  @override
+  void initState() {
+    super.initState();
+    _reload();
+    _addRow();
+  }
 
-  Color get _activeColor => _isIncome ? kGreen : kPrimary;
+  @override
+  void dispose() {
+    for (final r in _rows) r.dispose();
+    super.dispose();
+  }
 
-  void _save() {
-    final amt = double.tryParse(_amount.text.replaceAll(',', ''));
-    if (amt == null || amt <= 0 || _title.text.trim().isEmpty) {
-      _snack('Please fill in amount and title', kAccent);
+  void _reload() {
+    final cats = _isIncome
+        ? CategoryService.incomeCategories
+        : CategoryService.expenseCategories;
+    setState(() {
+      _cats = cats;
+      _selCat = cats.isNotEmpty ? cats.first : null;
+      for (final r in _rows) r.catName = cats.isNotEmpty ? cats.first.name : '';
+    });
+  }
+
+  void _addRow() => setState(() => _rows.add(_Row(_selCat?.name ?? '')));
+
+  void _removeRow(int i) {
+    if (_rows.length <= 1) return;
+    _rows[i].dispose();
+    setState(() => _rows.removeAt(i));
+  }
+
+  Color get _col => _isIncome ? kGreen : kPrimary;
+
+  Color _fromHex(String h) {
+    try {
+      return Color(int.parse('FF${h.replaceAll('#', '')}', radix: 16));
+    } catch (_) {
+      return kPrimary;
+    }
+  }
+
+  void _saveAll() {
+    final valid = _rows.where((r) => r.valid).toList();
+    if (valid.isEmpty) {
+      _snack('Fill in at least one item', kAccent);
       return;
     }
     HapticFeedback.mediumImpact();
-    final currency = ExpenseService.currency;
-    Hive.box<Expense>('expenses').add(
-      Expense(
-        id: const Uuid().v4(),
-        title: _title.text.trim(),
-        amount: amt,
-        category: _cat,
-        date: DateTime.now(),
-        isIncome: _isIncome,
-        currency: currency,
-      ),
-    );
+    final box = Hive.box<Expense>('expenses');
+    for (final r in valid) {
+      box.add(
+        Expense(
+          id: const Uuid().v4(),
+          title: r.tc.text.trim(),
+          amount: r.parsedAmount,
+          category: r.catName,
+          date: DateTime.now(),
+          isIncome: _isIncome,
+          currency: ExpenseService.currency,
+        ),
+      );
+    }
     Navigator.pop(context);
   }
 
-  Future<void> _showScanOptions() => showModalBottomSheet(
+  // ── Bill scan ───────────────────────────────────────────────────────────────
+  Future<void> _scan({required bool camera}) async {
+    setState(() => _scanning = true);
+    try {
+      final res = await BillScannerService.scan(fromCamera: camera);
+      if (res == null || !mounted) return;
+      if (!res.hasItems && res.totalAmount == null) {
+        _snack('No items found. Try a clearer photo.', kAmber);
+        return;
+      }
+      await _showReview(res);
+    } catch (_) {
+      _snack('Scan failed. Try again.', kAccent);
+    } finally {
+      if (mounted) setState(() => _scanning = false);
+    }
+  }
+
+  // ── Multi-item review sheet with checkboxes ─────────────────────────────────
+  Future<void> _showReview(BillScanResult res) async {
+    final sym = currencyOf(
+      res.detectedCurrency ?? ExpenseService.currency,
+    ).symbol;
+    final Set<int> sel = Set.from(List.generate(res.items.length, (i) => i));
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: context.c.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (_) => StatefulBuilder(
+        builder: (ctx, ss) => DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.75,
+          maxChildSize: 0.95,
+          minChildSize: 0.45,
+          builder: (_, sc) => Column(
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+                decoration: BoxDecoration(
+                  color: context.c.card,
+                  border: Border(bottom: BorderSide(color: context.c.border)),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 36,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: context.c.border,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Scanned Items',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            if (res.merchant != null)
+                              Text(
+                                res.merchant!,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: context.c.textMuted,
+                                ),
+                              ),
+                          ],
+                        ),
+                        TextButton(
+                          onPressed: () => ss(
+                            () => sel.length == res.items.length
+                                ? sel.clear()
+                                : sel.addAll(
+                                    List.generate(res.items.length, (i) => i),
+                                  ),
+                          ),
+                          child: Text(
+                            sel.length == res.items.length
+                                ? 'Deselect all'
+                                : 'Select all',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: kPrimary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              Expanded(
+                child: ListView(
+                  controller: sc,
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  children: [
+                    // Grand total quick-pick
+                    if (res.totalAmount != null)
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          _rows.removeWhere((r) => !r.valid);
+                          if (_rows.isEmpty)
+                            _rows.add(_Row(_selCat?.name ?? ''));
+                          _rows.last.tc.text = res.merchant ?? 'Bill Total';
+                          _rows.last.ac.text = res.totalAmount!.toStringAsFixed(
+                            0,
+                          );
+                          setState(() {});
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: kGreen.withOpacity(0.07),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: kGreen.withOpacity(0.3),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 38,
+                                height: 38,
+                                decoration: BoxDecoration(
+                                  color: kGreen.withOpacity(0.12),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    '🧾',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Grand Total — tap to use',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Use full bill as one expense',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: context.c.textMuted,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Text(
+                                '$sym${res.totalAmount!.toStringAsFixed(0)}',
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
+                                  color: kGreen,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                    if (res.hasItems) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: Row(
+                          children: [
+                            Expanded(child: Divider(color: context.c.border)),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                              child: Text(
+                                'or select items',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: context.c.textMuted,
+                                ),
+                              ),
+                            ),
+                            Expanded(child: Divider(color: context.c.border)),
+                          ],
+                        ),
+                      ),
+                      ...res.items.asMap().entries.map((e) {
+                        final isSel = sel.contains(e.key);
+                        return GestureDetector(
+                          onTap: () => ss(
+                            () => isSel ? sel.remove(e.key) : sel.add(e.key),
+                          ),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 150),
+                            margin: const EdgeInsets.only(bottom: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isSel
+                                  ? kPrimary.withOpacity(0.07)
+                                  : context.c.card,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: isSel ? kPrimary : context.c.border,
+                                width: isSel ? 1.5 : 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 150),
+                                  width: 22,
+                                  height: 22,
+                                  decoration: BoxDecoration(
+                                    color: isSel
+                                        ? kPrimary
+                                        : Colors.transparent,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: isSel
+                                          ? kPrimary
+                                          : context.c.border,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: isSel
+                                      ? const Icon(
+                                          Icons.check_rounded,
+                                          size: 13,
+                                          color: Colors.white,
+                                        )
+                                      : null,
+                                ),
+                                const SizedBox(width: 10),
+                                Container(
+                                  width: 26,
+                                  height: 26,
+                                  decoration: BoxDecoration(
+                                    color: kPrimary.withOpacity(0.10),
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      '${e.key + 1}',
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w800,
+                                        color: kPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    e.value.name,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  '$sym${e.value.amount.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: kPrimary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+                    ],
+                  ],
+                ),
+              ),
+
+              if (res.hasItems)
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    8,
+                    16,
+                    MediaQuery.of(context).padding.bottom + 14,
+                  ),
+                  child: AppButton(
+                    label: sel.isEmpty
+                        ? 'Tap items to select'
+                        : 'Add ${sel.length} item${sel.length == 1 ? '' : 's'} as expenses',
+                    color: sel.isEmpty ? context.c.borderStrong : kPrimary,
+                    icon: Icons.add_rounded,
+                    onTap: sel.isEmpty
+                        ? () {}
+                        : () {
+                            Navigator.pop(context);
+                            _rows.removeWhere((r) => !r.valid);
+                            if (_rows.isEmpty)
+                              _rows.add(_Row(_selCat?.name ?? ''));
+                            for (final idx in sel.toList()..sort()) {
+                              final it = res.items[idx];
+                              final nr = _Row(_selCat?.name ?? '');
+                              nr.tc.text = it.name;
+                              nr.ac.text = it.amount.toStringAsFixed(0);
+                              _rows.add(nr);
+                            }
+                            setState(() {});
+                          },
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _scanOpts() => showModalBottomSheet(
     context: context,
     backgroundColor: context.c.card,
     shape: const RoundedRectangleBorder(
@@ -67,17 +467,17 @@ class _State extends State<AddExpenseScreen> {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           const Text(
             'Scan Bill',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 4),
           Text(
-            'Automatically detect items and total',
+            'Detects every item on the bill',
             style: TextStyle(fontSize: 12, color: context.c.textMuted),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           ListTile(
             leading: Container(
               width: 40,
@@ -89,16 +489,16 @@ class _State extends State<AddExpenseScreen> {
               child: const Icon(Icons.camera_alt_rounded, color: kPrimary),
             ),
             title: const Text(
-              'Take a photo',
+              'Camera',
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: Text(
-              'Use camera to scan bill',
-              style: TextStyle(fontSize: 12, color: context.c.textMuted),
+              'Scan with camera',
+              style: TextStyle(fontSize: 11, color: context.c.textMuted),
             ),
             onTap: () {
               Navigator.pop(context);
-              _scan(fromCamera: true);
+              _scan(camera: true);
             },
           ),
           ListTile(
@@ -112,16 +512,16 @@ class _State extends State<AddExpenseScreen> {
               child: const Icon(Icons.photo_library_rounded, color: kBlue),
             ),
             title: const Text(
-              'Choose from gallery',
+              'Gallery',
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: Text(
-              'Pick existing bill photo',
-              style: TextStyle(fontSize: 12, color: context.c.textMuted),
+              'Pick from gallery',
+              style: TextStyle(fontSize: 11, color: context.c.textMuted),
             ),
             onTap: () {
               Navigator.pop(context);
-              _scan(fromCamera: false);
+              _scan(camera: false);
             },
           ),
           const SizedBox(height: 8),
@@ -129,99 +529,19 @@ class _State extends State<AddExpenseScreen> {
       ),
     ),
   );
-  Future<void> _scan({required bool fromCamera}) async {
-    setState(() => _scanning = true);
 
-    try {
-      final result = await BillScannerService.scan(fromCamera: fromCamera);
-
-      if (!mounted) return;
-
-      if (result == null) {
-        _snack('Scan cancelled.', kAccent);
-        return;
-      }
-
-      if (result.hasItems || result.totalAmount != null) {
-        debugPrint("Items detected: ${result.items.length}");
-        await _showScanReview(result);
-      } else {
-        _snack('No items detected. Try a clearer photo.', kAmber);
-      }
-    } catch (e) {
-      if (mounted) {
-        _snack('Scan failed: ${e.toString().split('\n').first}', kAccent);
-      }
-    } finally {
-      if (mounted) setState(() => _scanning = false);
-    }
-  }
-  // Future<void> _scan({required bool fromCamera}) async {
-  //   setState(() => _scanning = true);
-  //   try {
-  //     final result = await BillScannerService.scan(fromCamera: fromCamera);
-  //     if (result == null || !mounted) return;
-
-  //     if (result.hasItems || result.totalAmount != null) {
-  //       // Show item review sheet
-  //       await _showScanReview(result);
-  //     } else {
-  //       _snack('No items detected. Try a clearer photo.', kAmber);
-  //     }
-  //   } catch (e) {
-  //     if (mounted)
-  //       _snack('Scan failed: ${e.toString().split('\n').first}', kAccent);
-  //   } finally {
-  //     if (mounted) setState(() => _scanning = false);
-  //   }
-  // }
-
-  Future<void> _showScanReview(BillScanResult result) async {
-    final sym = currencyOf(result.detectedCurrency).symbol;
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: context.c.card,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => _ScanReviewSheet(
-        result: result,
-        sym: sym,
-        onSelectItem: (item) {
-          if (mounted)
-            setState(() {
-              _amount.text = item.amount.toStringAsFixed(0);
-              _title.text = item.name;
-            });
-          Navigator.pop(context);
-        },
-        onSelectTotal: result.totalAmount == null
-            ? null
-            : () {
-                if (mounted)
-                  setState(() {
-                    _amount.text = result.totalAmount!.toStringAsFixed(0);
-                    _title.text = result.merchant ?? 'Bill Total';
-                  });
-                Navigator.pop(context);
-              },
-      ),
-    );
-  }
-
-  void _snack(String msg, Color col) =>
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(msg),
-          backgroundColor: col,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+  void _snack(String m, Color c) => ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(m),
+      backgroundColor: c,
+      behavior: SnackBarBehavior.floating,
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final valid = _rows.where((r) => r.valid).length;
     return Scaffold(
       backgroundColor: c.bg,
       appBar: AppBar(
@@ -239,7 +559,6 @@ class _State extends State<AddExpenseScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: IconButton(
-              tooltip: 'Scan bill',
               icon: _scanning
                   ? const SizedBox(
                       width: 18,
@@ -253,506 +572,512 @@ class _State extends State<AddExpenseScreen> {
                       Icons.document_scanner_outlined,
                       color: kPrimary,
                     ),
-              onPressed: _scanning ? null : _showScanOptions,
+              tooltip: 'Scan bill',
+              onPressed: _scanning ? null : _scanOpts,
             ),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(18, 18, 18, 40),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Type toggle ────────────────────────────────────────────────────
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: c.card,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: c.border),
-              ),
-              child: Row(
-                children: [
-                  _TypeBtn(
-                    'Expense',
-                    !_isIncome,
-                    kAccent,
-                    () => setState(() {
-                      _isIncome = false;
-                      _cat = kCategories.first;
-                    }),
-                  ),
-                  _TypeBtn(
-                    'Income',
-                    _isIncome,
-                    kGreen,
-                    () => setState(() {
-                      _isIncome = true;
-                      _cat = kIncomeCategories.first;
-                    }),
-                  ),
-                ],
-              ),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(18, 16, 18, 120),
+        children: [
+          // Income/Expense toggle
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: c.card,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: c.border),
             ),
-
-            const SizedBox(height: 16),
-
-            // ── Amount card ────────────────────────────────────────────────────
-            AppCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'AMOUNT',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: c.textMuted,
-                      letterSpacing: 1.2,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        ExpenseService.symbol,
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                          color: _activeColor,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TextField(
-                          controller: _amount,
-                          autofocus: true,
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
-                          style: TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.w800,
-                            height: 1,
-                            color: context.textPrimary,
-                          ),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            isDense: true,
-                            hintText: '0',
-                            hintStyle: TextStyle(
-                              fontSize: 36,
-                              fontWeight: FontWeight.w800,
-                              color: c.border,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+            child: Row(
+              children: [
+                _Tog(
+                  '↑  Expense',
+                  !_isIncome,
+                  kAccent,
+                  () => setState(() {
+                    _isIncome = false;
+                    _reload();
+                  }),
+                ),
+                _Tog(
+                  '↓  Income',
+                  _isIncome,
+                  kGreen,
+                  () => setState(() {
+                    _isIncome = true;
+                    _reload();
+                  }),
+                ),
+              ],
             ),
+          ),
 
-            const SizedBox(height: 12),
+          const SizedBox(height: 18),
 
-            InputField(
-              hint: _isIncome
-                  ? 'Source (e.g. Monthly salary)'
-                  : 'What did you spend on?',
-              controller: _title,
-              prefix: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text(
-                  _isIncome ? '💰' : '📝',
-                  style: const TextStyle(fontSize: 16),
+          // Category horizontal scroll (from Supabase)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'CATEGORY',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: c.textMuted,
+                  letterSpacing: 1.2,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-            ),
-
-            const SizedBox(height: 22),
-
-            Text(
-              'CATEGORY',
-              style: TextStyle(
-                fontSize: 10,
-                color: c.textMuted,
-                letterSpacing: 1.2,
-                fontWeight: FontWeight.w600,
+              Text(
+                _selCat?.name ?? '',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: _col,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-
-            // ── Category grid ──────────────────────────────────────────────────
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 4,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              childAspectRatio: 1.05,
-              children: _cats.map((cat) {
-                final sel = _cat == cat;
+            ],
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 88,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _cats.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemBuilder: (_, i) {
+                final cat = _cats[i];
+                final isSel = _selCat?.id == cat.id;
+                final col = _fromHex(cat.color);
                 return GestureDetector(
                   onTap: () {
                     HapticFeedback.selectionClick();
-                    setState(() => _cat = cat);
+                    setState(() {
+                      _selCat = cat;
+                      for (final r in _rows) r.catName = cat.name;
+                    });
                   },
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
+                    width: 74,
                     decoration: BoxDecoration(
-                      color: sel ? _activeColor.withOpacity(0.12) : c.card,
+                      color: isSel ? col.withOpacity(0.12) : c.card,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: sel ? _activeColor : c.border,
-                        width: sel ? 1.5 : 1,
+                        color: isSel ? col : c.border,
+                        width: isSel ? 1.5 : 1,
                       ),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Text(cat.emoji, style: const TextStyle(fontSize: 22)),
+                        const SizedBox(height: 4),
                         Text(
-                          kCatEmoji[cat] ?? '📦',
-                          style: const TextStyle(fontSize: 22),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          cat,
+                          cat.name,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 9,
                             fontWeight: FontWeight.w600,
-                            color: sel ? _activeColor : c.textSub,
+                            color: isSel ? col : c.textSub,
                           ),
-                          textAlign: TextAlign.center,
                         ),
                       ],
                     ),
                   ),
                 );
-              }).toList(),
+              },
             ),
+          ),
 
-            const SizedBox(height: 28),
-            AppButton(
-              label: _isIncome ? 'Save Income' : 'Save Expense',
-              onTap: _save,
-              color: _activeColor,
-              icon: Icons.check_rounded,
+          const SizedBox(height: 20),
+
+          // Items header
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'ITEMS',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: c.textMuted,
+                  letterSpacing: 1.2,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                '${_rows.length} row${_rows.length == 1 ? '' : 's'} · $valid ready',
+                style: TextStyle(fontSize: 10, color: c.textMuted),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          // Dynamic rows
+          ..._rows.asMap().entries.map(
+            (e) => _ItemRow(
+              key: ValueKey(e.key),
+              row: e.value,
+              idx: e.key,
+              total: _rows.length,
+              col: _col,
+              sym: ExpenseService.symbol,
+              cats: _cats,
+              fromHex: _fromHex,
+              onRemove: () => _removeRow(e.key),
+              onCatChange: (name) => setState(() => e.value.catName = name),
+              onChanged: () => setState(() {}),
             ),
-          ],
+          ),
+
+          // Add row button
+          GestureDetector(
+            onTap: _addRow,
+            child: Container(
+              margin: const EdgeInsets.only(top: 4),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                color: kPrimary.withOpacity(0.04),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: kPrimary.withOpacity(0.2)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.add_circle_outline_rounded,
+                    color: kPrimary,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'Add another item',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: kPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18),
+        child: AppButton(
+          label: _rows.length == 1
+              ? (_isIncome ? 'Save Income' : 'Save Expense')
+              : 'Save $valid Item${valid == 1 ? '' : 's'}',
+          onTap: _saveAll,
+          color: _col,
+          icon: Icons.check_rounded,
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
 
-// ── Type toggle button ────────────────────────────────────────────────────────
-class _TypeBtn extends StatelessWidget {
-  final String label;
-  final bool active;
-  final Color color;
-  final VoidCallback onTap;
-  const _TypeBtn(this.label, this.active, this.color, this.onTap);
-
+class _Tog extends StatelessWidget {
+  final String l;
+  final bool a;
+  final Color c;
+  final VoidCallback t;
+  const _Tog(this.l, this.a, this.c, this.t);
   @override
-  Widget build(BuildContext context) => Expanded(
+  Widget build(BuildContext ctx) => Expanded(
     child: GestureDetector(
       onTap: () {
         HapticFeedback.selectionClick();
-        onTap();
+        t();
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         margin: const EdgeInsets.all(4),
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: active ? color : Colors.transparent,
+          color: a ? c : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              active
-                  ? (color == kGreen
-                        ? Icons.arrow_downward_rounded
-                        : Icons.arrow_upward_rounded)
-                  : Icons.circle_outlined,
-              size: 14,
-              color: active ? Colors.white : context.c.textMuted,
-            ),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: active ? Colors.white : context.c.textMuted,
-              ),
-            ),
-          ],
+        child: Text(
+          l,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: a ? Colors.white : ctx.c.textMuted,
+          ),
         ),
       ),
     ),
   );
 }
 
-// ── Scan review bottom sheet ──────────────────────────────────────────────────
-class _ScanReviewSheet extends StatelessWidget {
-  final BillScanResult result;
+// ── Single item row widget ────────────────────────────────────────────────────
+class _ItemRow extends StatelessWidget {
+  final _Row row;
+  final int idx, total;
+  final Color col;
   final String sym;
-  final ValueChanged<BillItem> onSelectItem;
-  final VoidCallback? onSelectTotal;
-  const _ScanReviewSheet({
-    required this.result,
+  final List<AppCategory> cats;
+  final Color Function(String) fromHex;
+  final VoidCallback onRemove, onChanged;
+  final ValueChanged<String> onCatChange;
+  const _ItemRow({
+    super.key,
+    required this.row,
+    required this.idx,
+    required this.total,
+    required this.col,
     required this.sym,
-    required this.onSelectItem,
-    required this.onSelectTotal,
+    required this.cats,
+    required this.fromHex,
+    required this.onRemove,
+    required this.onChanged,
+    required this.onCatChange,
   });
+
+  AppCategory get _cur => cats.firstWhere(
+    (c) => c.name == row.catName,
+    orElse: () => cats.isNotEmpty
+        ? cats.first
+        : AppCategory(
+            id: '',
+            name: 'Other',
+            emoji: '📦',
+            color: '#6366F1',
+            isIncome: false,
+          ),
+  );
 
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    return DraggableScrollableSheet(
-      expand: false,
-      initialChildSize: 0.65,
-      maxChildSize: 0.9,
-      minChildSize: 0.4,
-      builder: (_, ctrl) => Column(
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: c.card,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: c.border),
+      ),
+      child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-            decoration: BoxDecoration(
-              color: c.card,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(20),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 36,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: c.border,
-                      borderRadius: BorderRadius.circular(2),
+          // Title row
+          Row(
+            children: [
+              Container(
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  color: col.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Text(
+                    '${idx + 1}',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: col,
                     ),
                   ),
                 ),
-                const SizedBox(height: 14),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Scanned Items',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    if (result.merchant != null)
-                      Text(
-                        result.merchant!,
-                        style: TextStyle(fontSize: 12, color: c.textMuted),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Tap an item to add it as expense',
-                  style: TextStyle(fontSize: 12, color: c.textMuted),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Container(
-              color: c.bg,
-              child: ListView(
-                controller: ctrl,
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                children: [
-                  // Grand total row
-                  if (result.totalAmount != null) ...[
-                    GestureDetector(
-                      onTap: onSelectTotal,
-                      child: Container(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                        decoration: BoxDecoration(
-                          color: kGreen.withOpacity(0.08),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: kGreen.withOpacity(0.3),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                color: kGreen.withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  '🧾',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Grand Total',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Use full bill amount',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: c.textMuted,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Text(
-                              '$sym${result.totalAmount!.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
-                                color: kGreen,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: Row(
-                        children: [
-                          Expanded(child: Divider(color: c.border)),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Text(
-                              'or pick individual items',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: c.textMuted,
-                              ),
-                            ),
-                          ),
-                          Expanded(child: Divider(color: c.border)),
-                        ],
-                      ),
-                    ),
-                  ],
-
-                  // Individual items
-                  if (result.items.isEmpty)
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          children: [
-                            const Text('🔍', style: TextStyle(fontSize: 32)),
-                            const SizedBox(height: 8),
-                            Text(
-                              'No individual items found',
-                              style: TextStyle(color: c.textMuted),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Try using Grand Total above',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: c.textMuted,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  else
-                    ...result.items.asMap().entries.map(
-                      (e) => GestureDetector(
-                        onTap: () => onSelectItem(e.value),
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: c.card,
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: c.border),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 34,
-                                height: 34,
-                                decoration: BoxDecoration(
-                                  color: kPrimary.withOpacity(0.10),
-                                  borderRadius: BorderRadius.circular(9),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    '${e.key + 1}',
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w700,
-                                      color: kPrimary,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  e.value.name,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                '$sym${e.value.amount.toStringAsFixed(2)}',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: kPrimary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
               ),
-            ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: TextField(
+                  controller: row.tc,
+                  onChanged: (_) => onChanged(),
+                  style: TextStyle(
+                    color: context.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Item name',
+                    hintStyle: TextStyle(
+                      color: c.textMuted,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    border: InputBorder.none,
+                    isDense: true,
+                  ),
+                ),
+              ),
+              if (total > 1)
+                GestureDetector(
+                  onTap: onRemove,
+                  child: Icon(
+                    Icons.remove_circle_outline_rounded,
+                    color: c.textMuted,
+                    size: 18,
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              const SizedBox(width: 36),
+              // Amount field
+              Expanded(
+                flex: 2,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 9,
+                  ),
+                  decoration: BoxDecoration(
+                    color: c.bg,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: c.border),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        sym,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: col,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: TextField(
+                          controller: row.ac,
+                          onChanged: (_) => onChanged(),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          style: TextStyle(
+                            color: context.textPrimary,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: '0',
+                            hintStyle: TextStyle(color: c.textMuted),
+                            border: InputBorder.none,
+                            isDense: true,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Per-row category override
+              Expanded(
+                flex: 3,
+                child: GestureDetector(
+                  onTap: () => _catPicker(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 9,
+                    ),
+                    decoration: BoxDecoration(
+                      color: c.bg,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: c.border),
+                    ),
+                    child: Row(
+                      children: [
+                        Text(_cur.emoji, style: const TextStyle(fontSize: 14)),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            _cur.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: context.textPrimary,
+                            ),
+                          ),
+                        ),
+                        Icon(
+                          Icons.expand_more_rounded,
+                          size: 14,
+                          color: c.textMuted,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
+
+  void _catPicker(BuildContext ctx) => showModalBottomSheet(
+    context: ctx,
+    backgroundColor: ctx.c.card,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (_) => SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 10),
+          Container(
+            width: 36,
+            height: 4,
+            decoration: BoxDecoration(
+              color: ctx.c.border,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Select Category',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 4),
+          ...cats.map((cat) {
+            final isSel = row.catName == cat.name;
+            final col = fromHex(cat.color);
+            return ListTile(
+              leading: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: col.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(cat.emoji, style: const TextStyle(fontSize: 18)),
+                ),
+              ),
+              title: Text(
+                cat.name,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              trailing: isSel
+                  ? Icon(Icons.check_circle_rounded, color: col)
+                  : null,
+              onTap: () {
+                onCatChange(cat.name);
+                Navigator.pop(ctx);
+              },
+            );
+          }),
+          const SizedBox(height: 8),
+        ],
+      ),
+    ),
+  );
 }

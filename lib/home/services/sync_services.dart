@@ -9,49 +9,41 @@ SupabaseClient get _sb => Supabase.instance.client;
 class SyncService {
   static Box<Expense> get _box => Hive.box<Expense>('expenses');
 
-  // ── Check connectivity ──────────────────────────────────────────────────────
   static Future<bool> get isOnline async {
-    final result = await Connectivity().checkConnectivity();
-    return result.any((r) => r != ConnectivityResult.none);
+    final r = await Connectivity().checkConnectivity();
+    return r.any((x) => x != ConnectivityResult.none);
   }
 
-  // ── Full sync: push local → cloud, pull cloud → local ──────────────────────
   static Future<SyncResult> sync() async {
     if (!AuthService.isLoggedIn) return SyncResult.notLoggedIn;
     if (!await isOnline) return SyncResult.offline;
-
     try {
-      await _pushLocal();
-      await _pullRemote();
+      await _push();
+      await _pull();
       return SyncResult.success;
-    } catch (e) {
+    } catch (_) {
       return SyncResult.error;
     }
   }
 
-  // ── Push all local Hive expenses to Supabase (upsert) ──────────────────────
-  static Future<void> _pushLocal() async {
+  static Future<void> _push() async {
     final uid = AuthService.currentUser!.id;
     final rows = _box.values
         .map(
           (e) => {
-            'id': e.id,
-            'user_id': uid,
-            'title': e.title,
-            'amount': e.amount,
-            'category': e.category,
+            'id': e.id, 'user_id': uid, 'title': e.title,
+            'amount': e.amount, 'category': e.category,
             'date': e.date.toIso8601String(),
+            'is_income': e.isIncome, // ← synced
+            'currency': e.currency, // ← synced
           },
         )
         .toList();
-
     if (rows.isEmpty) return;
-    // upsert — safe to call multiple times (idempotent)
     await _sb.from('expenses').upsert(rows, onConflict: 'id');
   }
 
-  // ── Pull cloud expenses → write to Hive (merge, no duplicates) ─────────────
-  static Future<void> _pullRemote() async {
+  static Future<void> _pull() async {
     final uid = AuthService.currentUser!.id;
     final rows =
         await _sb
@@ -60,36 +52,32 @@ class SyncService {
                 .eq('user_id', uid)
                 .order('date', ascending: false)
             as List<dynamic>;
-
-    for (final row in rows) {
-      final id = row['id'] as String;
-      // Only add if not already in local box
-      if (!_box.values.any((e) => e.id == id)) {
-        await _box.add(
-          Expense(
-            id: id,
-            title: row['title'],
-            amount: (row['amount'] as num).toDouble(),
-            category: row['category'],
-            date: DateTime.parse(row['date']),
-          ),
-        );
-      }
+    for (final r in rows) {
+      final id = (r['id'] as String?) ?? '';
+      if (id.isEmpty || _box.values.any((e) => e.id == id)) continue;
+      _box.add(
+        Expense(
+          id: id,
+          title: (r['title'] as String?) ?? '',
+          amount: (r['amount'] as num?)?.toDouble() ?? 0,
+          category: (r['category'] as String?) ?? 'Other',
+          date: DateTime.tryParse(r['date'] as String? ?? '') ?? DateTime.now(),
+          isIncome: (r['is_income'] as bool?) ?? false,
+          currency: (r['currency'] as String?) ?? 'NPR',
+        ),
+      );
     }
   }
 
-  // ── Delete a single expense from both local + cloud ─────────────────────────
   static Future<void> deleteExpense(Expense e) async {
     await e.delete();
-    if (AuthService.isLoggedIn && await isOnline) {
+    if (AuthService.isLoggedIn && await isOnline)
       await _sb.from('expenses').delete().eq('id', e.id);
-    }
   }
 
-  // ── Migrate local data on first sign-in ────────────────────────────────────
   static Future<void> migrateOnFirstLogin() async {
     if (!await isOnline) return;
-    await _pushLocal(); // upload everything local
+    await _push();
   }
 }
 

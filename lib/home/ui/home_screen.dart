@@ -10,9 +10,12 @@ import 'package:expensetracker/expense/services/expenses_service.dart';
 import 'package:expensetracker/expense/ui/add_expense_screen.dart';
 import 'package:expensetracker/expense/ui/statemet_screen.dart';
 import 'package:expensetracker/home/services/sync_services.dart';
+import 'package:expensetracker/home/ui/inslight_screen.dart';
+import 'package:expensetracker/profile/ui/about_page.dart';
 import 'package:expensetracker/profile/ui/profile_screen.dart';
 import 'package:expensetracker/profile/ui/setting_screen.dart';
-import 'package:expensetracker/profile/ui/social_service.dart';
+import 'package:expensetracker/social/services/share_service.dart';
+import 'package:expensetracker/social/ui/social_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -20,10 +23,11 @@ import 'package:hive_flutter/hive_flutter.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
   @override
-  State<HomeScreen> createState() => _HomeState();
+  State<HomeScreen> createState() => _H();
 }
 
-class _HomeState extends State<HomeScreen> {
+class _H extends State<HomeScreen> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   SyncResult? _syncResult;
   bool _isLoading = true;
 
@@ -56,15 +60,19 @@ class _HomeState extends State<HomeScreen> {
       final (thisW, lastW) = ExpenseService.weekComparison();
       final dailyData = ExpenseService.dailyTotals(days: 7);
 
-      // Show shimmer skeleton on first load
-      if (_isLoading) {
+      if (_isLoading)
         return Scaffold(
+          key: _scaffoldKey,
           backgroundColor: context.c.bg,
           body: const SafeArea(child: HomeShimmer()),
         );
-      }
 
       return Scaffold(
+        key: _scaffoldKey,
+        drawer: _AppDrawer(
+          onPush: _push,
+          onShare: () => ShareService.shareReport(context),
+        ),
         body: Column(
           children: [
             Expanded(
@@ -76,6 +84,7 @@ class _HomeState extends State<HomeScreen> {
                     totalInc: totalInc,
                     budget: budget,
                     syncResult: _syncResult,
+                    onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
                     onProfileTap: () => _push(
                       AuthService.isLoggedIn
                           ? const ProfileScreen()
@@ -86,7 +95,7 @@ class _HomeState extends State<HomeScreen> {
                     padding: const EdgeInsets.fromLTRB(18, 4, 18, 20),
                     sliver: SliverList(
                       delegate: SliverChildListDelegate([
-                        // ── Metrics ──────────────────────────────────────────────────
+                        // Metric cards
                         Padding(
                           padding: const EdgeInsets.only(top: 16),
                           child: Row(
@@ -111,10 +120,9 @@ class _HomeState extends State<HomeScreen> {
                             ],
                           ),
                         ),
+                        const SizedBox(height: 14),
 
-                        const SizedBox(height: 16),
-
-                        // ── Income vs Expense chart ───────────────────────────────────
+                        // Income/Expense bar chart (REAL DATA)
                         AppCard(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,22 +140,21 @@ class _HomeState extends State<HomeScreen> {
                                   ),
                                   Row(
                                     children: [
-                                      _Legend(kGreen, 'Income'),
+                                      _Leg(kGreen, 'Income'),
                                       const SizedBox(width: 12),
-                                      _Legend(kAccent, 'Expense'),
+                                      _Leg(kAccent, 'Expense'),
                                     ],
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 16),
-                              _DualBarChart(data: dailyData),
+                              const SizedBox(height: 14),
+                              _DualBar(data: dailyData),
                             ],
                           ),
                         ),
+                        const SizedBox(height: 14),
 
-                        const SizedBox(height: 16),
-
-                        // ── Insight chip ──────────────────────────────────────────────
+                        // Insight card
                         AppCard(
                           padding: const EdgeInsets.all(14),
                           child: Row(
@@ -180,10 +187,9 @@ class _HomeState extends State<HomeScreen> {
                             ],
                           ),
                         ),
+                        const SizedBox(height: 14),
 
-                        const SizedBox(height: 16),
-
-                        // ── Week compare ──────────────────────────────────────────────
+                        // Week compare
                         AppCard(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,16 +200,15 @@ class _HomeState extends State<HomeScreen> {
                             ],
                           ),
                         ),
+                        const SizedBox(height: 14),
 
-                        const SizedBox(height: 16),
-
-                        // ── Recent ────────────────────────────────────────────────────
+                        // Recent
                         SectionLabel(
                           'Recent',
                           trailing: TextButton(
                             onPressed: () => _push(const StatementsScreen()),
                             child: const Text(
-                              'Statements →',
+                              'All →',
                               style: TextStyle(fontSize: 12, color: kPrimary),
                             ),
                           ),
@@ -240,11 +245,10 @@ class _HomeState extends State<HomeScreen> {
                           ),
 
                         ...all.take(6).map((e) {
-                          final cats = e.isIncome
-                              ? kIncomeCategories
-                              : kCategories;
+                          final isInc = e.isIncome;
+                          final cats = isInc ? kIncomeCategories : kCategories;
                           final idx = cats.indexOf(e.category);
-                          final col = e.isIncome
+                          final col = isInc
                               ? kGreen
                               : kCatColors[idx < 0
                                     ? 0
@@ -275,12 +279,192 @@ class _HomeState extends State<HomeScreen> {
             const AddExpenseScreen(),
           ).then((_) => AdService.trackAction()),
           onStatements: () => _push(const StatementsScreen()),
-          onSocial: () => _push(const SettingsScreen()),
+          onSocial: () => _push(const SocialScreen()),
           onAI: () => _push(const AiScreen()),
-          onSettings: () => _push(const SettingsScreen()),
         ),
       );
     },
+  );
+}
+
+// ── Drawer ────────────────────────────────────────────────────────────────────
+class _AppDrawer extends StatelessWidget {
+  final void Function(Widget) onPush;
+  final VoidCallback onShare;
+  const _AppDrawer({required this.onPush, required this.onShare});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final isLogged = AuthService.isLoggedIn;
+    return Drawer(
+      backgroundColor: c.surface,
+      child: SafeArea(
+        child: Column(
+          children: [
+            // Profile header
+            Container(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    kPrimary.withOpacity(0.12),
+                    kPrimary.withOpacity(0.02),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                border: Border(bottom: BorderSide(color: c.border)),
+              ),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                      onPush(
+                        isLogged ? const ProfileScreen() : const LoginScreen(),
+                      );
+                    },
+                    child: Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: const LinearGradient(
+                          colors: [kPrimary, Color(0xFF818CF8)],
+                        ),
+                        border: Border.all(
+                          color: kPrimary.withOpacity(0.3),
+                          width: 2,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          isLogged ? AuthService.userInitials : '?',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isLogged ? AuthService.userName : 'Guest',
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        Text(
+                          isLogged ? AuthService.userEmail : 'Sign in to sync',
+                          style: TextStyle(fontSize: 12, color: c.textMuted),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        StreakBadge(days: ExpenseService.budget.streakDays),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                children: [
+                  _DItem(
+                    Icons.home_rounded,
+                    'Home',
+                    kPrimary,
+                    () => Navigator.pop(context),
+                  ),
+                  _DItem(Icons.receipt_long_rounded, 'Statements', null, () {
+                    Navigator.pop(context);
+                    onPush(const StatementsScreen());
+                  }),
+                  _DItem(Icons.bar_chart_rounded, 'Insights', null, () {
+                    Navigator.pop(context);
+                    onPush(const InsightsScreen());
+                  }),
+                  _DItem(Icons.auto_awesome_rounded, 'AI Insights', null, () {
+                    Navigator.pop(context);
+                    onPush(const AiScreen());
+                  }),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    child: Divider(),
+                  ),
+                  _DItem(Icons.people_rounded, 'Community', kAmber, () {
+                    Navigator.pop(context);
+                    onPush(const SocialScreen());
+                  }),
+                  _DItem(Icons.share_rounded, 'Share Report', kGreen, () {
+                    Navigator.pop(context);
+                    onShare();
+                  }),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    child: Divider(),
+                  ),
+                  _DItem(Icons.settings_outlined, 'Settings', null, () {
+                    Navigator.pop(context);
+                    onPush(const SettingsScreen());
+                  }),
+                  _DItem(Icons.info_outline_rounded, 'About', null, () {
+                    Navigator.pop(context);
+                    onPush(const AboutScreen());
+                  }),
+                  if (!isLogged)
+                    _DItem(Icons.login_rounded, 'Sign In', kPrimary, () {
+                      Navigator.pop(context);
+                      onPush(const LoginScreen());
+                    }),
+                ],
+              ),
+            ),
+
+            // Footer
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'SpendSense v1.0',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 11, color: c.textMuted),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color? color;
+  final VoidCallback onTap;
+  const _DItem(this.icon, this.label, this.color, this.onTap);
+  @override
+  Widget build(BuildContext context) => ListTile(
+    leading: Icon(icon, color: color ?? context.c.textSub, size: 22),
+    title: Text(
+      label,
+      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+    ),
+    onTap: onTap,
+    dense: true,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
   );
 }
 
@@ -289,23 +473,21 @@ class _Header extends StatelessWidget {
   final double net, totalExp, totalInc;
   final Budget budget;
   final SyncResult? syncResult;
-  final VoidCallback onProfileTap;
+  final VoidCallback onMenuTap, onProfileTap;
   const _Header({
     required this.net,
     required this.totalExp,
     required this.totalInc,
     required this.budget,
     required this.syncResult,
+    required this.onMenuTap,
     required this.onProfileTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final isLoggedIn = AuthService.isLoggedIn;
-    final netColor = net >= 0 ? kGreen : kAccent;
-    final sym = ExpenseService.symbol;
-
+    final nc = net >= 0 ? kGreen : kAccent;
     return SliverToBoxAdapter(
       child: Container(
         decoration: BoxDecoration(
@@ -324,6 +506,25 @@ class _Header extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Hamburger
+                GestureDetector(
+                  onTap: onMenuTap,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: c.card,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: c.border),
+                    ),
+                    child: Icon(
+                      Icons.menu_rounded,
+                      size: 20,
+                      color: context.textPrimary,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -334,11 +535,11 @@ class _Header extends StatelessWidget {
                             : DateTime.now().hour < 17
                             ? 'Good afternoon 👋'
                             : 'Good evening 🌙',
-                        style: TextStyle(fontSize: 12, color: c.textMuted),
+                        style: TextStyle(fontSize: 11, color: c.textMuted),
                       ),
                       const SizedBox(height: 2),
                       const Text(
-                        'SpendSense',
+                        'BudgetBuddy',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
@@ -358,8 +559,6 @@ class _Header extends StatelessWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
                             colors: [kPrimary, Color(0xFF818CF8)],
                           ),
                           border: Border.all(
@@ -368,11 +567,11 @@ class _Header extends StatelessWidget {
                           ),
                         ),
                         child: Center(
-                          child: isLoggedIn
+                          child: AuthService.isLoggedIn
                               ? Text(
                                   AuthService.userInitials,
                                   style: const TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 13,
                                     fontWeight: FontWeight.w800,
                                     color: Colors.white,
                                   ),
@@ -412,10 +611,7 @@ class _Header extends StatelessWidget {
                 ),
               ],
             ),
-
-            const SizedBox(height: 20),
-
-            // Net balance hero
+            const SizedBox(height: 18),
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -424,20 +620,16 @@ class _Header extends StatelessWidget {
                   children: [
                     Text(
                       net >= 0 ? 'Net Savings' : 'Net Deficit',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: c.textMuted,
-                        letterSpacing: 0.3,
-                      ),
+                      style: TextStyle(fontSize: 11, color: c.textMuted),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 3),
                     Text(
                       '${net >= 0 ? '+' : ''}${ExpenseService.fmt(net.abs())}',
                       style: TextStyle(
-                        fontSize: 36,
+                        fontSize: 34,
                         fontWeight: FontWeight.w800,
                         height: 1,
-                        color: netColor,
+                        color: nc,
                       ),
                     ),
                   ],
@@ -446,21 +638,16 @@ class _Header extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    _MiniStat(
-                      '↑ Expenses',
-                      ExpenseService.fmt(totalExp),
-                      kAccent,
-                    ),
+                    _MS('↑ Expenses', ExpenseService.fmt(totalExp), kAccent),
                     const SizedBox(height: 4),
-                    _MiniStat('↓ Income', ExpenseService.fmt(totalInc), kGreen),
+                    _MS('↓ Income', ExpenseService.fmt(totalInc), kGreen),
                   ],
                 ),
               ],
             ),
-
             const SizedBox(height: 14),
             BudgetBar(percent: ExpenseService.budgetUsedPercent()),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -481,59 +668,52 @@ class _Header extends StatelessWidget {
   }
 }
 
-class _MiniStat extends StatelessWidget {
-  final String label, value;
-  final Color color;
-  const _MiniStat(this.label, this.value, this.color);
+class _MS extends StatelessWidget {
+  final String l, v;
+  final Color c;
+  const _MS(this.l, this.v, this.c);
   @override
-  Widget build(BuildContext context) => Row(
+  Widget build(BuildContext ctx) => Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      Text(label, style: TextStyle(fontSize: 10, color: context.c.textMuted)),
+      Text(l, style: TextStyle(fontSize: 10, color: ctx.c.textMuted)),
       const SizedBox(width: 6),
       Text(
-        value,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-          color: color,
-        ),
+        v,
+        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: c),
       ),
     ],
   );
 }
 
 // ── Dual bar chart ────────────────────────────────────────────────────────────
-class _DualBarChart extends StatelessWidget {
+class _DualBar extends StatelessWidget {
   final List<({double income, double expense})> data;
-  const _DualBarChart({required this.data});
+  const _DualBar({required this.data});
 
   @override
   Widget build(BuildContext context) {
-    final maxVal = data.fold(
+    final maxV = data.fold(
       0.0,
       (m, d) => [m, d.income, d.expense].reduce((a, b) => a > b ? a : b),
     );
     final now = DateTime.now();
-    const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-
-    if (maxVal == 0) {
+    const labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    if (maxV == 0)
       return SizedBox(
-        height: 100,
+        height: 80,
         child: Center(
           child: Text(
-            'No data yet — add some expenses!',
+            'Add expenses to see chart',
             style: TextStyle(fontSize: 12, color: context.c.textMuted),
           ),
         ),
       );
-    }
-
     return SizedBox(
-      height: 140,
+      height: 130,
       child: BarChart(
         BarChartData(
-          maxY: maxVal * 1.3,
+          maxY: maxV * 1.3,
           barGroups: data
               .asMap()
               .entries
@@ -545,14 +725,14 @@ class _DualBarChart extends StatelessWidget {
                     BarChartRodData(
                       toY: e.value.income,
                       width: 10,
-                      borderRadius: BorderRadius.circular(4),
                       color: kGreen.withOpacity(0.85),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                     BarChartRodData(
                       toY: e.value.expense,
                       width: 10,
-                      borderRadius: BorderRadius.circular(4),
                       color: kAccent.withOpacity(0.85),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                   ],
                 ),
@@ -578,14 +758,13 @@ class _DualBarChart extends StatelessWidget {
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-                reservedSize: 24,
+                reservedSize: 22,
                 getTitlesWidget: (v, _) {
-                  final dayIndex = v.toInt();
-                  final date = now.subtract(Duration(days: 6 - dayIndex));
-                  final label = days[date.weekday - 1];
-                  final isToday = date.day == now.day;
+                  final d = now.subtract(Duration(days: 6 - v.toInt()));
+                  final isToday = d.day == now.day && d.month == now.month;
+                  final lbl = labels[(d.weekday - 1) % 7];
                   return Text(
-                    label,
+                    lbl,
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: isToday ? FontWeight.w800 : FontWeight.w500,
@@ -598,18 +777,15 @@ class _DualBarChart extends StatelessWidget {
           ),
           barTouchData: BarTouchData(
             touchTooltipData: BarTouchTooltipData(
-              // tooltipRoundedRadius: 8,
-              getTooltipItem: (group, _, rod, rodIndex) {
-                final sym = ExpenseService.symbol;
-                return BarTooltipItem(
-                  '${rodIndex == 0 ? '↓ ' : '↑ '}$sym${rod.toY.toStringAsFixed(0)}',
-                  TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: rodIndex == 0 ? kGreen : kAccent,
-                  ),
-                );
-              },
+              tooltipBorderRadius: BorderRadius.circular(6),
+              getTooltipItem: (group, _, rod, ri) => BarTooltipItem(
+                '${ri == 0 ? '↓' : '↑'} ${ExpenseService.fmt(rod.toY)}',
+                TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: ri == 0 ? kGreen : kAccent,
+                ),
+              ),
             ),
           ),
         ),
@@ -618,39 +794,37 @@ class _DualBarChart extends StatelessWidget {
   }
 }
 
-class _Legend extends StatelessWidget {
-  final Color color;
-  final String label;
-  const _Legend(this.color, this.label);
+class _Leg extends StatelessWidget {
+  final Color c;
+  final String l;
+  const _Leg(this.c, this.l);
   @override
-  Widget build(BuildContext context) => Row(
+  Widget build(BuildContext ctx) => Row(
     mainAxisSize: MainAxisSize.min,
     children: [
       Container(
         width: 10,
         height: 10,
         decoration: BoxDecoration(
-          color: color,
+          color: c,
           borderRadius: BorderRadius.circular(3),
         ),
       ),
       const SizedBox(width: 5),
-      Text(label, style: TextStyle(fontSize: 11, color: context.c.textSub)),
+      Text(l, style: TextStyle(fontSize: 11, color: ctx.c.textSub)),
     ],
   );
 }
 
-// ── Bottom nav ────────────────────────────────────────────────────────────────
+// ── Bottom Nav ────────────────────────────────────────────────────────────────
 class _NavBar extends StatelessWidget {
-  final VoidCallback onAdd, onStatements, onSocial, onAI, onSettings;
+  final VoidCallback onAdd, onStatements, onSocial, onAI;
   const _NavBar({
     required this.onAdd,
     required this.onStatements,
     required this.onSocial,
     required this.onAI,
-    required this.onSettings,
   });
-
   @override
   Widget build(BuildContext context) {
     final c = context.c;
@@ -663,12 +837,11 @@ class _NavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _Btn(Icons.home_rounded, 'Home', true, () {}),
-          _Btn(Icons.receipt_long_rounded, 'Statements', false, onStatements),
+          _N(Icons.home_rounded, 'Home', true, () {}),
+          _N(Icons.receipt_long_rounded, 'Statements', false, onStatements),
           _Fab(onAdd),
-
-          _Btn(Icons.auto_awesome_rounded, 'AI', false, onAI),
-          _Btn(Icons.people_rounded, 'Settings', false, onSocial),
+          _N(Icons.people_rounded, 'Social', false, onSocial),
+          _N(Icons.auto_awesome_rounded, 'AI', false, onAI),
         ],
       ),
     );
@@ -676,25 +849,21 @@ class _NavBar extends StatelessWidget {
 }
 
 class _Fab extends StatelessWidget {
-  final VoidCallback onTap;
-  const _Fab(this.onTap);
+  final VoidCallback t;
+  const _Fab(this.t);
   @override
   Widget build(BuildContext context) => GestureDetector(
-    onTap: onTap,
+    onTap: t,
     child: Container(
-      width: 54,
-      height: 54,
+      width: 52,
+      height: 52,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [kPrimary, Color(0xFF818CF8)],
-        ),
-        borderRadius: BorderRadius.circular(17),
+        gradient: const LinearGradient(colors: [kPrimary, Color(0xFF818CF8)]),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: kPrimary.withOpacity(0.45),
-            blurRadius: 18,
+            blurRadius: 16,
             offset: const Offset(0, 6),
           ),
         ],
@@ -704,30 +873,30 @@ class _Fab extends StatelessWidget {
   );
 }
 
-class _Btn extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool active;
-  final VoidCallback onTap;
-  const _Btn(this.icon, this.label, this.active, this.onTap);
+class _N extends StatelessWidget {
+  final IconData i;
+  final String l;
+  final bool a;
+  final VoidCallback t;
+  const _N(this.i, this.l, this.a, this.t);
   @override
-  Widget build(BuildContext context) => GestureDetector(
-    onTap: onTap,
+  Widget build(BuildContext ctx) => GestureDetector(
+    onTap: t,
     child: SizedBox(
       width: 54,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 22, color: active ? kPrimary : context.c.textMuted),
+          Icon(i, size: 22, color: a ? kPrimary : ctx.c.textMuted),
           const SizedBox(height: 3),
           Text(
-            label,
+            l,
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 9,
               fontWeight: FontWeight.w600,
-              color: active ? kPrimary : context.c.textMuted,
+              color: a ? kPrimary : ctx.c.textMuted,
             ),
-            textAlign: TextAlign.center,
           ),
         ],
       ),
