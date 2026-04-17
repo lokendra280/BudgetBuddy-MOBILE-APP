@@ -1,8 +1,9 @@
 import 'package:expensetracker/auth/ui/otp_screen.dart';
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
+import 'package:expensetracker/dashboard/pages/dashboard_page.dart';
 import 'package:expensetracker/home/services/sync_services.dart';
-import 'package:expensetracker/home/ui/home_screen.dart';
+import 'package:expensetracker/home/ui/pages/home_screen.dart';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 
@@ -76,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) => const DashboardPage()),
         );
       }
     } catch (e) {

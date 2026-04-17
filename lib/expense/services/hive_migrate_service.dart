@@ -3,142 +3,98 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/expense.dart';
 
-/// Handles safe Hive initialization + schema migration.
+/// REAL DEVICE CRASH FIX
 ///
-/// ROOT CAUSE of Play Store crash:
-///   When you add new HiveFields (e.g. field 5 = isIncome, field 6 = currency)
-///   and publish a new APK, existing users have old Hive boxes on disk that
-///   were written by an older adapter. On first open the new adapter tries to
-///   read fields that don't exist → type-cast exception → crash.
+/// Why emulator works, real device crashes:
+///   Emulator = fresh install, no old Hive files.
+///   Real device from Play Store = Hive binary files already on disk
+///   written by an older adapter version. The new adapter tries to
+///   read binary fields that don't exist → type cast exception → crash.
 ///
-/// CACHE-CLEAR FIX:
-///   Clearing app cache deletes the Hive .hive files → fresh start → no crash.
-///   That's why it works after cache clear.
+/// Why opening raw (no adapters) doesn't work on real devices:
+///   Raw mode returns the actual typed objects (Expense instances),
+///   not plain Maps. So `v is Map` is always false → export is empty
+///   → migration does nothing.
 ///
-/// PROPER FIX (this file):
-///   1. Record a "schema version" in SharedPreferences.
-///   2. On every launch, compare current version to stored version.
-///   3. If version changed, export all data to plain Maps BEFORE registering
-///      adapters, delete the old boxes, then re-import into fresh boxes.
-///   4. The adapter's read() already uses ???? fallbacks for every field,
-///      so forward-compatibility is guaranteed for future fields.
+/// CORRECT FIX:
+///   1. Always register adapters FIRST (they have ?? fallbacks on every field)
+///   2. Try to open boxes normally
+///   3. If ANY exception — catch it, wipe the box files, open fresh
+///   4. Cloud sync via Supabase restores all data on next login
+///
+/// This is safe because:
+///   - The adapters are null-safe: every field has a default value
+///   - If reading an old box throws, we wipe + let cloud restore
+///   - We never lose data that was synced to Supabase
 
 class HiveMigrationService {
-  // Increment this every time you add/change a HiveField
-  static const int _currentSchemaVersion = 3;
-  static const String _versionKey = 'hive_schema_version';
+  static const int _schemaVersion = 4;
+  static const String _versionKey = 'hive_schema_v4';
 
   static Future<void> initSafely() async {
     await Hive.initFlutter();
 
-    final prefs = await SharedPreferences.getInstance();
-    final storedVersion = prefs.getInt(_versionKey) ?? 0;
-    final needsMigration = storedVersion < _currentSchemaVersion;
+    // ALWAYS register adapters first — they handle null fields gracefully
+    _register();
 
-    if (needsMigration && storedVersion > 0) {
-      debugPrint(
-        '[Hive] Schema changed $storedVersion → $_currentSchemaVersion, migrating…',
-      );
-      await _migrate(prefs);
+    final prefs = await SharedPreferences.getInstance();
+    final stored = prefs.getInt(_versionKey) ?? 0;
+
+    if (stored > 0 && stored < _schemaVersion) {
+      // Schema changed — wipe old boxes to avoid binary format mismatch
+      debugPrint('[Hive] Schema $stored → $_schemaVersion: wiping old boxes');
+      await _wipe();
     } else {
-      // Normal init
-      _registerAdapters();
-      await _openBoxes();
+      // Normal open with crash recovery
+      await _openWithRecovery();
     }
 
-    await prefs.setInt(_versionKey, _currentSchemaVersion);
-    debugPrint('[Hive] Ready. Schema v$_currentSchemaVersion');
+    await prefs.setInt(_versionKey, _schemaVersion);
+    debugPrint('[Hive] Ready v$_schemaVersion');
   }
 
-  // ── Register adapters ────────────────────────────────────────────────────
-  static void _registerAdapters() {
+  static void _register() {
     if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(ExpenseAdapter());
     if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(BudgetAdapter());
   }
 
-  // ── Open boxes ───────────────────────────────────────────────────────────
-  static Future<void> _openBoxes() async {
-    await Hive.openBox<Expense>('expenses');
-    await Hive.openBox<Budget>('budget');
+  static Future<void> _openWithRecovery() async {
+    try {
+      await Hive.openBox<Expense>('expenses');
+      await Hive.openBox<Budget>('budget');
+    } catch (e) {
+      // Binary format mismatch or corruption — wipe and start fresh
+      debugPrint('[Hive] Open failed ($e) — wiping and recreating');
+      await _wipe();
+    }
   }
 
-  // ── Migration: export raw → delete old boxes → re-import ─────────────────
-  static Future<void> _migrate(SharedPreferences prefs) async {
-    // Step 1: Open boxes WITHOUT typed adapters (raw mode) to safely read old data
-    final rawExpenses = await Hive.openBox('expenses');
-    final rawBudget = await Hive.openBox('budget');
-
-    // Step 2: Export to plain maps
-    final expenseMaps = rawExpenses.values
-        .map((v) {
-          if (v is Map) return Map<String, dynamic>.from(v as Map);
-          return <String, dynamic>{};
-        })
-        .where((m) => m.isNotEmpty)
-        .toList();
-
-    Map<String, dynamic>? budgetMap;
-    if (rawBudget.isNotEmpty) {
-      final v = rawBudget.getAt(0);
-      if (v is Map) budgetMap = Map<String, dynamic>.from(v as Map);
-    }
-
-    // Step 3: Close and delete old boxes
-    await rawExpenses.close();
-    await rawBudget.close();
-    await Hive.deleteBoxFromDisk('expenses');
-    await Hive.deleteBoxFromDisk('budget');
-
-    // Step 4: Open fresh typed boxes
-    _registerAdapters();
-    await _openBoxes();
-
-    // Step 5: Re-import expenses
-    final expBox = Hive.box<Expense>('expenses');
-    for (final m in expenseMaps) {
+  static Future<void> _wipe() async {
+    // Close any open boxes first
+    for (final name in ['expenses', 'budget']) {
       try {
-        expBox.add(
-          Expense(
-            id: m['id']?.toString() ?? '',
-            title: m['title']?.toString() ?? '',
-            amount: (m['amount'] as num?)?.toDouble() ?? 0.0,
-            category: m['category']?.toString() ?? 'Other',
-            date: m['date'] is DateTime
-                ? m['date'] as DateTime
-                : DateTime.tryParse(m['date']?.toString() ?? '') ??
-                      DateTime.now(),
-            isIncome: m['isIncome'] as bool? ?? false,
-            currency: m['currency']?.toString() ?? 'NPR',
-          ),
-        );
-      } catch (e) {
-        debugPrint('[Hive] Skipped corrupt expense: $e');
-      }
+        if (Hive.isBoxOpen(name)) await Hive.box(name).close();
+      } catch (_) {}
+      // Also try typed close
+      try {
+        if (name == 'expenses' && Hive.isBoxOpen(name)) {
+          await Hive.box<Expense>(name).close();
+        } else if (name == 'budget' && Hive.isBoxOpen(name)) {
+          await Hive.box<Budget>(name).close();
+        }
+      } catch (_) {}
     }
 
-    // Step 6: Re-import budget
-    final budgetBox = Hive.box<Budget>('budget');
-    if (budgetMap != null) {
-      try {
-        budgetBox.add(
-          Budget(
-            monthlyLimit:
-                (budgetMap['monthlyLimit'] as num?)?.toDouble() ?? 10000,
-            streakDays: budgetMap['streakDays'] as int? ?? 0,
-            lastActiveDate: budgetMap['lastActiveDate']?.toString() ?? '',
-            referralCode: budgetMap['referralCode']?.toString(),
-            referralCount: budgetMap['referralCount'] as int? ?? 0,
-            currency: budgetMap['currency']?.toString() ?? 'NPR',
-          ),
-        );
-      } catch (e) {
-        debugPrint('[Hive] Could not migrate budget: $e — using defaults');
-        budgetBox.add(Budget());
-      }
-    }
+    // Delete from disk
+    await Hive.deleteBoxFromDisk('expenses').catchError((_) {});
+    await Hive.deleteBoxFromDisk('budget').catchError((_) {});
+
+    // Open fresh empty boxes
+    await Hive.openBox<Expense>('expenses');
+    await Hive.openBox<Budget>('budget');
 
     debugPrint(
-      '[Hive] Migration complete. ${expBox.length} expenses restored.',
+      '[Hive] Fresh boxes ready. Supabase sync will restore cloud data.',
     );
   }
 }

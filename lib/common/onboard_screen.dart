@@ -1,8 +1,8 @@
 import 'package:expensetracker/common/app_theme.dart';
+import 'package:expensetracker/common/language_screen.dart';
+import 'package:expensetracker/common/services/app_version_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'language_screen.dart';
 
 class OnboardScreen extends StatefulWidget {
   const OnboardScreen({super.key});
@@ -18,23 +18,23 @@ class _State extends State<OnboardScreen> {
     _OnboardData(
       emoji: '💸',
       gradient: [Color(0xFF6C63FF), Color(0xFF8B5CF6)],
-      titleKey: 'onboard1Title',
-      subKey: 'onboard1Sub',
-      illustration: Icons.account_balance_wallet_rounded,
+      title: 'Track Every Rupee',
+      sub: 'Log expenses in seconds.\nKnow exactly where your money goes.',
+      icon: Icons.account_balance_wallet_rounded,
     ),
     _OnboardData(
       emoji: '📊',
       gradient: [Color(0xFF059669), Color(0xFF34D399)],
-      titleKey: 'onboard2Title',
-      subKey: 'onboard2Sub',
-      illustration: Icons.insights_rounded,
+      title: 'Smart Insights',
+      sub: 'Weekly reports, spending patterns,\nand shocking waste alerts.',
+      icon: Icons.insights_rounded,
     ),
     _OnboardData(
       emoji: '🎯',
       gradient: [Color(0xFFD97706), Color(0xFFFBBF24)],
-      titleKey: 'onboard3Title',
-      subKey: 'onboard3Sub',
-      illustration: Icons.savings_rounded,
+      title: 'Stay on Budget',
+      sub: 'Set monthly goals.\nBeat your streak. Build better habits.',
+      icon: Icons.savings_rounded,
     ),
   ];
 
@@ -51,8 +51,9 @@ class _State extends State<OnboardScreen> {
   }
 
   Future<void> _done() async {
-    final p = await SharedPreferences.getInstance();
-    await p.setBool('onboarded', true);
+    // Use AppVersionService — stores build number alongside flag
+    // so new installs always trigger onboarding
+    await AppVersionService.markOnboarded();
     if (!mounted) return;
     Navigator.pushReplacement(
       context,
@@ -69,22 +70,20 @@ class _State extends State<OnboardScreen> {
       backgroundColor: c.bg,
       body: Stack(
         children: [
-          // ── Background gradient blob ──────────────────────────────────────────
           AnimatedContainer(
             duration: const Duration(milliseconds: 400),
             decoration: BoxDecoration(
               gradient: RadialGradient(
                 center: Alignment.topCenter,
                 radius: 1.2,
-                colors: [d.gradient[0].withOpacity(0.15), Colors.transparent],
+                colors: [d.gradient[0].withOpacity(0.14), Colors.transparent],
               ),
             ),
           ),
-
           SafeArea(
             child: Column(
               children: [
-                // ── Skip ─────────────────────────────────────────────────────────────
+                // Skip button
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -100,17 +99,17 @@ class _State extends State<OnboardScreen> {
                   ),
                 ),
 
-                // ── Page view ────────────────────────────────────────────────────────
+                // Page view
                 Expanded(
                   child: PageView.builder(
                     controller: _ctrl,
                     onPageChanged: (i) => setState(() => _page = i),
                     itemCount: _pages.length,
-                    itemBuilder: (_, i) => _OnboardPage(data: _pages[i]),
+                    itemBuilder: (_, i) => _Page(data: _pages[i]),
                   ),
                 ),
 
-                // ── Dots ─────────────────────────────────────────────────────────────
+                // Dots
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(
@@ -130,7 +129,7 @@ class _State extends State<OnboardScreen> {
 
                 const SizedBox(height: 32),
 
-                // ── CTA button ───────────────────────────────────────────────────────
+                // CTA
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
                   child: SizedBox(
@@ -165,7 +164,6 @@ class _State extends State<OnboardScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 40),
               ],
             ),
@@ -176,9 +174,9 @@ class _State extends State<OnboardScreen> {
   }
 }
 
-class _OnboardPage extends StatelessWidget {
+class _Page extends StatelessWidget {
   final _OnboardData data;
-  const _OnboardPage({required this.data});
+  const _Page({required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -188,7 +186,6 @@ class _OnboardPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Illustration circle
           Container(
             width: 160,
             height: 160,
@@ -210,7 +207,7 @@ class _OnboardPage extends StatelessWidget {
               alignment: Alignment.center,
               children: [
                 Icon(
-                  data.illustration,
+                  data.icon,
                   size: 60,
                   color: data.gradient[0].withOpacity(0.3),
                 ),
@@ -218,11 +215,9 @@ class _OnboardPage extends StatelessWidget {
               ],
             ),
           ),
-
           const SizedBox(height: 48),
-
           Text(
-            _getTitle(context, data.titleKey),
+            data.title,
             style: const TextStyle(
               fontSize: 26,
               fontWeight: FontWeight.w800,
@@ -230,11 +225,9 @@ class _OnboardPage extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-
           const SizedBox(height: 16),
-
           Text(
-            _getSub(context, data.subKey),
+            data.sub,
             style: TextStyle(fontSize: 15, color: c.textSub, height: 1.6),
             textAlign: TextAlign.center,
           ),
@@ -242,39 +235,17 @@ class _OnboardPage extends StatelessWidget {
       ),
     );
   }
-
-  // Simple lookup — replace with S.of(context).xxx after code gen
-  String _getTitle(BuildContext ctx, String key) {
-    const map = {
-      'onboard1Title': 'Track Every Rupee',
-      'onboard2Title': 'Smart Insights',
-      'onboard3Title': 'Stay on Budget',
-    };
-    return map[key] ?? key;
-  }
-
-  String _getSub(BuildContext ctx, String key) {
-    const map = {
-      'onboard1Sub':
-          'Log expenses in seconds. Know exactly where your money goes.',
-      'onboard2Sub':
-          'Weekly reports, spending patterns, and shocking waste alerts.',
-      'onboard3Sub':
-          'Set monthly goals. Beat your streak. Build better habits.',
-    };
-    return map[key] ?? key;
-  }
 }
 
 class _OnboardData {
-  final String emoji, titleKey, subKey;
+  final String emoji, title, sub;
   final List<Color> gradient;
-  final IconData illustration;
+  final IconData icon;
   const _OnboardData({
     required this.emoji,
     required this.gradient,
-    required this.titleKey,
-    required this.subKey,
-    required this.illustration,
+    required this.title,
+    required this.sub,
+    required this.icon,
   });
 }

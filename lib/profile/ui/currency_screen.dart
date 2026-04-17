@@ -1,9 +1,10 @@
 import 'package:expensetracker/auth/services/user_profile_service.dart';
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
+import 'package:expensetracker/dashboard/pages/dashboard_page.dart';
 import 'package:expensetracker/expense/models/expense.dart';
 import 'package:expensetracker/expense/services/expenses_service.dart';
-import 'package:expensetracker/home/ui/home_screen.dart';
+import 'package:expensetracker/home/ui/pages/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -37,7 +38,7 @@ class _State extends State<CurrencyScreen> {
     if (!mounted) return;
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => const HomeScreen()),
+      MaterialPageRoute(builder: (_) => const DashboardPage()),
     );
   }
 
@@ -116,12 +117,13 @@ class _State extends State<CurrencyScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   cur.flag,
                                   style: const TextStyle(fontSize: 22),
                                 ),
-                                const Spacer(),
+
                                 if (isSel)
                                   Container(
                                     width: 20,
@@ -136,6 +138,11 @@ class _State extends State<CurrencyScreen> {
                                       color: Colors.white,
                                     ),
                                   ),
+                                Text(
+                                  cur.name,
+                                  style: TextStyle(fontSize: 12),
+                                  maxLines: 2,
+                                ),
                               ],
                             ),
                           ],
@@ -184,7 +191,7 @@ class _State extends State<CurrencyScreen> {
               const SizedBox(height: 16),
 
               AppButton(
-                label: 'Get Started 🚀',
+                label: 'Get Started',
                 onTap: _confirm,
                 icon: Icons.arrow_forward_rounded,
               ),

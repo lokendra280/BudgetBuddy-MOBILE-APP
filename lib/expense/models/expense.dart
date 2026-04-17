@@ -67,7 +67,7 @@ const kCurrencies = [
   CurrencyInfo('INR', '₹', 'Indian Rupee', '🇮🇳'),
   CurrencyInfo('GBP', '£', 'British Pound', '🇬🇧'),
   CurrencyInfo('EUR', '€', 'Euro', '🇪🇺'),
-  CurrencyInfo('AUD', 'A\$', 'Australian Dollar', '🇦🇺'),
+  CurrencyInfo('AUD', 'A\$', 'AUD Dollar', '🇦🇺'),
 ];
 
 CurrencyInfo currencyOf(String code) => kCurrencies.firstWhere(

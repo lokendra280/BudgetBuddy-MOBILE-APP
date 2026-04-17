@@ -29,12 +29,30 @@ class _State extends State<LockScreen> with WidgetsBindingObserver {
   // Re-lock when app goes to background
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused) setState(() => _unlocked = false);
-    if (state == AppLifecycleState.resumed && !_unlocked) _tryAuth();
+    if (state == AppLifecycleState.paused) {
+      _unlocked = false;
+    }
+
+    if (state == AppLifecycleState.resumed && !_unlocked) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted && !_unlocked) {
+          _tryAuth();
+        }
+      });
+    }
   }
 
   Future<void> _init() async {
-    final enabled = await BiometricService.isEnabled;
+    bool enabled = false;
+
+    try {
+      enabled = await BiometricService.isEnabled;
+    } catch (_) {
+      enabled = false;
+    }
+
+    if (!mounted) return;
+
     if (!enabled) {
       setState(() {
         _unlocked = true;
@@ -42,20 +60,34 @@ class _State extends State<LockScreen> with WidgetsBindingObserver {
       });
       return;
     }
+
     setState(() => _checking = false);
-    _tryAuth();
+
+    await _tryAuth();
   }
 
+  bool _authRunning = false;
+
   Future<void> _tryAuth() async {
-    final ok = await BiometricService.authenticate();
-    if (mounted) setState(() => _unlocked = ok);
+    if (_authRunning) return;
+    _authRunning = true;
+
+    try {
+      final ok = await BiometricService.authenticate();
+      if (!mounted) return;
+      setState(() => _unlocked = ok);
+    } catch (_) {}
+
+    _authRunning = false;
   }
 
   void _skip() => setState(() => _unlocked = true);
 
   @override
   Widget build(BuildContext context) {
-    if (_checking) return const SizedBox.shrink();
+    if (_checking) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     if (_unlocked) return widget.child;
 
     final c = context.c;

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:expensetracker/auth/services/auth_service.dart';
 import 'package:expensetracker/common/app_theme.dart';
+import 'package:expensetracker/dashboard/pages/dashboard_page.dart';
 import 'package:expensetracker/home/services/sync_services.dart';
-import 'package:expensetracker/home/ui/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -98,7 +98,7 @@ class _State extends State<OtpScreen> {
       );
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => const DashboardPage()),
         (_) => false,
       );
     } catch (e) {

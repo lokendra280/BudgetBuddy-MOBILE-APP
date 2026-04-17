@@ -62,6 +62,9 @@ class AppColors {
     textMuted: Color(0xFF9090B0),
     textSub: Color(0xFF606080),
   );
+
+  static const primaryColor = Color(0xFF10B981);
+  static const Color darkGrey = Color(0xff4D4D4D);
 }
 
 extension AppColorsX on BuildContext {
@@ -130,3 +133,30 @@ ThemeData buildTheme(bool dark) {
     ),
   );
 }
+
+
+
+
+
+
+// class AppColors {
+//   // 🌿 Primary (Main brand)
+//   static const primary = Color(0xFF10B981); // Green
+//   static const primaryDark = Color(0xFF059669);
+
+//   // 💰 Money states
+//   static const income = Color(0xFF22C55E);
+//   static const expense = Color(0xFFEF4444);
+//   static const warning = Color(0xFFF59E0B);
+
+//   // 🎨 UI Backgrounds
+//   static const backgroundLight = Color(0xFFF8FAF9);
+//   static const cardLight = Color(0xFFFFFFFF);
+
+//   static const backgroundDark = Color(0xFF0B1411);
+//   static const cardDark = Color(0xFF111C1A);
+
+//   // 📝 Text
+//   static const textPrimary = Color(0xFF0F172A);
+//   static const textSecondary = Color(0xFF64748B);
+// }

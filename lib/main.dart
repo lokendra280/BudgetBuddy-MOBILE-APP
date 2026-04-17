@@ -1,5 +1,6 @@
 import 'package:expensetracker/auth/ui/lock_screen.dart';
 import 'package:expensetracker/common/app_theme.dart';
+import 'package:expensetracker/common/navigation_service.dart';
 import 'package:expensetracker/common/onboard_screen.dart';
 import 'package:expensetracker/common/services/ads_service.dart';
 import 'package:expensetracker/common/services/lang_provider.dart';
@@ -9,7 +10,7 @@ import 'package:expensetracker/common/wrapper/update_wrapper.dart';
 import 'package:expensetracker/expense/models/expense.dart';
 import 'package:expensetracker/expense/services/category_services.dart';
 import 'package:expensetracker/expense/services/hive_migrate_service.dart';
-import 'package:expensetracker/home/ui/home_screen.dart';
+import 'package:expensetracker/home/ui/pages/home_screen.dart';
 import 'package:expensetracker/l10n/app_localizations.dart';
 import 'package:expensetracker/splash/ui/splash_page.dart';
 import 'package:flutter/material.dart';
@@ -67,6 +68,7 @@ class SpendSenseApp extends StatelessWidget {
         darkTheme: buildTheme(true),
         locale: locale,
         supportedLocales: LangProvider.supported,
+        navigatorKey: NavigationService.navigationKey,
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,

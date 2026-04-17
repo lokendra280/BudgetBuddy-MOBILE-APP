@@ -63,10 +63,10 @@ flutter {
 }
 
 dependencies {
-    // ✅ Required for notifications & modern Java APIs
+    // ✅ Required for modern Java APIs on older devices
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 
-    // Multidex support
+    // Multidex
     implementation("androidx.multidex:multidex:2.0.1")
 
 }
