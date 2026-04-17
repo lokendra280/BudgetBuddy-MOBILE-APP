@@ -85,7 +85,9 @@ class HomeBarGraph extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: isToday ? FontWeight.w800 : FontWeight.w500,
-                      color: isToday ? kPrimary : context.c.textMuted,
+                      color: isToday
+                          ? AppColors.primaryColor
+                          : context.c.textMuted,
                     ),
                   );
                 },

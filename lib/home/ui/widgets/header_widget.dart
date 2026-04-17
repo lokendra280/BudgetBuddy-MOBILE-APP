@@ -2,7 +2,9 @@ import 'dart:ui';
 
 import 'package:expensetracker/auth/services/auth_service.dart';
 import 'package:expensetracker/common/app_theme.dart';
+import 'package:expensetracker/common/common_svg_widget.dart';
 import 'package:expensetracker/common/common_widget.dart';
+import 'package:expensetracker/common/constant/constant_assets.dart';
 import 'package:expensetracker/expense/models/expense.dart';
 import 'package:expensetracker/expense/services/expenses_service.dart';
 import 'package:expensetracker/home/services/sync_services.dart';
@@ -99,10 +101,10 @@ class HeaderWidget extends StatelessWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: const LinearGradient(
-                            colors: [kPrimary, Color(0xFF818CF8)],
+                            colors: [AppColors.primaryColor, Color(0xFF818CF8)],
                           ),
                           border: Border.all(
-                            color: kPrimary.withOpacity(0.35),
+                            color: AppColors.primaryColor.withOpacity(0.35),
                             width: 2,
                           ),
                         ),
@@ -116,10 +118,11 @@ class HeaderWidget extends StatelessWidget {
                                     color: Colors.white,
                                   ),
                                 )
-                              : const Icon(
-                                  Icons.person_outline_rounded,
-                                  size: 20,
-                                  color: Colors.white,
+                              : CommonSvgWidget(
+                                  svgName: Assets.profile_circle,
+                                  height: 20,
+                                  width: 20,
+                                  color: AppColors.white,
                                 ),
                         ),
                       ),

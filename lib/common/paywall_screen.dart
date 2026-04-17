@@ -67,7 +67,7 @@
 //               decoration: BoxDecoration(
 //                 shape: BoxShape.circle,
 //                 gradient: RadialGradient(
-//                   colors: [kPrimary.withOpacity(0.2), Colors.transparent],
+//                   colors: [AppColors.primaryColor.withOpacity(0.2), Colors.transparent],
 //                 ),
 //               ),
 //             ),
@@ -301,10 +301,10 @@
 //           duration: const Duration(milliseconds: 180),
 //           padding: const EdgeInsets.all(16),
 //           decoration: BoxDecoration(
-//             color: selected ? kPrimary.withOpacity(0.12) : context.c.surface,
+//             color: selected ? AppColors.primaryColor.withOpacity(0.12) : context.c.surface,
 //             borderRadius: BorderRadius.circular(16),
 //             border: Border.all(
-//               color: selected ? kPrimary : context.c.border,
+//               color: selected ? AppColors.primaryColor : context.c.border,
 //               width: selected ? 1.5 : 1,
 //             ),
 //           ),
@@ -346,7 +346,7 @@
 //                 style: TextStyle(
 //                   fontSize: 22,
 //                   fontWeight: FontWeight.w800,
-//                   color: selected ? kPrimary : Colors.white,
+//                   color: selected ? AppColors.primaryColor : Colors.white,
 //                 ),
 //               ),
 //               Text(

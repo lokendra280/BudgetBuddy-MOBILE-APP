@@ -1,6 +1,8 @@
 import 'package:expensetracker/auth/services/biometric_service.dart';
 import 'package:expensetracker/common/app_theme.dart';
+import 'package:expensetracker/common/common_svg_widget.dart';
 import 'package:expensetracker/common/common_widget.dart';
+import 'package:expensetracker/common/constant/constant_assets.dart';
 import 'package:expensetracker/common/language_screen.dart';
 import 'package:expensetracker/common/services/lang_provider.dart';
 import 'package:expensetracker/common/services/notification_service.dart';
@@ -112,7 +114,10 @@ class _State extends State<SettingsScreen> {
                 ),
                 subtitle: Text('Symbol: ${cur.symbol}'),
                 trailing: selected
-                    ? const Icon(Icons.check_circle_rounded, color: kPrimary)
+                    ? const Icon(
+                        Icons.check_circle_rounded,
+                        color: AppColors.primaryColor,
+                      )
                     : null,
                 onTap: () async {
                   final b = ExpenseService.budget..currency = cur.code;
@@ -272,12 +277,12 @@ class _State extends State<SettingsScreen> {
                           width: 36,
                           height: 36,
                           decoration: BoxDecoration(
-                            color: kPrimary.withOpacity(0.10),
+                            color: AppColors.primaryColor.withOpacity(0.10),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Icon(
                             Icons.fingerprint_rounded,
-                            color: kPrimary,
+                            color: AppColors.primaryColor,
                             size: 20,
                           ),
                         ),
@@ -361,7 +366,7 @@ class _State extends State<SettingsScreen> {
                           curInfo.symbol,
                           style: const TextStyle(
                             fontSize: 16,
-                            color: kPrimary,
+                            color: AppColors.primaryColor,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -390,10 +395,10 @@ class _State extends State<SettingsScreen> {
                         color: kAccent.withOpacity(0.10),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(
-                        Icons.notifications_outlined,
-                        color: kAccent,
-                        size: 20,
+                      child: CommonSvgWidget(
+                        svgName: Assets.notification,
+                        height: 20,
+                        width: 20,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -426,7 +431,12 @@ class _State extends State<SettingsScreen> {
               AppCard(
                 child: Row(
                   children: [
-                    const Text('🔥', style: TextStyle(fontSize: 28)),
+                    CommonSvgWidget(
+                      svgName: Assets.strike,
+                      height: 20,
+                      width: 20,
+                      color: kAccent,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -464,13 +474,14 @@ class _State extends State<SettingsScreen> {
                       width: 36,
                       height: 36,
                       decoration: BoxDecoration(
-                        color: kPrimary.withOpacity(0.10),
+                        color: AppColors.primaryColor.withOpacity(0.10),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(
-                        Icons.info_outline_rounded,
-                        color: kPrimary,
-                        size: 20,
+                      child: CommonSvgWidget(
+                        svgName: Assets.about,
+                        height: 20,
+                        width: 20,
+                        color: AppColors.primaryColor,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -479,7 +490,7 @@ class _State extends State<SettingsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'About SpendSense',
+                            'About BudgetBuddy',
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -566,7 +577,7 @@ class _B extends StatelessWidget {
         margin: const EdgeInsets.all(3),
         padding: const EdgeInsets.symmetric(vertical: 11),
         decoration: BoxDecoration(
-          color: active ? kPrimary : Colors.transparent,
+          color: active ? AppColors.primaryColor : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(

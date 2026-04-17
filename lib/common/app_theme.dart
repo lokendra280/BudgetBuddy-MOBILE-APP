@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // ── Brand palette ─────────────────────────────────────────────────────────────
-const kPrimary = Color(0xFF6366F1); // indigo
+// indigo
 const kAccent = Color(0xFFF43F5E); // rose
 const kGreen = Color(0xFF10B981); // emerald
 const kAmber = Color(0xFFF59E0B); // amber
@@ -65,6 +65,7 @@ class AppColors {
 
   static const primaryColor = Color(0xFF10B981);
   static const Color darkGrey = Color(0xff4D4D4D);
+  static const Color white = Color(0xFFFFFFFF);
 }
 
 extension AppColorsX on BuildContext {
@@ -92,9 +93,12 @@ ThemeData buildTheme(bool dark) {
     scaffoldBackgroundColor: c.bg,
     colorScheme:
         (dark
-                ? const ColorScheme.dark(primary: kPrimary, secondary: kAccent)
+                ? const ColorScheme.dark(
+                    primary: AppColors.primaryColor,
+                    secondary: kAccent,
+                  )
                 : const ColorScheme.light(
-                    primary: kPrimary,
+                    primary: AppColors.primaryColor,
                     secondary: kAccent,
                   ))
             .copyWith(surface: c.surface),
@@ -116,12 +120,12 @@ ThemeData buildTheme(bool dark) {
     switchTheme: SwitchThemeData(
       thumbColor: WidgetStateProperty.resolveWith(
         (s) => s.contains(WidgetState.selected)
-            ? kPrimary
+            ? AppColors.primaryColor
             : (dark ? const Color(0xFF3A3A50) : Colors.white),
       ),
       trackColor: WidgetStateProperty.resolveWith(
         (s) => s.contains(WidgetState.selected)
-            ? kPrimary.withOpacity(0.35)
+            ? AppColors.primaryColor.withOpacity(0.35)
             : (dark ? const Color(0xFF252538) : const Color(0xFFDDDDEE)),
       ),
     ),

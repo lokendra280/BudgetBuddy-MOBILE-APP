@@ -2,7 +2,6 @@ import 'package:expensetracker/auth/services/auth_service.dart';
 import 'package:expensetracker/auth/ui/login_screen.dart';
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
-import 'package:expensetracker/common/constant/constant_assets.dart';
 import 'package:expensetracker/common/services/ads_service.dart';
 import 'package:expensetracker/common/services/notification_service.dart';
 import 'package:expensetracker/common/shimmer_widget.dart';
@@ -17,7 +16,6 @@ import 'package:expensetracker/home/ui/widgets/home_bar_graph.dart';
 import 'package:expensetracker/profile/ui/profile_screen.dart';
 import 'package:expensetracker/social/services/share_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -175,7 +173,9 @@ class _H extends State<HomeScreen> {
                                 width: 38,
                                 height: 38,
                                 decoration: BoxDecoration(
-                                  color: kPrimary.withOpacity(0.10),
+                                  color: AppColors.primaryColor.withOpacity(
+                                    0.10,
+                                  ),
                                   borderRadius: BorderRadius.circular(11),
                                 ),
                                 child: const Center(
@@ -221,7 +221,10 @@ class _H extends State<HomeScreen> {
                             onPressed: () => _push(const StatementsScreen()),
                             child: const Text(
                               'All →',
-                              style: TextStyle(fontSize: 12, color: kPrimary),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.primaryColor,
+                              ),
                             ),
                           ),
                         ),
@@ -323,11 +326,13 @@ class _Fab extends StatelessWidget {
       width: 52,
       height: 52,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [kPrimary, Color(0xFF818CF8)]),
+        gradient: const LinearGradient(
+          colors: [AppColors.primaryColor, Color(0xFF818CF8)],
+        ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: kPrimary.withOpacity(0.45),
+            color: AppColors.primaryColor.withOpacity(0.45),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),

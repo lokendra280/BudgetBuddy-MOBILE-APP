@@ -96,10 +96,12 @@ class _State extends State<CurrencyScreen> {
                         duration: const Duration(milliseconds: 200),
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: isSel ? kPrimary.withOpacity(0.08) : c.card,
+                          color: isSel
+                              ? AppColors.primaryColor.withOpacity(0.08)
+                              : c.card,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: isSel ? kPrimary : c.border,
+                            color: isSel ? AppColors.primaryColor : c.border,
                             width: isSel ? 2 : 1,
                           ),
                           boxShadow: !context.isDark && !isSel
@@ -129,7 +131,7 @@ class _State extends State<CurrencyScreen> {
                                     width: 20,
                                     height: 20,
                                     decoration: const BoxDecoration(
-                                      color: kPrimary,
+                                      color: AppColors.primaryColor,
                                       shape: BoxShape.circle,
                                     ),
                                     child: const Icon(
@@ -220,7 +222,7 @@ class _StepBar extends StatelessWidget {
                 height: 3,
                 margin: EdgeInsets.only(right: i < total - 1 ? 6 : 0),
                 decoration: BoxDecoration(
-                  color: i < step ? kPrimary : c.border,
+                  color: i < step ? AppColors.primaryColor : c.border,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),

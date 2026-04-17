@@ -1,6 +1,8 @@
 import 'package:expensetracker/auth/services/auth_service.dart';
 import 'package:expensetracker/common/app_theme.dart';
+import 'package:expensetracker/common/common_svg_widget.dart';
 import 'package:expensetracker/common/common_widget.dart';
+import 'package:expensetracker/common/constant/constant_assets.dart';
 import 'package:expensetracker/common/shimmer_widget.dart';
 import 'package:expensetracker/expense/services/expenses_service.dart';
 import 'package:expensetracker/profile/services/refers_service.dart';
@@ -74,16 +76,20 @@ class _SS extends State<SocialScreen> with SingleTickerProviderStateMixin {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.share_rounded, color: kPrimary),
+            // icon: const Icon(
+            //   Icons.share_rounded,
+            //   color: AppColors.primaryColor,
+            // ),
+            icon: CommonSvgWidget(svgName: Assets.share, height: 25, width: 25),
             onPressed: () => ShareService.shareReport(context),
             tooltip: 'Share my report',
           ),
         ],
         bottom: TabBar(
           controller: _tabs,
-          labelColor: kPrimary,
+          labelColor: AppColors.primaryColor,
           unselectedLabelColor: c.textMuted,
-          indicatorColor: kPrimary,
+          indicatorColor: AppColors.primaryColor,
           labelStyle: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w700,
@@ -157,7 +163,10 @@ class _LBS extends State<_LeaderboardTab> {
 
     if (_loading)
       return const Center(
-        child: CircularProgressIndicator(color: kPrimary, strokeWidth: 2),
+        child: CircularProgressIndicator(
+          color: AppColors.primaryColor,
+          strokeWidth: 2,
+        ),
       );
     if (_err != null)
       return Center(
@@ -171,7 +180,7 @@ class _LBS extends State<_LeaderboardTab> {
             ElevatedButton(
               onPressed: _fetch,
               style: ElevatedButton.styleFrom(
-                backgroundColor: kPrimary,
+                backgroundColor: AppColors.primaryColor,
                 foregroundColor: Colors.white,
               ),
               child: const Text('Retry'),
@@ -182,7 +191,7 @@ class _LBS extends State<_LeaderboardTab> {
 
     return RefreshIndicator(
       onRefresh: _fetch,
-      color: kPrimary,
+      color: AppColors.primaryColor,
       child: ListView(
         padding: const EdgeInsets.all(18),
         children: [
@@ -195,7 +204,7 @@ class _LBS extends State<_LeaderboardTab> {
                   height: 40,
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [kPrimary, Color(0xFF818CF8)],
+                      colors: [AppColors.primaryColor, Color(0xFF818CF8)],
                     ),
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -234,7 +243,7 @@ class _LBS extends State<_LeaderboardTab> {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: kPrimary,
+                    color: AppColors.primaryColor,
                   ),
                 ),
               ],
@@ -286,11 +295,11 @@ class _LBS extends State<_LeaderboardTab> {
                   ? c.textSub
                   : rank == 3
                   ? const Color(0xFFCD7F32)
-                  : kPrimary;
+                  : AppColors.primaryColor;
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: AppCard(
-                  color: isMe ? kPrimary.withOpacity(0.06) : null,
+                  color: isMe ? AppColors.primaryColor.withOpacity(0.06) : null,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 14,
                     vertical: 12,
@@ -333,7 +342,7 @@ class _LBS extends State<_LeaderboardTab> {
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
-                                color: isMe ? kPrimary : null,
+                                color: isMe ? AppColors.primaryColor : null,
                               ),
                             ),
                             if (streak > 0)
@@ -421,7 +430,7 @@ class _CHS extends State<_ChallengesTab> {
           'Food Saver 🍱',
           'Keep food under 30% of budget',
           food > 0 ? (1 - (food / (budget * 0.3)).clamp(0, 1)) : 1.0,
-          kPrimary,
+          AppColors.primaryColor,
           'Food: ${ExpenseService.fmt(food)} / ${ExpenseService.fmt(budget * 0.3)}',
         ),
         _CData(
@@ -458,7 +467,10 @@ class _CHS extends State<_ChallengesTab> {
   Widget build(BuildContext context) {
     if (_loading)
       return const Center(
-        child: CircularProgressIndicator(color: kPrimary, strokeWidth: 2),
+        child: CircularProgressIndicator(
+          color: AppColors.primaryColor,
+          strokeWidth: 2,
+        ),
       );
     return ListView(
       padding: const EdgeInsets.all(18),
@@ -562,12 +574,15 @@ class _InviteTab extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [kPrimary.withOpacity(0.14), kPrimary.withOpacity(0.04)],
+              colors: [
+                AppColors.primaryColor.withOpacity(0.14),
+                AppColors.primaryColor.withOpacity(0.04),
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: kPrimary.withOpacity(0.3)),
+            border: Border.all(color: AppColors.primaryColor.withOpacity(0.3)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -635,13 +650,15 @@ class _InviteTab extends StatelessWidget {
                         width: 46,
                         height: 46,
                         decoration: BoxDecoration(
-                          color: kPrimary.withOpacity(0.1),
+                          color: AppColors.primaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: kPrimary.withOpacity(0.3)),
+                          border: Border.all(
+                            color: AppColors.primaryColor.withOpacity(0.3),
+                          ),
                         ),
                         child: const Icon(
                           Icons.copy_rounded,
-                          color: kPrimary,
+                          color: AppColors.primaryColor,
                           size: 20,
                         ),
                       ),
@@ -679,7 +696,11 @@ class _InviteTab extends StatelessWidget {
                   ],
                 ),
               ] else
-                const Center(child: CircularProgressIndicator(color: kPrimary)),
+                const Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.primaryColor,
+                  ),
+                ),
             ],
           ),
         ),

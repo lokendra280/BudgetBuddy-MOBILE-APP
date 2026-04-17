@@ -143,7 +143,10 @@ class _LoginScreenState extends State<LoginScreen> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [kPrimary.withOpacity(0.12), Colors.transparent],
+                  colors: [
+                    AppColors.primaryColor.withOpacity(0.12),
+                    Colors.transparent,
+                  ],
                 ),
               ),
             ),
@@ -161,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 52,
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [kPrimary, Color(0xFF818CF8)],
+                        colors: [AppColors.primaryColor, Color(0xFF818CF8)],
                       ),
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -255,7 +258,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             : 'New here? Create account',
                         style: TextStyle(
                           fontSize: 12,
-                          color: kPrimary,
+                          color: AppColors.primaryColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

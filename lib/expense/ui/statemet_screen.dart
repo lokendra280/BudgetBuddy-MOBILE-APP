@@ -53,7 +53,7 @@ class _State extends State<StatementsScreen> {
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
           colorScheme: ColorScheme.fromSeed(
-            seedColor: kPrimary,
+            seedColor: AppColors.primaryColor,
             brightness: Theme.of(ctx).brightness,
           ),
         ),
@@ -148,7 +148,7 @@ class _State extends State<StatementsScreen> {
                     height: 18,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: kPrimary,
+                      color: AppColors.primaryColor,
                     ),
                   )
                 : const Icon(Icons.picture_as_pdf_rounded, color: kAccent),
@@ -244,10 +244,10 @@ class _State extends State<StatementsScreen> {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: kPrimary.withOpacity(0.08),
+                              color: AppColors.primaryColor.withOpacity(0.08),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: kPrimary.withOpacity(0.2),
+                                color: AppColors.primaryColor.withOpacity(0.2),
                               ),
                             ),
                             child: Text(
@@ -255,7 +255,7 @@ class _State extends State<StatementsScreen> {
                               style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
-                                color: kPrimary,
+                                color: AppColors.primaryColor,
                               ),
                             ),
                           ),
@@ -284,16 +284,18 @@ class _State extends State<StatementsScreen> {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: kPrimary.withOpacity(0.07),
+                          color: AppColors.primaryColor.withOpacity(0.07),
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: kPrimary.withOpacity(0.25)),
+                          border: Border.all(
+                            color: AppColors.primaryColor.withOpacity(0.25),
+                          ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Icon(
                               Icons.date_range_rounded,
-                              color: kPrimary,
+                              color: AppColors.primaryColor,
                               size: 18,
                             ),
                             const SizedBox(width: 10),
@@ -304,13 +306,13 @@ class _State extends State<StatementsScreen> {
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
-                                color: kPrimary,
+                                color: AppColors.primaryColor,
                               ),
                             ),
                             const SizedBox(width: 8),
                             const Icon(
                               Icons.edit_calendar_rounded,
-                              color: kPrimary,
+                              color: AppColors.primaryColor,
                               size: 16,
                             ),
                           ],
@@ -490,7 +492,7 @@ class _State extends State<StatementsScreen> {
                         (cat) => _FChip(
                           cat,
                           _filterCat == cat,
-                          kPrimary,
+                          AppColors.primaryColor,
                           () => setState(
                             () => _filterCat = _filterCat == cat ? null : cat,
                           ),
@@ -707,7 +709,7 @@ class _FModeBtn extends StatelessWidget {
         margin: const EdgeInsets.all(3),
         padding: const EdgeInsets.symmetric(vertical: 9),
         decoration: BoxDecoration(
-          color: active ? kPrimary : Colors.transparent,
+          color: active ? AppColors.primaryColor : Colors.transparent,
           borderRadius: BorderRadius.circular(9),
         ),
         child: Text(

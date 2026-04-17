@@ -120,7 +120,9 @@ class _State extends State<SplashScreen> with SingleTickerProviderStateMixin {
                       backgroundColor: isDark
                           ? const Color(0xFF1E1E30)
                           : const Color(0xFFE8E8F0),
-                      valueColor: const AlwaysStoppedAnimation(kPrimary),
+                      valueColor: const AlwaysStoppedAnimation(
+                        AppColors.primaryColor,
+                      ),
                     ),
                   ),
                 ),

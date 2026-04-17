@@ -1,6 +1,9 @@
 import 'package:expensetracker/common/app_theme.dart';
+import 'package:expensetracker/common/button.dart';
+import 'package:expensetracker/common/common_svg_widget.dart';
 import 'package:expensetracker/common/common_widget.dart';
-import 'package:expensetracker/expense/services/bill_scaning_service.dart';
+import 'package:expensetracker/common/constant/constant_assets.dart';
+import 'package:expensetracker/common/wiidget/emoji_image.dart';
 import 'package:expensetracker/expense/services/category_services.dart';
 import 'package:expensetracker/expense/services/expenses_service.dart';
 import 'package:flutter/material.dart';
@@ -71,13 +74,13 @@ class _S extends State<AddExpenseScreen> {
     setState(() => _rows.removeAt(i));
   }
 
-  Color get _col => _isIncome ? kGreen : kPrimary;
+  Color get _col => _isIncome ? kGreen : AppColors.primaryColor;
 
   Color _fromHex(String h) {
     try {
       return Color(int.parse('FF${h.replaceAll('#', '')}', radix: 16));
     } catch (_) {
-      return kPrimary;
+      return AppColors.primaryColor;
     }
   }
 
@@ -200,7 +203,7 @@ class _S extends State<AddExpenseScreen> {
   //                               : 'Select all',
   //                           style: const TextStyle(
   //                             fontSize: 12,
-  //                             color: kPrimary,
+  //                             color: AppColors.primaryColor,
   //                           ),
   //                         ),
   //                       ),
@@ -328,11 +331,11 @@ class _S extends State<AddExpenseScreen> {
   //                           ),
   //                           decoration: BoxDecoration(
   //                             color: isSel
-  //                                 ? kPrimary.withOpacity(0.07)
+  //                                 ? AppColors.primaryColor.withOpacity(0.07)
   //                                 : context.c.card,
   //                             borderRadius: BorderRadius.circular(14),
   //                             border: Border.all(
-  //                               color: isSel ? kPrimary : context.c.border,
+  //                               color: isSel ? AppColors.primaryColor : context.c.border,
   //                               width: isSel ? 1.5 : 1,
   //                             ),
   //                           ),
@@ -344,12 +347,12 @@ class _S extends State<AddExpenseScreen> {
   //                                 height: 22,
   //                                 decoration: BoxDecoration(
   //                                   color: isSel
-  //                                       ? kPrimary
+  //                                       ? AppColors.primaryColor
   //                                       : Colors.transparent,
   //                                   shape: BoxShape.circle,
   //                                   border: Border.all(
   //                                     color: isSel
-  //                                         ? kPrimary
+  //                                         ? AppColors.primaryColor
   //                                         : context.c.border,
   //                                     width: 1.5,
   //                                   ),
@@ -367,7 +370,7 @@ class _S extends State<AddExpenseScreen> {
   //                                 width: 26,
   //                                 height: 26,
   //                                 decoration: BoxDecoration(
-  //                                   color: kPrimary.withOpacity(0.10),
+  //                                   color: AppColors.primaryColor.withOpacity(0.10),
   //                                   borderRadius: BorderRadius.circular(7),
   //                                 ),
   //                                 child: Center(
@@ -376,7 +379,7 @@ class _S extends State<AddExpenseScreen> {
   //                                     style: const TextStyle(
   //                                       fontSize: 10,
   //                                       fontWeight: FontWeight.w800,
-  //                                       color: kPrimary,
+  //                                       color: AppColors.primaryColor,
   //                                     ),
   //                                   ),
   //                                 ),
@@ -396,7 +399,7 @@ class _S extends State<AddExpenseScreen> {
   //                                 style: const TextStyle(
   //                                   fontSize: 13,
   //                                   fontWeight: FontWeight.w700,
-  //                                   color: kPrimary,
+  //                                   color: AppColors.primaryColor,
   //                                 ),
   //                               ),
   //                             ],
@@ -421,7 +424,7 @@ class _S extends State<AddExpenseScreen> {
   //                   label: sel.isEmpty
   //                       ? 'Tap items to select'
   //                       : 'Add ${sel.length} item${sel.length == 1 ? '' : 's'} as expenses',
-  //                   color: sel.isEmpty ? context.c.borderStrong : kPrimary,
+  //                   color: sel.isEmpty ? context.c.borderStrong : AppColors.primaryColor,
   //                   icon: Icons.add_rounded,
   //                   onTap: sel.isEmpty
   //                       ? () {}
@@ -483,10 +486,10 @@ class _S extends State<AddExpenseScreen> {
   //             width: 40,
   //             height: 40,
   //             decoration: BoxDecoration(
-  //               color: kPrimary.withOpacity(0.1),
+  //               color: AppColors.primaryColor.withOpacity(0.1),
   //               borderRadius: BorderRadius.circular(10),
   //             ),
-  //             child: const Icon(Icons.camera_alt_rounded, color: kPrimary),
+  //             child: const Icon(Icons.camera_alt_rounded, color: AppColors.primaryColor),
   //           ),
   //           title: const Text(
   //             'Camera',
@@ -565,12 +568,12 @@ class _S extends State<AddExpenseScreen> {
         //               height: 18,
         //               child: CircularProgressIndicator(
         //                 strokeWidth: 2,
-        //                 color: kPrimary,
+        //                 color: AppColors.primaryColor,
         //               ),
         //             )
         //           : const Icon(
         //               Icons.document_scanner_outlined,
-        //               color: kPrimary,
+        //               color: AppColors.primaryColor,
         //             ),
         //       tooltip: 'Scan bill',
         //       onPressed: _scanning ? null : _scanOpts,
@@ -671,7 +674,10 @@ class _S extends State<AddExpenseScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(cat.emoji, style: const TextStyle(fontSize: 22)),
+                        EmojiImage(
+                          value: cat.emoji,
+                          size: 20,
+                        ), // Text(cat.emoji, style: const TextStyle(fontSize: 22)),
                         const SizedBox(height: 4),
                         Text(
                           cat.name,
@@ -679,8 +685,8 @@ class _S extends State<AddExpenseScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400,
                             color: isSel ? col : c.textSub,
                           ),
                         ),
@@ -731,50 +737,34 @@ class _S extends State<AddExpenseScreen> {
               onChanged: () => setState(() {}),
             ),
           ),
-
-          // Add row button
-          GestureDetector(
-            onTap: _addRow,
-            child: Container(
-              margin: const EdgeInsets.only(top: 4),
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              decoration: BoxDecoration(
-                color: kPrimary.withOpacity(0.04),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: kPrimary.withOpacity(0.2)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.add_circle_outline_rounded,
-                    color: kPrimary,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'Add another item',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: kPrimary,
-                    ),
-                  ),
-                ],
-              ),
+          PrimaryButton(
+            onPressed: _addRow,
+            title: 'Add Another Items',
+            radius: 8,
+            height: 50,
+            textSize: 18,
+            color: AppColors.primaryColor,
+            icon: CommonSvgWidget(
+              svgName: Assets.add,
+              height: 18,
+              width: 18,
+              color: AppColors.white,
             ),
           ),
         ],
       ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18),
-        child: AppButton(
-          label: _rows.length == 1
+        child: PrimaryButton(
+          onPressed: _saveAll,
+          title: _rows.length == 1
               ? (_isIncome ? 'Save Income' : 'Save Expense')
               : 'Save $valid Item${valid == 1 ? '' : 's'}',
-          onTap: _saveAll,
+          radius: 8,
+          height: 50,
+          textSize: 18,
           color: _col,
-          icon: Icons.check_rounded,
+          icon: const Icon(Icons.check_rounded, color: Colors.white, size: 18),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -991,7 +981,7 @@ class _ItemRow extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        Text(_cur.emoji, style: const TextStyle(fontSize: 14)),
+                        EmojiImage(value: _cur.emoji, size: 20), //
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
@@ -1029,54 +1019,54 @@ class _ItemRow extends StatelessWidget {
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     builder: (_) => SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 10),
-          Container(
-            width: 36,
-            height: 4,
-            decoration: BoxDecoration(
-              color: ctx.c.border,
-              borderRadius: BorderRadius.circular(2),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 10),
+            Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: ctx.c.border,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          const Text(
-            'Select Category',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 4),
-          ...cats.map((cat) {
-            final isSel = row.catName == cat.name;
-            final col = fromHex(cat.color);
-            return ListTile(
-              leading: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: col.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(10),
+            const SizedBox(height: 12),
+            const Text(
+              'Select Category',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 4),
+            ...cats.map((cat) {
+              final isSel = row.catName == cat.name;
+              final col = fromHex(cat.color);
+              return ListTile(
+                leading: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: col.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(child: EmojiImage(value: cat.emoji, size: 18)),
                 ),
-                child: Center(
-                  child: Text(cat.emoji, style: const TextStyle(fontSize: 18)),
+                title: Text(
+                  cat.name,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
-              ),
-              title: Text(
-                cat.name,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              trailing: isSel
-                  ? Icon(Icons.check_circle_rounded, color: col)
-                  : null,
-              onTap: () {
-                onCatChange(cat.name);
-                Navigator.pop(ctx);
-              },
-            );
-          }),
-          const SizedBox(height: 8),
-        ],
+                trailing: isSel
+                    ? Icon(Icons.check_circle_rounded, color: col)
+                    : null,
+                onTap: () {
+                  onCatChange(cat.name);
+                  Navigator.pop(ctx);
+                },
+              );
+            }),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     ),
   );

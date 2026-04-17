@@ -103,12 +103,12 @@ class _State extends State<LockScreen> with WidgetsBindingObserver {
                 height: 88,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [kPrimary, Color(0xFF9D8FFF)],
+                    colors: [AppColors.primaryColor, Color(0xFF9D8FFF)],
                   ),
                   borderRadius: BorderRadius.circular(28),
                   boxShadow: [
                     BoxShadow(
-                      color: kPrimary.withOpacity(0.4),
+                      color: AppColors.primaryColor.withOpacity(0.4),
                       blurRadius: 28,
                       offset: const Offset(0, 10),
                     ),
@@ -136,17 +136,17 @@ class _State extends State<LockScreen> with WidgetsBindingObserver {
                   width: 72,
                   height: 72,
                   decoration: BoxDecoration(
-                    color: kPrimary.withOpacity(0.12),
+                    color: AppColors.primaryColor.withOpacity(0.12),
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: kPrimary.withOpacity(0.4),
+                      color: AppColors.primaryColor.withOpacity(0.4),
                       width: 2,
                     ),
                   ),
                   child: const Icon(
                     Icons.fingerprint_rounded,
                     size: 38,
-                    color: kPrimary,
+                    color: AppColors.primaryColor,
                   ),
                 ),
               ),

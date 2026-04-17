@@ -151,12 +151,12 @@ class _State extends State<ProfileScreen> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: kPrimary.withOpacity(0.1),
+                        color: AppColors.primaryColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
                         Icons.cloud_sync_rounded,
-                        color: kPrimary,
+                        color: AppColors.primaryColor,
                         size: 20,
                       ),
                     ),
@@ -185,7 +185,7 @@ class _State extends State<ProfileScreen> {
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: kPrimary,
+                          color: AppColors.primaryColor,
                         ),
                       )
                     else
@@ -196,7 +196,7 @@ class _State extends State<ProfileScreen> {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: kPrimary,
+                            color: AppColors.primaryColor,
                           ),
                         ),
                       ),
@@ -271,9 +271,14 @@ class _Avatar extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: url.isEmpty
-            ? const LinearGradient(colors: [kPrimary, Color(0xFF9D8FFF)])
+            ? const LinearGradient(
+                colors: [AppColors.primaryColor, Color(0xFF9D8FFF)],
+              )
             : null,
-        border: Border.all(color: kPrimary.withOpacity(0.3), width: 2),
+        border: Border.all(
+          color: AppColors.primaryColor.withOpacity(0.3),
+          width: 2,
+        ),
       ),
       child: url.isNotEmpty
           ? ClipOval(

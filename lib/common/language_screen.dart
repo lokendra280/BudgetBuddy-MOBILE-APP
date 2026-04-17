@@ -92,10 +92,12 @@ class _State extends State<LanguageScreen> {
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: sel ? kPrimary.withOpacity(0.08) : c.card,
+                      color: sel
+                          ? AppColors.primaryColor.withOpacity(0.08)
+                          : c.card,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: sel ? kPrimary : c.border,
+                        color: sel ? AppColors.primaryColor : c.border,
                         width: sel ? 1.5 : 1,
                       ),
                       boxShadow: !context.isDark && !sel
@@ -121,7 +123,9 @@ class _State extends State<LanguageScreen> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
-                                  color: sel ? kPrimary : context.textPrimary,
+                                  color: sel
+                                      ? AppColors.primaryColor
+                                      : context.textPrimary,
                                 ),
                               ),
                               Text(
@@ -139,7 +143,7 @@ class _State extends State<LanguageScreen> {
                             width: 22,
                             height: 22,
                             decoration: const BoxDecoration(
-                              color: kPrimary,
+                              color: AppColors.primaryColor,
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -196,7 +200,7 @@ class _StepIndicator extends StatelessWidget {
                 height: 3,
                 margin: EdgeInsets.only(right: i < total - 1 ? 6 : 0),
                 decoration: BoxDecoration(
-                  color: i < step ? kPrimary : c.border,
+                  color: i < step ? AppColors.primaryColor : c.border,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),

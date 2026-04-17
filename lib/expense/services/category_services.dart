@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:expensetracker/common/constant/constant_assets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -32,7 +33,6 @@ class AppCategory {
 }
 
 // ── Supabase SQL (run once) ────────────────────────────────────────────────────
-
 
 class CategoryService {
   static const _key = 'categories_v1';
@@ -97,70 +97,70 @@ class CategoryService {
     AppCategory(
       id: 'food',
       name: 'Food',
-      emoji: '🍜',
+      emoji: Assets.food,
       color: '#6366F1',
       isIncome: false,
     ),
     AppCategory(
       id: 'trans',
       name: 'Transport',
-      emoji: '🚗',
+      emoji: Assets.transport,
       color: '#F43F5E',
       isIncome: false,
     ),
     AppCategory(
       id: 'shop',
       name: 'Shopping',
-      emoji: '🛍',
+      emoji: Assets.shopping,
       color: '#10B981',
       isIncome: false,
     ),
     AppCategory(
       id: 'hlth',
       name: 'Health',
-      emoji: '💊',
+      emoji: Assets.health,
       color: '#F59E0B',
       isIncome: false,
     ),
     AppCategory(
       id: 'bill',
       name: 'Bills',
-      emoji: '⚡',
+      emoji: Assets.bills,
       color: '#3B82F6',
       isIncome: false,
     ),
     AppCategory(
       id: 'ent',
       name: 'Entertainment',
-      emoji: '🎬',
+      emoji: Assets.entertainment,
       color: '#EC4899',
       isIncome: false,
     ),
     AppCategory(
       id: 'edu',
       name: 'Education',
-      emoji: '📚',
+      emoji: Assets.education,
       color: '#8B5CF6',
       isIncome: false,
     ),
     AppCategory(
       id: 'trav',
       name: 'Travel',
-      emoji: '✈️',
+      emoji: Assets.travel,
       color: '#14B8A6',
       isIncome: false,
     ),
     AppCategory(
       id: 'groc',
       name: 'Groceries',
-      emoji: '🛒',
+      emoji: Assets.groceries,
       color: '#22C55E',
       isIncome: false,
     ),
     AppCategory(
       id: 'oth',
       name: 'Other',
-      emoji: '📦',
+      emoji: Assets.other,
       color: '#64748B',
       isIncome: false,
     ),
@@ -169,35 +169,35 @@ class CategoryService {
     AppCategory(
       id: 'sal',
       name: 'Salary',
-      emoji: '💼',
+      emoji: Assets.salary,
       color: '#10B981',
       isIncome: true,
     ),
     AppCategory(
       id: 'frl',
       name: 'Freelance',
-      emoji: '💻',
+      emoji: Assets.freelance,
       color: '#6366F1',
       isIncome: true,
     ),
     AppCategory(
       id: 'biz',
       name: 'Business',
-      emoji: '🏢',
+      emoji: Assets.business,
       color: '#F59E0B',
       isIncome: true,
     ),
     AppCategory(
       id: 'inv',
       name: 'Investment',
-      emoji: '📈',
+      emoji: Assets.investment,
       color: '#3B82F6',
       isIncome: true,
     ),
     AppCategory(
       id: 'gft',
       name: 'Gift',
-      emoji: '🎁',
+      emoji: Assets.gift,
       color: '#EC4899',
       isIncome: true,
     ),

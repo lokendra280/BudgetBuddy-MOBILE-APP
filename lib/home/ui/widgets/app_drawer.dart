@@ -3,6 +3,7 @@ import 'package:expensetracker/auth/services/auth_service.dart';
 import 'package:expensetracker/auth/ui/login_screen.dart';
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
+import 'package:expensetracker/common/constant/constant_assets.dart';
 import 'package:expensetracker/expense/services/expenses_service.dart';
 import 'package:expensetracker/home/ui/inslight_screen.dart';
 import 'package:expensetracker/home/ui/widgets/drawer_button.dart';
@@ -31,8 +32,8 @@ class AppDrawer extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    kPrimary.withOpacity(0.12),
-                    kPrimary.withOpacity(0.02),
+                    AppColors.primaryColor.withOpacity(0.12),
+                    AppColors.primaryColor.withOpacity(0.02),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -54,10 +55,10 @@ class AppDrawer extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: const LinearGradient(
-                          colors: [kPrimary, Color(0xFF818CF8)],
+                          colors: [AppColors.primaryColor, Color(0xFF818CF8)],
                         ),
                         border: Border.all(
-                          color: kPrimary.withOpacity(0.3),
+                          color: AppColors.primaryColor.withOpacity(0.3),
                           width: 2,
                         ),
                       ),
@@ -104,25 +105,20 @@ class AppDrawer extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
-                  DrawsButton(Icons.bar_chart_rounded, 'Insights', null, () {
+                  DrawsButton(Assets.insights, 'Insights', null, () {
                     Navigator.pop(context);
                     onPush(const InsightsScreen());
                   }),
-                  DrawsButton(
-                    Icons.auto_awesome_rounded,
-                    'AI Insights',
-                    null,
-                    () {
-                      Navigator.pop(context);
-                      onPush(const AiScreen());
-                    },
-                  ),
+                  DrawsButton(Assets.ai, 'AI Insights', null, () {
+                    Navigator.pop(context);
+                    onPush(const AiScreen());
+                  }),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     child: Divider(),
                   ),
 
-                  DrawsButton(Icons.share_rounded, 'Share Report', kGreen, () {
+                  DrawsButton(Assets.share, 'Share Report', kGreen, () {
                     Navigator.pop(context);
                     onShare();
                   }),
@@ -130,19 +126,24 @@ class AppDrawer extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     child: Divider(),
                   ),
-                  DrawsButton(Icons.settings_outlined, 'Settings', null, () {
+                  DrawsButton(Assets.settings, 'Settings', null, () {
                     Navigator.pop(context);
                     onPush(const SettingsScreen());
                   }),
-                  DrawsButton(Icons.info_outline_rounded, 'About', null, () {
+                  DrawsButton(Assets.about, 'About', null, () {
                     Navigator.pop(context);
                     onPush(const AboutScreen());
                   }),
                   if (!isLogged)
-                    DrawsButton(Icons.login_rounded, 'Sign In', kPrimary, () {
-                      Navigator.pop(context);
-                      onPush(const LoginScreen());
-                    }),
+                    DrawsButton(
+                      Assets.login,
+                      'Sign In',
+                      AppColors.primaryColor,
+                      () {
+                        Navigator.pop(context);
+                        onPush(const LoginScreen());
+                      },
+                    ),
                 ],
               ),
             ),

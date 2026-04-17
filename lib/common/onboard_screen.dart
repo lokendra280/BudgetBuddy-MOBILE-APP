@@ -120,7 +120,7 @@ class _State extends State<OnboardScreen> {
                       width: i == _page ? 24 : 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: i == _page ? kPrimary : c.border,
+                        color: i == _page ? AppColors.primaryColor : c.border,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),

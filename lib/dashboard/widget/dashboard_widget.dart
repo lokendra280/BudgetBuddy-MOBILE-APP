@@ -35,9 +35,12 @@ class NavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.c;
+
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
+
       elevation: elevation,
       selectedItemColor: AppColors.primaryColor,
       unselectedItemColor: AppColors.darkGrey,
@@ -164,7 +167,7 @@ class _DashboardWidgetState extends State<DashboardWidget>
                     ? AppColors.primaryColor
                     : AppColors.darkGrey,
               ),
-              label: "Ai",
+              label: "AI Insights",
             ),
           ],
         ),

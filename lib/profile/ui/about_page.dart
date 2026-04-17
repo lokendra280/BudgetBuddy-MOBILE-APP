@@ -3,7 +3,6 @@ import 'package:expensetracker/common/common_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-
 class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
   @override
@@ -58,12 +57,12 @@ class _State extends State<AboutScreen> {
                     gradient: const LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [kPrimary, Color(0xFF818CF8)],
+                      colors: [AppColors.primaryColor, Color(0xFF818CF8)],
                     ),
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: kPrimary.withOpacity(0.4),
+                        color: AppColors.primaryColor.withOpacity(0.4),
                         blurRadius: 28,
                         offset: const Offset(0, 8),
                       ),
@@ -124,7 +123,7 @@ class _State extends State<AboutScreen> {
           _Section('Target Markets'),
           Row(
             children: [
-              _MarketCard('🇳🇵', 'Nepal', 'Primary', kPrimary),
+              _MarketCard('🇳🇵', 'Nepal', 'Primary', AppColors.primaryColor),
               const SizedBox(width: 10),
               _MarketCard('🇮🇳', 'India', 'Growing', kAmber),
               const SizedBox(width: 10),
@@ -145,7 +144,7 @@ class _State extends State<AboutScreen> {
                   '🤖',
                   'AI Insights',
                   'Smart spending suggestions & pattern detection',
-                  kPrimary,
+                  AppColors.primaryColor,
                 ),
                 _Divider(),
                 _FeatureRow(
@@ -354,9 +353,9 @@ class _TechChip extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
     decoration: BoxDecoration(
-      color: kPrimary.withOpacity(0.06),
+      color: AppColors.primaryColor.withOpacity(0.06),
       borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: kPrimary.withOpacity(0.15)),
+      border: Border.all(color: AppColors.primaryColor.withOpacity(0.15)),
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,

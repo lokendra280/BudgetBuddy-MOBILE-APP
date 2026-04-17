@@ -95,7 +95,7 @@ class _State extends State<InsightsScreen> {
               icon: const Icon(
                 Icons.ios_share_rounded,
                 size: 20,
-                color: kPrimary,
+                color: AppColors.primaryColor,
               ),
               onPressed: _share,
             ),
@@ -245,7 +245,7 @@ class _Tab extends StatelessWidget {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(vertical: 9),
         decoration: BoxDecoration(
-          color: current == idx ? kPrimary : Colors.transparent,
+          color: current == idx ? AppColors.primaryColor : Colors.transparent,
           borderRadius: BorderRadius.circular(9),
         ),
         child: Text(
@@ -390,7 +390,10 @@ class _BarChart extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
-                        colors: [kPrimary.withOpacity(0.4), kPrimary],
+                        colors: [
+                          AppColors.primaryColor.withOpacity(0.4),
+                          AppColors.primaryColor,
+                        ],
                       ),
                     ),
                   ],

@@ -172,9 +172,11 @@ class _State extends State<OtpScreen> {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: kPrimary.withOpacity(0.1),
+                color: AppColors.primaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: kPrimary.withOpacity(0.3)),
+                border: Border.all(
+                  color: AppColors.primaryColor.withOpacity(0.3),
+                ),
               ),
               child: const Center(
                 child: Text('📧', style: TextStyle(fontSize: 28)),
@@ -248,7 +250,7 @@ class _State extends State<OtpScreen> {
               child: ElevatedButton(
                 onPressed: _loading ? null : _verify,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: kPrimary,
+                  backgroundColor: AppColors.primaryColor,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -301,12 +303,12 @@ class _State extends State<OtpScreen> {
                               style: TextStyle(
                                 color: _resendSeconds > 0
                                     ? c.textMuted
-                                    : kPrimary,
+                                    : AppColors.primaryColor,
                                 fontWeight: FontWeight.w700,
                                 decoration: _resendSeconds == 0
                                     ? TextDecoration.underline
                                     : TextDecoration.none,
-                                decorationColor: kPrimary,
+                                decorationColor: AppColors.primaryColor,
                               ),
                             ),
                           ],
@@ -380,7 +382,10 @@ class _OtpBox extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: kPrimary, width: 2),
+              borderSide: const BorderSide(
+                color: AppColors.primaryColor,
+                width: 2,
+              ),
             ),
           ),
         ),

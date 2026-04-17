@@ -157,7 +157,7 @@ class AppButton extends StatelessWidget {
     child: ElevatedButton(
       onPressed: loading ? null : onTap,
       style: ElevatedButton.styleFrom(
-        backgroundColor: color ?? kPrimary,
+        backgroundColor: color ?? AppColors.primaryColor,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
         elevation: 0,
@@ -241,7 +241,10 @@ class InputField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(13),
-          borderSide: const BorderSide(color: kPrimary, width: 1.5),
+          borderSide: const BorderSide(
+            color: AppColors.primaryColor,
+            width: 1.5,
+          ),
         ),
       ),
     );
@@ -340,7 +343,7 @@ class WeekCompareBar extends StatelessWidget {
     final max = [thisWeek, lastWeek, 1.0].reduce((a, b) => a > b ? a : b);
     return Row(
       children: [
-        _WBar('This week', thisWeek, thisWeek / max, kPrimary),
+        _WBar('This week', thisWeek, thisWeek / max, AppColors.primaryColor),
         const SizedBox(width: 12),
         _WBar('Last week', lastWeek, lastWeek / max, context.c.textMuted),
       ],
@@ -569,7 +572,7 @@ class ShareCard extends StatelessWidget {
         colors: [Color(0xFF1A1040), Color(0xFF0D0D1E)],
       ),
       borderRadius: BorderRadius.circular(24),
-      border: Border.all(color: kPrimary.withOpacity(0.3)),
+      border: Border.all(color: AppColors.primaryColor.withOpacity(0.3)),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -583,7 +586,7 @@ class ShareCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: kPrimary,
+                color: AppColors.primaryColor,
               ),
             ),
             const Spacer(),
@@ -607,7 +610,7 @@ class ShareCard extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: kPrimary.withOpacity(0.1),
+            color: AppColors.primaryColor.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
