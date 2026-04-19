@@ -10,7 +10,6 @@ import 'package:expensetracker/common/wrapper/update_wrapper.dart';
 import 'package:expensetracker/expense/models/expense.dart';
 import 'package:expensetracker/expense/services/category_services.dart';
 import 'package:expensetracker/expense/services/hive_migrate_service.dart';
-import 'package:expensetracker/home/ui/pages/home_screen.dart';
 import 'package:expensetracker/l10n/app_localizations.dart';
 import 'package:expensetracker/splash/ui/splash_page.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +74,7 @@ class SpendSenseApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        home: UpdateWrapper(child: const SplashScreen()),
+        home: const SplashScreen(),
       ),
     ),
   );

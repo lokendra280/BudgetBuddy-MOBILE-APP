@@ -1,7 +1,6 @@
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
 import 'package:expensetracker/common/services/ads_service.dart';
-import 'package:expensetracker/common/services/premium_service.dart';
 import 'package:expensetracker/expense/models/expense.dart';
 import 'package:expensetracker/expense/services/expenses_service.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +27,7 @@ class _State extends State<InsightsScreen> {
   @override
   void initState() {
     super.initState();
-    _advancedUnlocked = PremiumService.isPremium;
+    // _advancedUnlocked = PremiumService.isPremium;
     AdService.preloadRewarded();
     if (widget.showShare) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _share());

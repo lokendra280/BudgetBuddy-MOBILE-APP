@@ -3,6 +3,7 @@ import 'package:expensetracker/auth/ui/lock_screen.dart';
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/onboard_screen.dart';
 import 'package:expensetracker/common/services/app_version_service.dart';
+import 'package:expensetracker/dashboard/pages/dashboard_page.dart';
 import 'package:expensetracker/dashboard/widget/dashboard_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -41,7 +42,7 @@ class _State extends State<SplashScreen> with SingleTickerProviderStateMixin {
     final onboarded = await AppVersionService.isOnboarded();
     final bioEnabled = await BiometricService.isEnabled;
 
-    Widget dest = onboarded ? const DashboardWidget() : const OnboardScreen();
+    Widget dest = onboarded ? const DashboardPage() : const OnboardScreen();
     if (bioEnabled && onboarded) dest = LockScreen(child: dest);
 
     Navigator.pushReplacement(

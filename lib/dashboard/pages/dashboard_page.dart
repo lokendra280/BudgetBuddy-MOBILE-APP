@@ -1,3 +1,4 @@
+import 'package:expensetracker/common/wrapper/update_wrapper.dart';
 import 'package:expensetracker/dashboard/widget/dashboard_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -6,6 +7,6 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const DashboardWidget();
+    return UpdateWrapper(child: const DashboardWidget());
   }
 }

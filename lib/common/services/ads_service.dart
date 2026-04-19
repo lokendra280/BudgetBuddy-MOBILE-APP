@@ -48,13 +48,13 @@ class AdService {
   }
 
   static void trackAction() {
-    if (PremiumService.isPremium) return;
+    // if (PremiumService.isPremium) return;
     _actionCount++;
     if (_actionCount % 3 == 0) showInterstitial();
   }
 
   static void showInterstitial({VoidCallback? onDismissed}) {
-    if (PremiumService.isPremium || _interstitial == null) return;
+    // if (PremiumService.isPremium || _interstitial == null) return;
     _interstitial!.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: (ad) {
         ad.dispose();
