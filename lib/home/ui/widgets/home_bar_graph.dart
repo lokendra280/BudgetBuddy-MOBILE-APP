@@ -1,20 +1,23 @@
 import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/expense/services/expenses_service.dart';
+import 'package:expensetracker/expense/providers/expense_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeBarGraph extends StatelessWidget {
+class HomeBarGraph extends ConsumerWidget {
   final List<({double income, double expense})> data;
   const HomeBarGraph({super.key, required this.data});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final fmt = ref.watch(fmtProvider);
     final maxV = data.fold(
       0.0,
       (m, d) => [m, d.income, d.expense].reduce((a, b) => a > b ? a : b),
     );
     final now = DateTime.now();
     const labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
     if (maxV == 0) {
       return SizedBox(
         height: 80,
@@ -26,6 +29,7 @@ class HomeBarGraph extends StatelessWidget {
         ),
       );
     }
+
     return SizedBox(
       height: 130,
       child: BarChart(
@@ -77,11 +81,11 @@ class HomeBarGraph extends StatelessWidget {
                 showTitles: true,
                 reservedSize: 22,
                 getTitlesWidget: (v, _) {
-                  final d = now.subtract(Duration(days: 6 - v.toInt()));
-                  final isToday = d.day == now.day && d.month == now.month;
-                  final lbl = labels[(d.weekday - 1) % 7];
+                  final day = now.subtract(Duration(days: 6 - v.toInt()));
+                  final isToday = day.day == now.day && day.month == now.month;
+                  final label = labels[(day.weekday - 1) % 7];
                   return Text(
-                    lbl,
+                    label,
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: isToday ? FontWeight.w800 : FontWeight.w500,
@@ -96,9 +100,8 @@ class HomeBarGraph extends StatelessWidget {
           ),
           barTouchData: BarTouchData(
             touchTooltipData: BarTouchTooltipData(
-              tooltipBorderRadius: BorderRadius.circular(6),
               getTooltipItem: (group, _, rod, ri) => BarTooltipItem(
-                '${ri == 0 ? '↓' : '↑'} ${ExpenseService.fmt(rod.toY)}',
+                '${ri == 0 ? '↓' : '↑'} ${fmt(rod.toY)}',
                 TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,

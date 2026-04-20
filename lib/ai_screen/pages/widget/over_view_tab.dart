@@ -1,40 +1,42 @@
-import 'package:expensetracker/ai_screen/pages/widget/burn_stat.dart';
-import 'package:expensetracker/ai_screen/services/ai_services.dart';
+import 'package:expensetracker/ai_screen/pages/widget/shared_wdiget.dart';
+import 'package:expensetracker/ai_screen/providers/ai_providers.dart';
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
-import 'package:expensetracker/expense/services/expenses_service.dart';
+import 'package:expensetracker/expense/providers/expense_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class OverViewTab extends StatelessWidget {
-  const OverViewTab({super.key});
+class OverviewTab extends ConsumerWidget {
+  const OverviewTab({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final score = AiService.healthScore();
-    final burn = AiService.burnRate();
-    final alerts = AiService.alerts();
-    final insights = AiService.suggestions();
-
+  Widget build(BuildContext context, WidgetRef ref) {
+    final score = ref.watch(healthScoreProvider);
+    final burn = ref.watch(burnRateProvider);
+    final alerts = ref.watch(alertsProvider);
+    final insights = ref.watch(aiSuggestionsProvider);
+    final subs = ref.watch(subscriptionsProvider);
+    final rec = ref.watch(recurringProvider);
+    final fmt = ref.watch(fmtProvider);
     final c = context.c;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(18, 16, 18, 40),
       children: [
-        // ── Financial Health Score ───────────────────────────────────────────
+        // ── Financial Health Score ─────────────────────────────────────────────
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                score.color.withOpacity(0.15),
-                score.color.withOpacity(0.03),
+                score.color.withOpacity(0.2),
+                score.color.withOpacity(0.1),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: score.color.withOpacity(0.3)),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             children: [
@@ -49,7 +51,7 @@ class OverViewTab extends StatelessWidget {
                       value: score.score / 100,
                       strokeWidth: 8,
                       backgroundColor: c.border,
-                      valueColor: AlwaysStoppedAnimation<Color>(score.color),
+                      valueColor: AlwaysStoppedAnimation(score.color),
                     ),
                     Column(
                       mainAxisSize: MainAxisSize.min,
@@ -76,8 +78,6 @@ class OverViewTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 16),
-
-              // Details
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +100,6 @@ class OverViewTab extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-
                     ...score.factors.map(
                       (f) => Padding(
                         padding: const EdgeInsets.only(bottom: 6),
@@ -134,16 +133,10 @@ class OverViewTab extends StatelessWidget {
                                     ],
                                   ),
                                   const SizedBox(height: 2),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(3),
-                                    child: LinearProgressIndicator(
-                                      value: f.score / 100,
-                                      minHeight: 4,
-                                      backgroundColor: c.border,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        score.color,
-                                      ),
-                                    ),
+                                  ProgressBar(
+                                    f.score / 100,
+                                    score.color,
+                                    height: 4,
                                   ),
                                 ],
                               ),
@@ -161,35 +154,22 @@ class OverViewTab extends StatelessWidget {
 
         const SizedBox(height: 14),
 
-        // ── Burn Rate ───────────────────────────────────────────────
+        // ── Burn Rate ──────────────────────────────────────────────────────────
         AppCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: const [
-                  Text('🔥', style: TextStyle(fontSize: 18)),
-                  SizedBox(width: 8),
-                  Text(
-                    'Burn Rate & Runway',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                  ),
-                ],
-              ),
+              const IconLabel('🔥', 'Burn Rate & Runway'),
               const SizedBox(height: 14),
               Row(
                 children: [
-                  BurnStatWidget(
-                    'Daily Spend',
-                    ExpenseService.fmt(burn.dailySpend),
-                    kAccent,
-                  ),
-                  BurnStatWidget(
+                  StatCol('Daily Spend', fmt(burn.dailySpend), kAccent),
+                  StatCol(
                     'Monthly Rate',
-                    ExpenseService.fmt(burn.monthlySpend),
+                    fmt(burn.monthlySpend),
                     AppColors.primaryColor,
                   ),
-                  BurnStatWidget(
+                  StatCol(
                     'Runway',
                     '${burn.runwayDays} days',
                     burn.runwayDays < 30
@@ -200,17 +180,76 @@ class OverViewTab extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 14),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: (burn.runwayDays < 30 ? kAccent : kGreen).withOpacity(
+                    0.07,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      burn.runwayDays < 30
+                          ? '⚠️'
+                          : burn.runwayDays < 90
+                          ? '💡'
+                          : '✅',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        burn.runwayDays < 30
+                            ? 'Critical: runs out in ${burn.runwayDays} days at this rate'
+                            : burn.runwayDays < 90
+                            ? 'Moderate: ${burn.runwayDays} day runway. Build emergency fund.'
+                            : 'Healthy ${burn.runwayDays}-day runway 🎉',
+                        style: TextStyle(
+                          fontSize: 12,
+                          height: 1.4,
+                          fontWeight: FontWeight.w600,
+                          color: burn.runwayDays < 30
+                              ? kAccent
+                              : burn.runwayDays < 90
+                              ? kAmber
+                              : kGreen,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
 
         const SizedBox(height: 14),
 
-        // ── Alerts ───────────────────────────────────────────────
+        // ── Smart Alerts ───────────────────────────────────────────────────────
         if (alerts.isNotEmpty) ...[
-          const SectionLabel('Smart Alerts'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const SectionLabel('Smart Alerts'),
+              Chip(
+                label: Text(
+                  '${alerts.length}',
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: kAccent,
+                  ),
+                ),
+                backgroundColor: kAccent.withOpacity(0.1),
+                side: BorderSide.none,
+                padding: EdgeInsets.zero,
+              ),
+            ],
+          ),
           const SizedBox(height: 10),
-
           ...alerts.map(
             (a) => Padding(
               padding: const EdgeInsets.only(bottom: 8),
@@ -219,49 +258,158 @@ class OverViewTab extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Color(a.severityColor).withOpacity(0.07),
                   borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: Color(a.severityColor).withOpacity(0.25),
+                  ),
                 ),
                 child: Row(
                   children: [
                     Text(a.emoji, style: const TextStyle(fontSize: 20)),
                     const SizedBox(width: 12),
-                    Expanded(child: Text(a.title)),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            a.title,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: Color(a.severityColor),
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            a.body,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: c.textMuted,
+                              height: 1.4,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
           ),
+          const SizedBox(height: 6),
         ],
 
-        const SizedBox(height: 14),
+        // ── AI Spending Insights ───────────────────────────────────────────────
+        const SectionLabel('AI Spending Insights'),
+        const SizedBox(height: 10),
+        if (insights.isEmpty)
+          const EmptyCard(
+            '✨',
+            'Add more expenses',
+            'We\'ll analyse patterns once you have more data.',
+          )
+        else
+          ...insights.map(
+            (s) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: AppCard(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    EmojiBox(s.emoji, Color(s.color)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            s.title,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            s.body,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: c.textMuted,
+                              height: 1.4,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
 
-        // ── Subscriptions ─────────────────────────────────────────
+        // ── Subscriptions + Recurring ──────────────────────────────────────────
+        const SizedBox(height: 8),
         const SectionLabel('Subscriptions & Recurring'),
         const SizedBox(height: 10),
-
-        ...() {
-          final subs = AiService.detectSubscriptions();
-          final rec = AiService.detectRecurring();
-
-          final all = [
-            ...subs.map((s) => (s.name, s.emoji, s.amount, 'Sub')),
-            ...rec
-                .where((r) => !subs.any((s) => s.name == r.title))
-                .map(
-                  (r) => (
-                    r.title,
-                    r.emoji,
-                    r.avgAmount,
-                    '~${DateFormat('MMM d').format(r.nextEstimate)}',
-                  ),
+        // combine subscriptions and recurring items, take up to 5 and render each as a card
+        ...[...subs, ...rec].take(5).map(
+          (i) {
+            final dyn = i as dynamic;
+            final title = dyn.title ?? dyn.name ?? dyn.label ?? '';
+            final subtitle = dyn.schedule ?? dyn.period ?? dyn.recurring ?? '';
+            final emoji = (dyn.emoji ?? '💳') as String;
+            final color = dyn.color != null ? Color(dyn.color) : AppColors.primaryColor.withOpacity(0.12);
+            final amountVal = dyn.amount ?? dyn.price ?? dyn.cost ?? 0;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: AppCard(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 11,
                 ),
-          ];
-
-          if (all.isEmpty) {
-            return [AppCard(child: Text('No recurring expenses'))];
-          }
-
-          return all.map((item) => AppCard(child: Text(item.$1)));
-        }(),
+                child: Row(
+                  children: [
+                    EmojiBox(
+                      emoji,
+                      color,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            subtitle,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: c.textMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      fmt(amountVal),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ).toList(),
       ],
     );
   }

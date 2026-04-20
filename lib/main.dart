@@ -1,13 +1,9 @@
-import 'package:expensetracker/auth/ui/lock_screen.dart';
 import 'package:expensetracker/common/app_theme.dart';
+import 'package:expensetracker/common/hive_storages/hive_storage.dart';
 import 'package:expensetracker/common/navigation_service.dart';
-import 'package:expensetracker/common/onboard_screen.dart';
+import 'package:expensetracker/common/providers/theme_provider.dart';
 import 'package:expensetracker/common/services/ads_service.dart';
-import 'package:expensetracker/common/services/lang_provider.dart';
 import 'package:expensetracker/common/services/notification_service.dart';
-import 'package:expensetracker/common/theme_provider.dart';
-import 'package:expensetracker/common/wrapper/update_wrapper.dart';
-import 'package:expensetracker/expense/models/expense.dart';
 import 'package:expensetracker/expense/services/category_services.dart';
 import 'package:expensetracker/expense/services/hive_migrate_service.dart';
 import 'package:expensetracker/l10n/app_localizations.dart';
@@ -15,8 +11,8 @@ import 'package:expensetracker/splash/ui/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -27,55 +23,43 @@ void main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
   await Hive.initFlutter();
-  Hive.registerAdapter(ExpenseAdapter());
-  Hive.registerAdapter(BudgetAdapter());
-  await Hive.openBox<Expense>('expenses');
-  await Hive.openBox<Budget>('budget');
-  // Safe Hive init with schema migration — FIXES Play Store crash
+  await HiveStorage.init();
+
   await HiveMigrationService.initSafely();
-  // category fetch + cache
   await CategoryService.init();
-  // Ads + notifications
   await AdService.init();
   await NotificationService.init();
   AdService.preloadInterstitial();
   AdService.preloadRewarded();
 
-  // preferences
-  await ThemeProvider.init();
-  await LangProvider.init();
-  final prefs = await SharedPreferences.getInstance();
-  final onboarded = prefs.getBool('onboarded') ?? false;
-
-  runApp(SpendSenseApp(onboarded: onboarded));
+  runApp(ProviderScope(child: SpendSenseApp()));
 }
 
-class SpendSenseApp extends StatelessWidget {
-  final bool onboarded;
-  const SpendSenseApp({super.key, required this.onboarded});
+class SpendSenseApp extends ConsumerWidget {
+  const SpendSenseApp({super.key});
 
   @override
-  Widget build(BuildContext context) => ValueListenableBuilder<ThemeMode>(
-    valueListenable: ThemeProvider.notifier,
-    builder: (_, themeMode, __) => ValueListenableBuilder<Locale>(
-      valueListenable: LangProvider.notifier,
-      builder: (_, locale, __) => MaterialApp(
-        title: 'SpendSense',
-        debugShowCheckedModeBanner: false,
-        themeMode: themeMode,
-        theme: buildTheme(false),
-        darkTheme: buildTheme(true),
-        locale: locale,
-        supportedLocales: LangProvider.supported,
-        navigatorKey: NavigationService.navigationKey,
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        home: const SplashScreen(),
-      ),
-    ),
-  );
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Read theme + locale from Riverpod providers
+    final themeMode = ref.watch(themeProvider);
+    final locale = ref.watch(localeProvider);
+
+    return MaterialApp(
+      navigatorKey: NavigationService.navigationKey,
+      title: 'Budget Buddy',
+      debugShowCheckedModeBanner: false,
+      themeMode: themeMode,
+      theme: buildTheme(false), // light
+      darkTheme: buildTheme(true), // dark
+      locale: locale,
+      supportedLocales: LocaleNotifier.supported,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      home: const SplashScreen(),
+    );
+  }
 }

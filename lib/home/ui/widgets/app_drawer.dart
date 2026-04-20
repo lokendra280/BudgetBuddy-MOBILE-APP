@@ -1,32 +1,39 @@
 import 'package:expensetracker/ai_screen/pages/ai_screen.dart';
-import 'package:expensetracker/auth/services/auth_service.dart';
+import 'package:expensetracker/auth/providers/auth_provider.dart';
 import 'package:expensetracker/auth/ui/login_screen.dart';
 import 'package:expensetracker/common/app_theme.dart';
+import 'package:expensetracker/common/common_svg_widget.dart';
 import 'package:expensetracker/common/common_widget.dart';
 import 'package:expensetracker/common/constant/constant_assets.dart';
-import 'package:expensetracker/expense/services/expenses_service.dart';
+import 'package:expensetracker/expense/providers/expense_provider.dart';
+import 'package:expensetracker/expense/ui/statemet_screen.dart';
 import 'package:expensetracker/home/ui/inslight_screen.dart';
-import 'package:expensetracker/home/ui/widgets/drawer_button.dart';
 import 'package:expensetracker/profile/ui/about_page.dart';
 import 'package:expensetracker/profile/ui/profile_screen.dart';
 import 'package:expensetracker/profile/ui/setting_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AppDrawer extends StatelessWidget {
+class AppDrawer extends ConsumerWidget {
   final void Function(Widget) onPush;
   final VoidCallback onShare;
   const AppDrawer({super.key, required this.onPush, required this.onShare});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
-    final isLogged = AuthService.isLoggedIn;
+    final isLogged = ref.watch(isLoggedInProvider);
+    final name = ref.watch(userNameProvider);
+    final email = ref.watch(userEmailProvider);
+    final initials = ref.watch(userInitialsProvider);
+    final streak = ref.watch(budgetProvider).streakDays;
+
     return Drawer(
       backgroundColor: c.surface,
       child: SafeArea(
         child: Column(
           children: [
-            // Profile header
+            // ── Profile header ─────────────────────────────────────────────
             Container(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
               decoration: BoxDecoration(
@@ -64,7 +71,7 @@ class AppDrawer extends StatelessWidget {
                       ),
                       child: Center(
                         child: Text(
-                          isLogged ? AuthService.userInitials : '?',
+                          isLogged ? initials : '?',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
@@ -80,20 +87,20 @@ class AppDrawer extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          isLogged ? AuthService.userName : 'Guest',
+                          isLogged ? name : 'Guest',
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         Text(
-                          isLogged ? AuthService.userEmail : 'Sign in to sync',
+                          isLogged ? email : 'Sign in to sync',
                           style: TextStyle(fontSize: 12, color: c.textMuted),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
-                        StreakBadge(days: ExpenseService.budget.streakDays),
+                        StreakBadge(days: streak),
                       ],
                     ),
                   ),
@@ -101,24 +108,22 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
 
+            // ── Nav items ──────────────────────────────────────────────────
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
-                  DrawsButton(Assets.insights, 'Insights', null, () {
+                  _DrawerItem(Assets.insights, 'Insights', null, () {
                     Navigator.pop(context);
                     onPush(const InsightsScreen());
                   }),
-                  DrawsButton(Assets.ai, 'AI Insights', null, () {
-                    Navigator.pop(context);
-                    onPush(const AiScreen());
-                  }),
+
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     child: Divider(),
                   ),
 
-                  DrawsButton(Assets.share, 'Share Report', kGreen, () {
+                  _DrawerItem(Assets.share, 'Share Report', kGreen, () {
                     Navigator.pop(context);
                     onShare();
                   }),
@@ -126,16 +131,16 @@ class AppDrawer extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     child: Divider(),
                   ),
-                  DrawsButton(Assets.settings, 'Settings', null, () {
+                  _DrawerItem(Assets.settings, 'Settings', null, () {
                     Navigator.pop(context);
                     onPush(const SettingsScreen());
                   }),
-                  DrawsButton(Assets.about, 'About', null, () {
+                  _DrawerItem(Assets.about, 'About', null, () {
                     Navigator.pop(context);
                     onPush(const AboutScreen());
                   }),
                   if (!isLogged)
-                    DrawsButton(
+                    _DrawerItem(
                       Assets.login,
                       'Sign In',
                       AppColors.primaryColor,
@@ -148,13 +153,12 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
 
-            // Footer
             Padding(
               padding: const EdgeInsets.all(16),
               child: Text(
                 'BudgetBuddy v1.0',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 11, color: c.textMuted),
+                style: TextStyle(fontSize: 11, color: context.c.textMuted),
               ),
             ),
           ],
@@ -162,4 +166,31 @@ class AppDrawer extends StatelessWidget {
       ),
     );
   }
+}
+
+class _DrawerItem extends StatelessWidget {
+  final String icon;
+  final String label;
+  final Color? color;
+  final VoidCallback onTap;
+  const _DrawerItem(this.icon, this.label, this.color, this.onTap);
+
+  @override
+  Widget build(BuildContext context) => ListTile(
+    leading: CommonSvgWidget(
+      svgName: icon,
+      color: color ?? context.c.textSub,
+      height: 22,
+      width: 22,
+    ),
+    // leading: Icon(icon, color: color ?? context.c.textSub, size: 22),
+    title: Text(
+      label,
+      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+    ),
+    onTap: onTap,
+    dense: true,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+  );
 }

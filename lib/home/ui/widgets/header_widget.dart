@@ -1,22 +1,22 @@
-import 'dart:ui';
-
-import 'package:expensetracker/auth/services/auth_service.dart';
+import 'package:expensetracker/auth/providers/auth_provider.dart';
 import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/common/common_svg_widget.dart';
 import 'package:expensetracker/common/common_widget.dart';
-import 'package:expensetracker/common/constant/constant_assets.dart';
 import 'package:expensetracker/expense/models/expense.dart';
-import 'package:expensetracker/expense/services/expenses_service.dart';
-import 'package:expensetracker/home/services/sync_services.dart';
-import 'package:expensetracker/home/ui/widgets/header_button.dart';
+import 'package:expensetracker/expense/providers/expense_provider.dart';
+import 'package:expensetracker/home/providers/sync_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HeaderWidget extends StatelessWidget {
+class HeaderWidget extends ConsumerWidget {
+  /// All values are passed in from HomeScreen so the widget is pure/testable.
+  /// Alternatively remove params and watch providers directly here.
   final double net, totalExp, totalInc;
   final Budget budget;
-  final SyncResult? syncResult;
+  final SyncStatus? syncResult;
   final VoidCallback onMenuTap, onProfileTap;
+
   const HeaderWidget({
+    super.key,
     required this.net,
     required this.totalExp,
     required this.totalInc,
@@ -27,9 +27,14 @@ class HeaderWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
     final nc = net >= 0 ? kGreen : kAccent;
+    final fmt = ref.watch(fmtProvider);
+    final initials = ref.watch(userInitialsProvider);
+    final isLogged = ref.watch(isLoggedInProvider);
+    final budgPct = ref.watch(budgetUsedPctProvider);
+
     return SliverToBoxAdapter(
       child: Container(
         decoration: BoxDecoration(
@@ -45,6 +50,7 @@ class HeaderWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ── Top row: menu + greeting + avatar ────────────────────────────
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -81,7 +87,7 @@ class HeaderWidget extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       const Text(
-                        'BudgetBuddy',
+                        'SpendSense',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
@@ -90,7 +96,7 @@ class HeaderWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                // Profile avatar
+                // Profile avatar + sync badge
                 GestureDetector(
                   onTap: onProfileTap,
                   child: Column(
@@ -109,24 +115,23 @@ class HeaderWidget extends StatelessWidget {
                           ),
                         ),
                         child: Center(
-                          child: AuthService.isLoggedIn
+                          child: isLogged
                               ? Text(
-                                  AuthService.userInitials,
+                                  initials,
                                   style: const TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w800,
                                     color: Colors.white,
                                   ),
                                 )
-                              : CommonSvgWidget(
-                                  svgName: Assets.profile_circle,
-                                  height: 20,
-                                  width: 20,
-                                  color: AppColors.white,
+                              : const Icon(
+                                  Icons.person_outline_rounded,
+                                  size: 20,
+                                  color: Colors.white,
                                 ),
                         ),
                       ),
-                      if (syncResult == SyncResult.success)
+                      if (syncResult == SyncStatus.success)
                         Padding(
                           padding: const EdgeInsets.only(top: 3),
                           child: Row(
@@ -154,7 +159,10 @@ class HeaderWidget extends StatelessWidget {
                 ),
               ],
             ),
+
             const SizedBox(height: 18),
+
+            // ── Net balance + expense/income labels ──────────────────────────
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -167,7 +175,7 @@ class HeaderWidget extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      '${net >= 0 ? '+' : ''}${ExpenseService.fmt(net.abs())}',
+                      '${net >= 0 ? '+' : ''}${fmt(net.abs())}',
                       style: TextStyle(
                         fontSize: 34,
                         fontWeight: FontWeight.w800,
@@ -181,33 +189,28 @@ class HeaderWidget extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    HeaderButtonWidget(
-                      '↑ Expenses',
-                      ExpenseService.fmt(totalExp),
-                      kAccent,
-                    ),
+                    _MiniStat('↑ Expenses', fmt(totalExp), kAccent),
                     const SizedBox(height: 4),
-                    HeaderButtonWidget(
-                      '↓ Income',
-                      ExpenseService.fmt(totalInc),
-                      kGreen,
-                    ),
+                    _MiniStat('↓ Income', fmt(totalInc), kGreen),
                   ],
                 ),
               ],
             ),
+
             const SizedBox(height: 14),
-            BudgetBar(percent: ExpenseService.budgetUsedPercent()),
+
+            // ── Budget progress bar ──────────────────────────────────────────
+            BudgetBar(percent: budgPct),
             const SizedBox(height: 6),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${ExpenseService.fmt(totalExp)} spent',
+                  '${fmt(totalExp)} spent',
                   style: TextStyle(fontSize: 10, color: c.textMuted),
                 ),
                 Text(
-                  '${ExpenseService.fmt(budget.monthlyLimit)} limit',
+                  '${fmt(budget.monthlyLimit)} limit',
                   style: TextStyle(fontSize: 10, color: c.textMuted),
                 ),
               ],
@@ -217,4 +220,27 @@ class HeaderWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+class _MiniStat extends StatelessWidget {
+  final String label, value;
+  final Color color;
+  const _MiniStat(this.label, this.value, this.color);
+
+  @override
+  Widget build(BuildContext context) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text(label, style: TextStyle(fontSize: 10, color: context.c.textMuted)),
+      const SizedBox(width: 6),
+      Text(
+        value,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
+      ),
+    ],
+  );
 }
