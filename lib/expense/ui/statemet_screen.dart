@@ -1,24 +1,32 @@
 import 'package:expensetracker/common/app_theme.dart';
+import 'package:expensetracker/common/common_svg_widget.dart';
 import 'package:expensetracker/common/common_widget.dart';
+import 'package:expensetracker/common/constant/constant_assets.dart';
+import 'package:expensetracker/common/localization/category_localization.dart';
 import 'package:expensetracker/common/shimmer_widget.dart';
-import 'package:expensetracker/expense/services/expenses_service.dart';
+import 'package:expensetracker/expense/models/expense.dart';
+import 'package:expensetracker/expense/providers/expense_provider.dart';
 import 'package:expensetracker/expense/services/pdf_service.dart';
-import 'package:flutter/material.dart';
+import 'package:expensetracker/expense/ui/widgets/button.dart';
+import 'package:expensetracker/expense/ui/widgets/date_range.dart';
+import 'package:expensetracker/expense/ui/widgets/fi_chip.dart';
+import 'package:expensetracker/expense/ui/widgets/transcation_widget.dart';
+import 'package:expensetracker/l10n/app_localizations.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:intl/intl.dart';
-import '../models/expense.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum _FilterMode { month, dateRange }
+enum _Mode { month, dateRange }
 
-class StatementsScreen extends StatefulWidget {
+class StatementsScreen extends ConsumerStatefulWidget {
   const StatementsScreen({super.key});
   @override
-  State<StatementsScreen> createState() => _State();
+  ConsumerState<StatementsScreen> createState() => _State();
 }
 
-class _State extends State<StatementsScreen> {
-  _FilterMode _filterMode = _FilterMode.month;
+class _State extends ConsumerState<StatementsScreen> {
+  // ── Local UI state ─────────────────────────────────────────────────────────
+  _Mode _mode = _Mode.month;
   DateTime _month = DateTime(DateTime.now().year, DateTime.now().month);
   DateTime? _fromDate;
   DateTime? _toDate;
@@ -37,18 +45,40 @@ class _State extends State<StatementsScreen> {
     });
   }
 
-  // ── Date range picker ─────────────────────────────────────────────────────
-  Future<void> _pickDateRange() async {
-    final now = DateTime.now();
+  // ── Period filter ──────────────────────────────────────────────────────────
+  List<Expense> _period(List<Expense> all) {
+    if (_mode == _Mode.dateRange && _fromDate != null && _toDate != null) {
+      final end = _toDate!.add(const Duration(days: 1));
+      return all
+          .where((e) => e.date.isAfter(_fromDate!) && e.date.isBefore(end))
+          .toList();
+    }
+    return all
+        .where(
+          (e) => e.date.month == _month.month && e.date.year == _month.year,
+        )
+        .toList();
+  }
+
+  // ── Chip filter ────────────────────────────────────────────────────────────
+  List<Expense> _chip(List<Expense> list) => list.where((e) {
+    if (!_showIncome && e.isIncome) return false;
+    if (!_showExpense && !e.isIncome) return false;
+    if (_filterCat != null && e.category != _filterCat) return false;
+    return true;
+  }).toList();
+
+  // ── Date range picker ──────────────────────────────────────────────────────
+  Future<void> _pickRange() async {
     final range = await showDateRangePicker(
       context: context,
       firstDate: DateTime(2020),
-      lastDate: now,
+      lastDate: DateTime.now(),
       initialDateRange: _fromDate != null && _toDate != null
           ? DateTimeRange(start: _fromDate!, end: _toDate!)
           : DateTimeRange(
-              start: now.subtract(const Duration(days: 30)),
-              end: now,
+              start: DateTime.now().subtract(const Duration(days: 30)),
+              end: DateTime.now(),
             ),
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
@@ -64,33 +94,12 @@ class _State extends State<StatementsScreen> {
     setState(() {
       _fromDate = range.start;
       _toDate = range.end;
-      _filterMode = _FilterMode.dateRange;
+      _mode = _Mode.dateRange;
     });
   }
 
-  // ── Get expenses for current filter ────────────────────────────────────────
-  List<Expense> _getFiltered(List<Expense> all) {
-    return all.where((e) {
-      if (!_showIncome && e.isIncome) return false;
-      if (!_showExpense && !e.isIncome) return false;
-      if (_filterCat != null && e.category != _filterCat) return false;
-      return true;
-    }).toList();
-  }
-
-  List<Expense> _getPeriodExpenses(List<Expense> all) {
-    if (_filterMode == _FilterMode.dateRange &&
-        _fromDate != null &&
-        _toDate != null) {
-      final end = _toDate!.add(const Duration(days: 1));
-      return all
-          .where((e) => e.date.isAfter(_fromDate!) && e.date.isBefore(end))
-          .toList();
-    }
-    return ExpenseService.forMonth(_month);
-  }
-
-  Future<void> _exportPdf(List<Expense> expenses) async {
+  // ── PDF export ─────────────────────────────────────────────────────────────
+  Future<void> _export(List<Expense> expenses) async {
     if (expenses.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -102,10 +111,10 @@ class _State extends State<StatementsScreen> {
     }
     setState(() => _exporting = true);
     try {
-      final from = _filterMode == _FilterMode.dateRange && _fromDate != null
+      final from = _mode == _Mode.dateRange && _fromDate != null
           ? _fromDate!
           : DateTime(_month.year, _month.month, 1);
-      final to = _filterMode == _FilterMode.dateRange && _toDate != null
+      final to = _mode == _Mode.dateRange && _toDate != null
           ? _toDate!
           : DateTime(_month.year, _month.month + 1, 0);
       await PdfService.exportStatement(expenses: expenses, from: from, to: to);
@@ -124,614 +133,434 @@ class _State extends State<StatementsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: context.c.bg,
-    appBar: AppBar(
-      backgroundColor: context.c.surface,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
-        onPressed: () => Navigator.pop(context),
-      ),
-      title: const Text(
-        'Statements',
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-      ),
-      centerTitle: true,
-      actions: [
-        // PDF export button
-        Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: IconButton(
-            icon: _exporting
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.primaryColor,
-                    ),
-                  )
-                : const Icon(Icons.picture_as_pdf_rounded, color: kAccent),
-            tooltip: 'Export as PDF',
-            onPressed: _exporting
-                ? null
-                : () {
-                    final allExpenses = ExpenseService.all;
-                    final period = _getPeriodExpenses(allExpenses);
-                    _exportPdf(period);
-                  },
-          ),
+  Widget build(BuildContext context) {
+    // ── Read from providers ─────────────────────────────────────────────────
+    final all = ref
+        .watch(expenseProvider)
+        .all; // reactive: rebuilds on any expense change
+    final fmt = ref.watch(fmtProvider); // currency-aware formatter
+    final sym = ref.watch(symbolProvider); // currency symbol
+
+    // ── Derived lists ───────────────────────────────────────────────────────
+    final period = _period(all);
+    final filtered = _chip(period);
+    final expenses = period.where((e) => !e.isIncome).toList();
+    final incomes = period.where((e) => e.isIncome).toList();
+    final totalExp = expenses.fold(0.0, (s, e) => s + e.amount);
+    final totalInc = incomes.fold(0.0, (s, e) => s + e.amount);
+    final net = totalInc - totalExp;
+    // Category map (expenses only, sorted by amount desc)
+    final catMap = <String, double>{};
+    for (final e in expenses)
+      catMap[e.category] = (catMap[e.category] ?? 0) + e.amount;
+    final cats = catMap.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    final usedCats = period.map((e) => e.category).toSet().toList();
+
+    return Scaffold(
+      backgroundColor: context.c.bg,
+      appBar: AppBar(
+        backgroundColor: context.c.surface,
+
+        title: Text(
+          AppLocalizations.of(context)!.statements,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
-      ],
-    ),
-    body: _isLoading
-        ? const StatementsShimmer()
-        : ValueListenableBuilder(
-            valueListenable: Hive.box<Expense>('expenses').listenable(),
-            builder: (_, __, ___) {
-              final allExpenses = ExpenseService.all;
-              final period = _getPeriodExpenses(allExpenses);
-              final expenses = period.where((e) => !e.isIncome).toList();
-              final incomes = period.where((e) => e.isIncome).toList();
-              final totalExp = ExpenseService.totalFor(expenses);
-              final totalInc = ExpenseService.totalFor(incomes);
-              final net = totalInc - totalExp;
-              final catMap = ExpenseService.byCategory(expenses);
-              final cats = catMap.entries.toList();
-              final usedCats = period.map((e) => e.category).toSet().toList();
-              final filtered = _getFiltered(period);
-
-              return ListView(
-                padding: const EdgeInsets.fromLTRB(18, 14, 18, 40),
-                children: [
-                  // ── Filter mode toggle ──────────────────────────────────────
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: context.c.card,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: context.c.border),
+        centerTitle: true,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton(
+              icon: _exporting
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.primaryColor,
+                      ),
+                    )
+                  : CommonSvgWidget(
+                      svgName: Assets.pdf,
+                      color: kAccent,
+                      height: 30,
+                      width: 30,
                     ),
-                    child: Row(
-                      children: [
-                        _FModeBtn(
-                          'Month',
-                          _filterMode == _FilterMode.month,
-                          () => setState(() => _filterMode = _FilterMode.month),
-                        ),
-                        _FModeBtn(
-                          'Date Range',
-                          _filterMode == _FilterMode.dateRange,
-                          _pickDateRange,
-                        ),
-                      ],
-                    ),
+              tooltip: 'Export as PDF',
+              onPressed: _exporting ? null : () => _export(period),
+            ),
+          ),
+        ],
+      ),
+      body: _isLoading
+          ? const StatementsShimmer()
+          : ListView(
+              padding: const EdgeInsets.fromLTRB(18, 14, 18, 40),
+              children: [
+                // ── Mode toggle ───────────────────────────────────────────────
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: context.c.card,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: context.c.border),
                   ),
+                  child: Row(
+                    children: [
+                      ModeBtn(
+                        AppLocalizations.of(context)!.month,
+                        _mode == _Mode.month,
+                        () => setState(() => _mode = _Mode.month),
+                      ),
+                      ModeBtn(
+                        AppLocalizations.of(context)!.dataRange,
+                        _mode == _Mode.dateRange,
+                        _pickRange,
+                      ),
+                    ],
+                  ),
+                ),
 
-                  const SizedBox(height: 12),
+                const SizedBox(height: 12),
 
-                  // ── Month navigator OR date range display ───────────────────
-                  if (_filterMode == _FilterMode.month)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.chevron_left_rounded),
-                          onPressed: () => setState(
+                // ── Month navigator / Date range display ──────────────────────
+                if (_mode == _Mode.month)
+                  MonthNav(
+                    month: _month,
+                    onPrev: () => setState(
+                      () => _month = DateTime(_month.year, _month.month - 1),
+                    ),
+                    onNext:
+                        _month.month == DateTime.now().month &&
+                            _month.year == DateTime.now().year
+                        ? null
+                        : () => setState(
                             () => _month = DateTime(
                               _month.year,
-                              _month.month - 1,
+                              _month.month + 1,
                             ),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () async {
-                            final p = await showDatePicker(
-                              context: context,
-                              initialDate: _month,
-                              firstDate: DateTime(2020),
-                              lastDate: DateTime.now(),
-                              initialDatePickerMode: DatePickerMode.year,
-                            );
-                            if (p != null)
-                              setState(
-                                () => _month = DateTime(p.year, p.month),
-                              );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryColor.withOpacity(0.08),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: AppColors.primaryColor.withOpacity(0.2),
-                              ),
-                            ),
-                            child: Text(
-                              DateFormat('MMMM yyyy').format(_month),
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.primaryColor,
-                              ),
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.chevron_right_rounded),
-                          onPressed:
-                              _month.month == DateTime.now().month &&
-                                  _month.year == DateTime.now().year
-                              ? null
-                              : () => setState(
-                                  () => _month = DateTime(
-                                    _month.year,
-                                    _month.month + 1,
-                                  ),
-                                ),
-                        ),
-                      ],
-                    )
-                  else
-                    GestureDetector(
-                      onTap: _pickDateRange,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryColor.withOpacity(0.07),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: AppColors.primaryColor.withOpacity(0.25),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.date_range_rounded,
-                              color: AppColors.primaryColor,
-                              size: 18,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              _fromDate != null && _toDate != null
-                                  ? '${DateFormat('MMM d, yyyy').format(_fromDate!)} → ${DateFormat('MMM d, yyyy').format(_toDate!)}'
-                                  : 'Tap to select date range',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.primaryColor,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Icon(
-                              Icons.edit_calendar_rounded,
-                              color: AppColors.primaryColor,
-                              size: 16,
-                            ),
-                          ],
-                        ),
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: _month,
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime.now(),
+                        initialDatePickerMode: DatePickerMode.year,
+                      );
+                      if (picked != null)
+                        setState(
+                          () => _month = DateTime(picked.year, picked.month),
+                        );
+                    },
+                  )
+                else
+                  DateRange(from: _fromDate, to: _toDate, onTap: _pickRange),
+
+                const SizedBox(height: 14),
+
+                // ── Summary: Income / Expense / Net ──────────────────────────
+                AppCard(
+                  child: Row(
+                    children: [
+                      _SumCol(
+                        AppLocalizations.of(context)!.income,
+                        totalInc,
+                        kGreen,
+                        fmt: fmt,
                       ),
-                    ),
+                      Container(width: 1, height: 40, color: context.c.border),
+                      _SumCol(
+                        AppLocalizations.of(context)!.expense,
+                        totalExp,
+                        kAccent,
+                        fmt: fmt,
+                      ),
+                      Container(width: 1, height: 40, color: context.c.border),
+                      _SumCol(
+                        AppLocalizations.of(context)!.net,
+                        net.abs(),
+                        net >= 0 ? kGreen : kAccent,
+                        fmt: fmt,
+                        prefix: net >= 0 ? '+' : '-',
+                      ),
+                    ],
+                  ),
+                ),
 
-                  const SizedBox(height: 14),
+                const SizedBox(height: 14),
 
-                  // ── Summary row ─────────────────────────────────────────────
+                // ── Pie chart ─────────────────────────────────────────────────
+                if (cats.isNotEmpty) ...[
+                  SectionLabel(AppLocalizations.of(context)!.byCategory),
+                  const SizedBox(height: 10),
                   AppCard(
                     child: Row(
                       children: [
-                        _SumCol('Income', totalInc, kGreen),
-                        Container(
-                          width: 1,
-                          height: 40,
-                          color: context.c.border,
-                        ),
-                        _SumCol('Expense', totalExp, kAccent),
-                        Container(
-                          width: 1,
-                          height: 40,
-                          color: context.c.border,
-                        ),
-                        _SumCol(
-                          'Net',
-                          net,
-                          net >= 0 ? kGreen : kAccent,
-                          prefix: net >= 0 ? '+' : '',
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  // ── Pie chart ───────────────────────────────────────────────
-                  if (cats.isNotEmpty) ...[
-                    const SectionLabel('By Category'),
-                    const SizedBox(height: 10),
-                    AppCard(
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: 128,
-                            height: 128,
-                            child: PieChart(
-                              PieChartData(
-                                sectionsSpace: 2,
-                                centerSpaceRadius: 34,
-                                pieTouchData: PieTouchData(
-                                  touchCallback: (_, r) => setState(
-                                    () => _touchedPie =
-                                        r
-                                            ?.touchedSection
-                                            ?.touchedSectionIndex ??
-                                        -1,
-                                  ),
+                        SizedBox(
+                          width: 128,
+                          height: 128,
+                          child: PieChart(
+                            PieChartData(
+                              sectionsSpace: 2,
+                              centerSpaceRadius: 34,
+                              pieTouchData: PieTouchData(
+                                touchCallback: (_, r) => setState(
+                                  () => _touchedPie =
+                                      r?.touchedSection?.touchedSectionIndex ??
+                                      -1,
                                 ),
-                                sections: cats.asMap().entries.map((e) {
-                                  final col =
-                                      kCatColors[e.key % kCatColors.length];
-                                  final hit = e.key == _touchedPie;
-                                  final pct = totalExp > 0
-                                      ? e.value.value / totalExp * 100
-                                      : 0.0;
-                                  return PieChartSectionData(
-                                    value: e.value.value,
-                                    color: col,
-                                    radius: hit ? 50 : 42,
-                                    showTitle: hit,
-                                    title: '${pct.toInt()}%',
-                                    titleStyle: const TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white,
-                                    ),
-                                  );
-                                }).toList(),
                               ),
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: cats.asMap().entries.take(5).map((e) {
+                              sections: cats.asMap().entries.map((e) {
                                 final col =
                                     kCatColors[e.key % kCatColors.length];
+                                final hit = e.key == _touchedPie;
                                 final pct = totalExp > 0
-                                    ? (e.value.value / totalExp * 100).toInt()
-                                    : 0;
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 6),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 7,
-                                        height: 7,
-                                        decoration: BoxDecoration(
-                                          color: col,
-                                          shape: BoxShape.circle,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Expanded(
-                                        child: Text(
-                                          e.value.key,
-                                          style: const TextStyle(fontSize: 11),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                      Text(
-                                        '$pct%',
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w700,
-                                          color: col,
-                                        ),
-                                      ),
-                                    ],
+                                    ? e.value.value / totalExp * 100
+                                    : 0.0;
+                                return PieChartSectionData(
+                                  value: e.value.value,
+                                  color: col,
+                                  radius: hit ? 50 : 42,
+                                  showTitle: hit,
+                                  title: '${pct.toInt()}%',
+                                  titleStyle: const TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
                                   ),
                                 );
                               }).toList(),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                  ],
-
-                  // ── Bar chart ───────────────────────────────────────────────
-                  const SectionLabel('Daily overview'),
-                  const SizedBox(height: 10),
-                  AppCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            _Leg(kGreen, 'Income'),
-                            const SizedBox(width: 12),
-                            _Leg(kAccent, 'Expense'),
-                          ],
                         ),
-                        const SizedBox(height: 12),
-                        _BarChart(expenses: period),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  // ── Filters ─────────────────────────────────────────────────
-                  const SectionLabel('Filter'),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _FChip(
-                        'Income',
-                        _showIncome,
-                        kGreen,
-                        () => setState(() => _showIncome = !_showIncome),
-                      ),
-                      _FChip(
-                        'Expense',
-                        _showExpense,
-                        kAccent,
-                        () => setState(() => _showExpense = !_showExpense),
-                      ),
-                      ...usedCats.map(
-                        (cat) => _FChip(
-                          cat,
-                          _filterCat == cat,
-                          AppColors.primaryColor,
-                          () => setState(
-                            () => _filterCat = _filterCat == cat ? null : cat,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  // ── Export button ───────────────────────────────────────────
-                  AppCard(
-                    onTap: () => _exportPdf(filtered),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: kAccent.withOpacity(0.10),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(
-                            Icons.picture_as_pdf_rounded,
-                            color: kAccent,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 14),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Export as PDF',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
+                            children: cats.asMap().entries.take(5).map((e) {
+                              final col = kCatColors[e.key % kCatColors.length];
+                              final pct = totalExp > 0
+                                  ? (e.value.value / totalExp * 100).toInt()
+                                  : 0;
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 6),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 7,
+                                      height: 7,
+                                      decoration: BoxDecoration(
+                                        color: col,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Expanded(
+                                      child: Text(
+                                        CategoryLocalization.getName(
+                                          AppLocalizations.of(context)!,
+                                          e.value.key,
+                                        ),
+                                        style: const TextStyle(fontSize: 11),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    Text(
+                                      '$pct%',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w700,
+                                        color: col,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              Text(
-                                'Bank-style statement · ${filtered.length} transactions',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: context.c.textMuted,
-                                ),
-                              ),
-                            ],
+                              );
+                            }).toList(),
                           ),
                         ),
-                        _exporting
-                            ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: kAccent,
-                                ),
-                              )
-                            : const Icon(
-                                Icons.download_rounded,
-                                color: kAccent,
-                                size: 20,
-                              ),
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 14),
+                ],
 
-                  // ── Transactions ────────────────────────────────────────────
-                  SectionLabel(
-                    'Transactions',
-                    trailing: Text(
-                      '${filtered.length} items',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: context.c.textMuted,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  if (filtered.isEmpty)
-                    AppCard(
-                      padding: const EdgeInsets.symmetric(vertical: 28),
-                      child: Column(
+                // ── Daily bar chart ───────────────────────────────────────────
+                SectionLabel(AppLocalizations.of(context)!.dailyOverview),
+                const SizedBox(height: 10),
+                AppCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
                         children: [
-                          const Text('📭', style: TextStyle(fontSize: 32)),
-                          const SizedBox(height: 8),
-                          Text(
-                            'No transactions for this period',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: context.c.textMuted,
-                            ),
-                          ),
+                          _Leg(kGreen, AppLocalizations.of(context)!.income),
+                          const SizedBox(width: 12),
+                          _Leg(kAccent, AppLocalizations.of(context)!.expense),
                         ],
                       ),
-                    ),
+                      const SizedBox(height: 12),
+                      _BarChart(expenses: period),
+                    ],
+                  ),
+                ),
 
-                  ...filtered.map((e) {
-                    final isInc = e.isIncome;
-                    final cidx = (isInc ? kIncomeCategories : kCategories)
-                        .indexOf(e.category);
-                    final col = isInc
-                        ? kGreen
-                        : kCatColors[cidx < 0 ? 0 : cidx % kCatColors.length];
-                    final sym = currencyOf(e.currency).symbol;
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: AppCard(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 11,
+                const SizedBox(height: 14),
+
+                // ── Chip filters ──────────────────────────────────────────────
+                SectionLabel(AppLocalizations.of(context)!.filter),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    FiChip(
+                      AppLocalizations.of(context)!.income,
+                      _showIncome,
+                      kGreen,
+                      () => setState(() => _showIncome = !_showIncome),
+                    ),
+                    FiChip(
+                      AppLocalizations.of(context)!.expense,
+                      _showExpense,
+                      kAccent,
+                      () => setState(() => _showExpense = !_showExpense),
+                    ),
+                    ...usedCats.map(
+                      (cat) => FiChip(
+                        CategoryLocalization.getName(
+                          AppLocalizations.of(context)!,
+                          cat,
                         ),
-                        child: Row(
+                        _filterCat == cat,
+                        AppColors.primaryColor,
+                        () => setState(
+                          () => _filterCat = _filterCat == cat ? null : cat,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 14),
+
+                // ── Export card ───────────────────────────────────────────────
+                AppCard(
+                  onTap: () => _export(filtered),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: kAccent.withOpacity(0.10),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: CommonSvgWidget(
+                          svgName: Assets.pdf,
+                          color: kAccent,
+                          height: 20,
+                          width: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: col.withOpacity(0.12),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  kCatEmoji[e.category] ?? '📦',
-                                  style: const TextStyle(fontSize: 17),
-                                ),
+                            Text(
+                              AppLocalizations.of(context)!.export,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    e.title,
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    '${e.category} · ${DateFormat('MMM d, yyyy').format(e.date)}',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: context.c.textMuted,
-                                    ),
-                                  ),
-                                ],
+                            Text(
+                              '${AppLocalizations.of(context)!.bankStyle} · ${filtered.length} ${AppLocalizations.of(context)!.transactions}',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: context.c.textMuted,
                               ),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  '${isInc ? '+' : '-'}$sym${e.amount.toStringAsFixed(0)}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    color: col,
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(top: 2),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 5,
-                                    vertical: 1,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: col.withOpacity(0.10),
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    isInc ? 'Income' : 'Expense',
-                                    style: TextStyle(
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.w600,
-                                      color: col,
-                                    ),
-                                  ),
-                                ),
-                              ],
                             ),
                           ],
                         ),
                       ),
-                    );
-                  }),
-                ],
-              );
-            },
-          ),
-  );
+                      _exporting
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: kAccent,
+                              ),
+                            )
+                          : CommonSvgWidget(
+                              svgName: Assets.download,
+                              color: kAccent,
+                              height: 30,
+                              width: 30,
+                            ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 14),
+
+                // ── Transactions list ─────────────────────────────────────────
+                SectionLabel(
+                  AppLocalizations.of(context)!.transactions,
+                  trailing: Text(
+                    '${filtered.length} ${AppLocalizations.of(context)!.items}',
+                    style: TextStyle(fontSize: 11, color: context.c.textMuted),
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                if (filtered.isEmpty)
+                  AppCard(
+                    padding: const EdgeInsets.symmetric(vertical: 28),
+                    child: Column(
+                      children: [
+                        CommonSvgWidget(
+                          svgName: Assets.nodata,
+                          color: AppColors.primaryColor,
+                          height: 48,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          AppLocalizations.of(context)!.noTransaction,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: context.c.textMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                ...filtered.map((e) => TransactionWidget(expense: e)),
+              ],
+            ),
+    );
+  }
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-class _FModeBtn extends StatelessWidget {
-  final String label;
-  final bool active;
-  final VoidCallback onTap;
-  const _FModeBtn(this.label, this.active, this.onTap);
-  @override
-  Widget build(BuildContext context) => Expanded(
-    child: GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        margin: const EdgeInsets.all(3),
-        padding: const EdgeInsets.symmetric(vertical: 9),
-        decoration: BoxDecoration(
-          color: active ? AppColors.primaryColor : Colors.transparent,
-          borderRadius: BorderRadius.circular(9),
-        ),
-        child: Text(
-          label,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: active ? Colors.white : context.c.textMuted,
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
+// Summary column (Income / Expense / Net)
 class _SumCol extends StatelessWidget {
-  final String label;
+  final String label, prefix;
   final double amount;
   final Color color;
-  final String prefix;
-  const _SumCol(this.label, this.amount, this.color, {this.prefix = ''});
+  final String Function(double) fmt;
+  const _SumCol(
+    this.label,
+    this.amount,
+    this.color, {
+    required this.fmt,
+    this.prefix = '',
+  });
   @override
   Widget build(BuildContext context) => Expanded(
     child: Column(
@@ -746,7 +575,7 @@ class _SumCol extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          '$prefix${ExpenseService.fmt(amount.abs())}',
+          '$prefix${fmt(amount)}',
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w800,
@@ -760,6 +589,7 @@ class _SumCol extends StatelessWidget {
   );
 }
 
+// Legend dot
 class _Leg extends StatelessWidget {
   final Color color;
   final String label;
@@ -782,38 +612,9 @@ class _Leg extends StatelessWidget {
   );
 }
 
-class _FChip extends StatelessWidget {
-  final String label;
-  final bool active;
-  final Color color;
-  final VoidCallback onTap;
-  const _FChip(this.label, this.active, this.color, this.onTap);
-  @override
-  Widget build(BuildContext context) => GestureDetector(
-    onTap: onTap,
-    child: AnimatedContainer(
-      duration: const Duration(milliseconds: 160),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-      decoration: BoxDecoration(
-        color: active ? color.withOpacity(0.12) : context.c.card,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: active ? color : context.c.border,
-          width: active ? 1.5 : 1,
-        ),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: active ? color : context.c.textMuted,
-        ),
-      ),
-    ),
-  );
-}
-
+// ─────────────────────────────────────────────────────────────────────────────
+// DAILY BAR CHART — pure StatelessWidget, receives list from parent
+// ─────────────────────────────────────────────────────────────────────────────
 class _BarChart extends StatelessWidget {
   final List<Expense> expenses;
   const _BarChart({required this.expenses});
@@ -831,9 +632,7 @@ class _BarChart extends StatelessWidget {
         ),
       );
 
-    // Group by day (or week if range > 31 days)
     final days = expenses.map((e) => e.date.day).toSet().toList()..sort();
-    if (days.isEmpty) return const SizedBox.shrink();
 
     final groups = days.map((d) {
       final inc = expenses

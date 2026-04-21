@@ -1,3 +1,4 @@
+import 'package:expensetracker/common/constant/constant_assets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 part 'expense.g.dart';
@@ -65,7 +66,6 @@ const kCurrencies = [
   CurrencyInfo('NPR', 'Rs.', 'Nepali Rupee', '🇳🇵'),
   CurrencyInfo('USD', '\$', 'US Dollar', '🇺🇸'),
   CurrencyInfo('INR', '₹', 'Indian Rupee', '🇮🇳'),
-  CurrencyInfo('GBP', '£', 'British Pound', '🇬🇧'),
   CurrencyInfo('EUR', '€', 'Euro', '🇪🇺'),
   CurrencyInfo('AUD', 'A\$', 'AUD Dollar', '🇦🇺'),
 ];
@@ -94,16 +94,19 @@ const kIncomeCategories = [
 ];
 
 const kCatEmoji = {
-  'Food': '🍜',
-  'Transport': '🚗',
-  'Shopping': '🛍',
-  'Health': '💊',
-  'Bills': '⚡',
-  'Entertainment': '🎬',
-  'Other': '📦',
-  'Salary': '💼',
-  'Freelance': '💻',
-  'Business': '🏢',
-  'Investment': '📈',
-  'Gift': '🎁',
+  'Food': Assets.food,
+  'Transport': Assets.transport,
+  'Shopping': Assets.shopping,
+  'Health': Assets.health,
+  'Bills': Assets.bills,
+  'Entertainment': Assets.entertainment,
+  'Other': Assets.other,
+  'Salary': Assets.salary,
+  'Freelance': Assets.freelance,
+  'Business': Assets.business,
+  'Investment': Assets.investment,
+  'Gift': Assets.gift,
+  'Education': Assets.education,
+  'Groceries': Assets.groceries,
+  'Travel': Assets.travel,
 };

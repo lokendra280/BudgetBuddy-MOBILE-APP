@@ -249,7 +249,6 @@ class _H extends ConsumerState<HomeScreen> {
                           child: Column(
                             children: [
                               Image.asset(Assets.salary, width: 64, height: 64),
-                              // const Text('💸', style: TextStyle(fontSize: 36)),
                               const SizedBox(height: 10),
                               Text(
                                 AppLocalizations.of(context)!.noEntryYet,

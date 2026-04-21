@@ -276,6 +276,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Net Deficit'**
   String get netDeficit;
+
+  /// No description provided for @month.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get month;
+
+  /// No description provided for @dataRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Range'**
+  String get dataRange;
+
+  /// No description provided for @dailyOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily OverView'**
+  String get dailyOverview;
+
+  /// No description provided for @noDataPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'No Data For This Period'**
+  String get noDataPeriod;
+
+  /// No description provided for @export.
+  ///
+  /// In en, this message translates to:
+  /// **'Export As Pdf'**
+  String get export;
+
+  /// No description provided for @bankStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank-Style Statements 0 Transactions'**
+  String get bankStyle;
+
+  /// No description provided for @items.
+  ///
+  /// In en, this message translates to:
+  /// **'Items'**
+  String get items;
+
+  /// No description provided for @noTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'No Transactions For This Period'**
+  String get noTransaction;
+
+  /// No description provided for @filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get filter;
+
+  /// No description provided for @net.
+  ///
+  /// In en, this message translates to:
+  /// **'net'**
+  String get net;
+
+  /// No description provided for @byCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'By Category'**
+  String get byCategory;
+
+  /// No description provided for @travel.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel'**
+  String get travel;
+
+  /// No description provided for @education.
+  ///
+  /// In en, this message translates to:
+  /// **'Education'**
+  String get education;
+
+  /// No description provided for @salary.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary'**
+  String get salary;
+
+  /// No description provided for @freelance.
+  ///
+  /// In en, this message translates to:
+  /// **'Freelance'**
+  String get freelance;
+
+  /// No description provided for @business.
+  ///
+  /// In en, this message translates to:
+  /// **'Business'**
+  String get business;
+
+  /// No description provided for @investment.
+  ///
+  /// In en, this message translates to:
+  /// **'Investment'**
+  String get investment;
+
+  /// No description provided for @gift.
+  ///
+  /// In en, this message translates to:
+  /// **'Gift'**
+  String get gift;
+
+  /// No description provided for @transport.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport'**
+  String get transport;
+
+  /// No description provided for @shopping.
+  ///
+  /// In en, this message translates to:
+  /// **'Shopping'**
+  String get shopping;
+
+  /// No description provided for @health.
+  ///
+  /// In en, this message translates to:
+  /// **'Health'**
+  String get health;
+
+  /// No description provided for @bill.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill'**
+  String get bill;
+
+  /// No description provided for @entertainment.
+  ///
+  /// In en, this message translates to:
+  /// **'Entertainment'**
+  String get entertainment;
+
+  /// No description provided for @groceries.
+  ///
+  /// In en, this message translates to:
+  /// **'Groceries'**
+  String get groceries;
+
+  /// No description provided for @food.
+  ///
+  /// In en, this message translates to:
+  /// **'Food'**
+  String get food;
+
+  /// No description provided for @other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

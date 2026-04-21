@@ -1,4 +1,6 @@
 import 'package:expensetracker/common/app_theme.dart';
+import 'package:expensetracker/common/constant/constant_assets.dart';
+import 'package:expensetracker/common/localization/category_localization.dart';
 import 'package:expensetracker/common/services/ads_service.dart';
 import 'package:expensetracker/expense/models/expense.dart';
 import 'package:expensetracker/expense/services/expenses_service.dart';
@@ -441,9 +443,10 @@ class ExpenseTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Center(
-                child: Text(
-                  kCatEmoji[e.category] ?? '📦',
-                  style: const TextStyle(fontSize: 17),
+                child: Image.asset(
+                  kCatEmoji[e.category] ?? Assets.nodata,
+                  width: 20,
+                  height: 20,
                 ),
               ),
             ),
@@ -463,7 +466,7 @@ class ExpenseTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${e.category} · ${DateFormat('MMM d').format(e.date)}',
+                    '${CategoryLocalization.getName(AppLocalizations.of(context)!, e.category)} · ${DateFormat('MMM d').format(e.date)}',
                     style: TextStyle(fontSize: 11, color: context.c.textMuted),
                   ),
                 ],
@@ -492,7 +495,9 @@ class ExpenseTile extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    e.isIncome ? 'Income' : 'Expense',
+                    e.isIncome
+                        ? '${AppLocalizations.of(context)!.income}'
+                        : '${AppLocalizations.of(context)!.expense}',
                     style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.w600,

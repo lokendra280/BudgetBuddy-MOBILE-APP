@@ -165,6 +165,8 @@ class CategoryService {
       isIncome: false,
     ),
   ];
+  
+  
   static final _fallbackIncome = [
     AppCategory(
       id: 'sal',

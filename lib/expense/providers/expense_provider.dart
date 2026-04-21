@@ -4,6 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import '../models/expense.dart';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// EXPENSE NOTIFIER — owns the Hive box, exposes CRUD + computed values
+// ─────────────────────────────────────────────────────────────────────────────
 
 class ExpenseState {
   final List<Expense> all;
@@ -204,13 +207,28 @@ final daily7Provider = Provider<List<({double income, double expense})>>((ref) {
   });
 });
 
-// ── Currency formatter ────────────────────────────────────────────────────────
+// ── Global formatter (uses the user's CURRENT preferred currency) ─────────────
+// Use this for summary totals (monthly total, net, budget bar) where we are
+// aggregating many expenses and showing one combined number.
+// Do NOT use this for individual expense amounts — use fmtExpense() instead.
 final fmtProvider = Provider<String Function(double)>((ref) {
   final sym = ref.watch(symbolProvider);
-  return (double amount) {
-    if (amount >= 1000000)
-      return '$sym${(amount / 1000000).toStringAsFixed(1)}M';
-    if (amount >= 1000) return '$sym${(amount / 1000).toStringAsFixed(1)}K';
-    return '$sym${amount.toStringAsFixed(0)}';
-  };
+  return (double amount) => _fmt(sym, amount);
 });
+
+// ── Per-expense formatter (uses the currency STORED ON EACH EXPENSE) ──────────
+// Fixes the bug: adding an expense in AUD, then changing settings to GBP,
+// previously showed the AUD amount with a £ symbol.
+// Now each expense always displays with its own saved currency symbol.
+String fmtExpense(Expense e) {
+  final sym = currencyOf(e.currency).symbol;
+  return _fmt(sym, e.amount);
+}
+
+// ── Shared format logic ────────────────────────────────────────────────────────
+String _fmt(String sym, double amount) {
+  if (amount >= 1_000_000)
+    return '$sym${(amount / 1_000_000).toStringAsFixed(1)}M';
+  if (amount >= 1_000) return '$sym${(amount / 1_000).toStringAsFixed(1)}K';
+  return '$sym${amount.toStringAsFixed(0)}';
+}

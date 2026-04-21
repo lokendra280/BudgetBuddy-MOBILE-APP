@@ -24,7 +24,10 @@ class Assets {
   static const String notification = "$_basePathSvg/notification-bell$_svg";
 
   static const String strike = "$_basePathSvg/strike$_svg";
-
+  //// Statement
+  static const String download = "$_basePathSvg/download$_svg";
+  static const String pdf = "$_basePathSvg/pdf$_svg";
+  static const String nodata = "$_basePathSvg/no-data$_svg";
   // static const String home = "$_basePathSvg/home$_svg";
 
   /// Png Images

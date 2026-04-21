@@ -97,4 +97,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get netDeficit => 'Net Deficit';
+
+  @override
+  String get month => 'Month';
+
+  @override
+  String get dataRange => 'Date Range';
+
+  @override
+  String get dailyOverview => 'Daily OverView';
+
+  @override
+  String get noDataPeriod => 'No Data For This Period';
+
+  @override
+  String get export => 'Export As Pdf';
+
+  @override
+  String get bankStyle => 'Bank-Style Statements 0 Transactions';
+
+  @override
+  String get items => 'Items';
+
+  @override
+  String get noTransaction => 'No Transactions For This Period';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
+  String get net => 'net';
+
+  @override
+  String get byCategory => 'By Category';
+
+  @override
+  String get travel => 'Travel';
+
+  @override
+  String get education => 'Education';
+
+  @override
+  String get salary => 'Salary';
+
+  @override
+  String get freelance => 'Freelance';
+
+  @override
+  String get business => 'Business';
+
+  @override
+  String get investment => 'Investment';
+
+  @override
+  String get gift => 'Gift';
+
+  @override
+  String get transport => 'Transport';
+
+  @override
+  String get shopping => 'Shopping';
+
+  @override
+  String get health => 'Health';
+
+  @override
+  String get bill => 'Bill';
+
+  @override
+  String get entertainment => 'Entertainment';
+
+  @override
+  String get groceries => 'Groceries';
+
+  @override
+  String get food => 'Food';
+
+  @override
+  String get other => 'Other';
 }

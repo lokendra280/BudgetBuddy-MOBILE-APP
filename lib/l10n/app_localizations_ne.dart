@@ -54,7 +54,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get income => 'आम्दानी';
 
   @override
-  String get transactions => 'लेनदेन';
+  String get transactions => 'कारोबारहरू';
 
   @override
   String get last7Days => 'पछिल्ला ७ दिन';
@@ -97,4 +97,82 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get netDeficit => 'कुल घाटा';
+
+  @override
+  String get month => 'महिना';
+
+  @override
+  String get dataRange => 'मिति दायरा';
+
+  @override
+  String get dailyOverview => 'दैनिक अवलोकन';
+
+  @override
+  String get noDataPeriod => 'यो अवधिमा कुनै डेटा छैन';
+
+  @override
+  String get export => 'PDF रूपमा निर्यात गर्नुहोस्';
+
+  @override
+  String get bankStyle => 'बैंक-शैली विवरणहरू । 0 कारोबारहरू';
+
+  @override
+  String get items => 'वस्तुहरू';
+
+  @override
+  String get noTransaction => 'यो अवधिमा कुनै कारोबार छैन';
+
+  @override
+  String get filter => 'फ़िल्टर';
+
+  @override
+  String get net => 'नेट';
+
+  @override
+  String get byCategory => 'श्रेणी अनुसार';
+
+  @override
+  String get travel => 'यात्रा';
+
+  @override
+  String get education => 'शिक्षा';
+
+  @override
+  String get salary => 'तलब';
+
+  @override
+  String get freelance => 'फ्रिलान्स';
+
+  @override
+  String get business => 'व्यवसाय';
+
+  @override
+  String get investment => 'लगानी';
+
+  @override
+  String get gift => 'उपहार';
+
+  @override
+  String get transport => 'यातायात';
+
+  @override
+  String get shopping => 'किनमेल';
+
+  @override
+  String get health => 'स्वास्थ्य';
+
+  @override
+  String get bill => 'बिल';
+
+  @override
+  String get entertainment => 'मनोरञ्जन';
+
+  @override
+  String get groceries => 'किराना';
+
+  @override
+  String get food => 'खाना';
+
+  @override
+  String get other => 'अन्य';
 }
