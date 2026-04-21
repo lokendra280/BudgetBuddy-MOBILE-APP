@@ -44,4 +44,5 @@ class Assets {
   static const String investment = "$_basePath/invest$_png";
   static const String gift = "$_basePath/gift$_png";
   static const String business = "$_basePath/business$_png";
+  static const String appIcons = "$_basePath/app_icon$_png";
 }

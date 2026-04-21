@@ -1,5 +1,6 @@
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/expense/providers/expense_provider.dart';
+import 'package:expensetracker/l10n/app_localizations.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,7 +24,7 @@ class HomeBarGraph extends ConsumerWidget {
         height: 80,
         child: Center(
           child: Text(
-            'Add expenses to see chart',
+            AppLocalizations.of(context)!.addexpense,
             style: TextStyle(fontSize: 12, color: context.c.textMuted),
           ),
         ),

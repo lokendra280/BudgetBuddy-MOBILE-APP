@@ -1,5 +1,5 @@
 {
-  "appName": "Expense Tracker",
+  "appName": "BudgetBuddy",
   "home": "Home",
   "insights": "Insights",
   "ai": "AI",
@@ -9,5 +9,25 @@
   "light": "Light",
   "system": "System",
   "language": "Language",
-  "monthlybudget": "Monthly Budget"
+  "monthlybudget": "Monthly Budget",
+  "goodMorning": "Good Morning",
+  "netSaving": "Net Savings",
+  "expense": "Expense",
+  "income": "Income",
+  "transactions": "Transactions",
+  "last7Days": "Last 7 Days",
+  "addexpense": "Add Expense To See Chart",
+  "youHaventSpend": "You haven't spent anything yet",
+  "weeklyComparsion": "Week Comparison",
+  "thisweek": "This Week",
+  "lastWeek": "Last Week",
+  "recent": "Recent",
+  "all": "All",
+  "noEntryYet": "No Entries Yet",
+  "tapToAddIncome": "Tap + to add income or expense",
+  "statements": "Statements",
+  "social": "Social",
+  "aiInsight": "AI Insights",
+  "netDeficit": "Net Deficit"
+
 }

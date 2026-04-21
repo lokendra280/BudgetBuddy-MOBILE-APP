@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -38,6 +39,8 @@ class AuthNotifier extends Notifier<AuthState> {
     return AuthState(user: _sb.auth.currentUser);
   }
 
+  static const _webClientId =
+      '818667313685-phdmniunn776scacsik3pgs0jh8evosv.apps.googleusercontent.com';
   Future<String?> signUp(String email, String password) async {
     state = state.loading();
     try {
@@ -95,38 +98,66 @@ class AuthNotifier extends Notifier<AuthState> {
     }
   }
 
-  // Future<String?> signInWithGoogle() async {
-  //   state = state.loading();
-  //   try {
-  //     final gAccount = await GoogleSignIn(
-  //       clientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com',
-  //     ).signIn();
-  //     if (gAccount == null) {
-  //       state = state.loggedOut();
-  //       return 'Cancelled';
-  //     }
-  //     final gAuth = await gAccount.authentication;
-  //     if (gAuth.idToken == null) throw Exception('No ID token');
-  //     final r = await _sb.auth.signInWithIdToken(
-  //       provider: OAuthProvider.google,
-  //       idToken: gAuth.idToken!,
-  //       accessToken: gAuth.accessToken,
-  //     );
-  //     state = r.user != null
-  //         ? state.loggedIn(r.user!)
-  //         : state.withError('Google sign in failed');
-  //     return null;
-  //   } catch (e) {
-  //     state = state.withError(e.toString());
-  //     return e.toString();
-  //   }
-  // }
+  static Future<AuthResponse?> signInWithGoogle() async {
+    try {
+      debugPrint('🔵 Google Sign-In: starting authenticate()');
 
-  // Future<void> signOut() async {
-  //   await GoogleSignIn().signOut().catchError((_) {});
-  //   await _sb.auth.signOut();
-  //   state = state.loggedOut();
-  // }
+      // Initialize with serverClientId before authenticate()
+      await GoogleSignIn.instance.initialize(serverClientId: _webClientId);
+
+      // Use authenticate() for version 7.x
+      final GoogleSignInAccount googleUser = await GoogleSignIn.instance
+          .authenticate();
+
+      debugPrint('🔵 Google account: ${googleUser.email}');
+
+      // Get authentication - returns GoogleSignInAuthentication directly
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+      final String? idToken = googleAuth.idToken;
+
+      debugPrint('🔵 idToken: ${idToken != null ? "found ✅" : "NULL ❌"}');
+
+      if (idToken == null) {
+        throw Exception(
+          'No ID Token. Ensure Web Client ID is configured correctly.',
+        );
+      }
+
+      // For accessToken in v7.x, we need to get it from authorizationClient
+      String? accessToken;
+      try {
+        final authorization = await googleUser.authorizationClient
+            .authorizationForScopes(['email']);
+        accessToken = authorization?.accessToken;
+        debugPrint(
+          '🔵 accessToken: ${accessToken != null ? "found ✅" : "NULL"}',
+        );
+      } catch (e) {
+        debugPrint('🟡 Could not get access token: $e');
+      }
+
+      // Sign in to Supabase with Google tokens
+      debugPrint('🔵 Signing in to Supabase...');
+      final response = await _sb.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+        accessToken: accessToken,
+      );
+
+      debugPrint('✅ Supabase sign-in success: ${response.user?.email}');
+      return response;
+    } on GoogleSignInException catch (e) {
+      debugPrint(' GoogleSignInException: ${e.code} - ${e.toString()}');
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        debugPrint(' User cancelled — returning null');
+        return null;
+      }
+      rethrow;
+    } catch (e) {
+      debugPrint('Unexpected error in GoogleAuthService.signIn(): $e');
+      rethrow;
+    }
+  }
 }
 
 final authProvider = NotifierProvider<AuthNotifier, AuthState>(

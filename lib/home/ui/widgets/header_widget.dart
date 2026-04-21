@@ -4,12 +4,11 @@ import 'package:expensetracker/common/common_widget.dart';
 import 'package:expensetracker/expense/models/expense.dart';
 import 'package:expensetracker/expense/providers/expense_provider.dart';
 import 'package:expensetracker/home/providers/sync_provider.dart';
+import 'package:expensetracker/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HeaderWidget extends ConsumerWidget {
-  /// All values are passed in from HomeScreen so the widget is pure/testable.
-  /// Alternatively remove params and watch providers directly here.
   final double net, totalExp, totalInc;
   final Budget budget;
   final SyncStatus? syncResult;
@@ -86,8 +85,8 @@ class HeaderWidget extends ConsumerWidget {
                         style: TextStyle(fontSize: 11, color: c.textMuted),
                       ),
                       const SizedBox(height: 2),
-                      const Text(
-                        'SpendSense',
+                      Text(
+                        AppLocalizations.of(context)!.appName,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
@@ -170,7 +169,9 @@ class HeaderWidget extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      net >= 0 ? 'Net Savings' : 'Net Deficit',
+                      net >= 0
+                          ? AppLocalizations.of(context)!.netSaving
+                          : AppLocalizations.of(context)!.netDeficit,
                       style: TextStyle(fontSize: 11, color: c.textMuted),
                     ),
                     const SizedBox(height: 3),
@@ -189,9 +190,17 @@ class HeaderWidget extends ConsumerWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    _MiniStat('↑ Expenses', fmt(totalExp), kAccent),
+                    _MiniStat(
+                      '↑ ${AppLocalizations.of(context)!.expense}',
+                      fmt(totalExp),
+                      kAccent,
+                    ),
                     const SizedBox(height: 4),
-                    _MiniStat('↓ Income', fmt(totalInc), kGreen),
+                    _MiniStat(
+                      '↓ ${AppLocalizations.of(context)!.income}',
+                      fmt(totalInc),
+                      kGreen,
+                    ),
                   ],
                 ),
               ],

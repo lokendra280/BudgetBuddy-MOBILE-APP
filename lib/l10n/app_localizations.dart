@@ -100,7 +100,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In en, this message translates to:
-  /// **'Expense Tracker'**
+  /// **'BudgetBuddy'**
   String get appName;
 
   /// No description provided for @home.
@@ -162,6 +162,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Monthly Budget'**
   String get monthlybudget;
+
+  /// No description provided for @goodMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Morning'**
+  String get goodMorning;
+
+  /// No description provided for @netSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Net Savings'**
+  String get netSaving;
+
+  /// No description provided for @expense.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense'**
+  String get expense;
+
+  /// No description provided for @income.
+  ///
+  /// In en, this message translates to:
+  /// **'Income'**
+  String get income;
+
+  /// No description provided for @transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
+  String get transactions;
+
+  /// No description provided for @last7Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 Days'**
+  String get last7Days;
+
+  /// No description provided for @addexpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Expense To See Chart'**
+  String get addexpense;
+
+  /// No description provided for @youHaventSpend.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t spent anything yet'**
+  String get youHaventSpend;
+
+  /// No description provided for @weeklyComparsion.
+  ///
+  /// In en, this message translates to:
+  /// **'Week Comparison'**
+  String get weeklyComparsion;
+
+  /// No description provided for @thisweek.
+  ///
+  /// In en, this message translates to:
+  /// **'This Week'**
+  String get thisweek;
+
+  /// No description provided for @lastWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Week'**
+  String get lastWeek;
+
+  /// No description provided for @recent.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get recent;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @noEntryYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No Entries Yet'**
+  String get noEntryYet;
+
+  /// No description provided for @tapToAddIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to add income or expense'**
+  String get tapToAddIncome;
+
+  /// No description provided for @statements.
+  ///
+  /// In en, this message translates to:
+  /// **'Statements'**
+  String get statements;
+
+  /// No description provided for @social.
+  ///
+  /// In en, this message translates to:
+  /// **'Social'**
+  String get social;
+
+  /// No description provided for @aiInsight.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Insights'**
+  String get aiInsight;
+
+  /// No description provided for @netDeficit.
+  ///
+  /// In en, this message translates to:
+  /// **'Net Deficit'**
+  String get netDeficit;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

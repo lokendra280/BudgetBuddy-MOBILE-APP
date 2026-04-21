@@ -1,8 +1,8 @@
 import 'package:expensetracker/auth/providers/auth_provider.dart';
-import 'package:expensetracker/auth/services/auth_service.dart';
 import 'package:expensetracker/auth/ui/login_screen.dart';
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
+import 'package:expensetracker/common/constant/constant_assets.dart';
 import 'package:expensetracker/common/services/ads_service.dart';
 import 'package:expensetracker/common/services/notification_service.dart';
 import 'package:expensetracker/common/shimmer_widget.dart';
@@ -11,10 +11,10 @@ import 'package:expensetracker/expense/providers/expense_provider.dart';
 import 'package:expensetracker/expense/services/category_services.dart';
 import 'package:expensetracker/expense/ui/statemet_screen.dart';
 import 'package:expensetracker/home/providers/sync_provider.dart';
-import 'package:expensetracker/home/services/sync_services.dart';
 import 'package:expensetracker/home/ui/widgets/app_drawer.dart';
 import 'package:expensetracker/home/ui/widgets/header_widget.dart';
 import 'package:expensetracker/home/ui/widgets/home_bar_graph.dart';
+import 'package:expensetracker/l10n/app_localizations.dart';
 import 'package:expensetracker/profile/ui/profile_screen.dart';
 import 'package:expensetracker/social/services/share_service.dart';
 import 'package:flutter/material.dart';
@@ -117,21 +117,21 @@ class _H extends ConsumerState<HomeScreen> {
                         child: Row(
                           children: [
                             MetricCard(
-                              label: 'Expenses',
+                              label: AppLocalizations.of(context)!.expense,
                               value: fmt(totalExp),
                               color: kAccent,
                               icon: Icons.arrow_upward_rounded,
                               subtitle:
-                                  '${all.where((e) => !e.isIncome).length} transactions',
+                                  '${all.where((e) => !e.isIncome).length} ${AppLocalizations.of(context)!.thisweek}',
                             ),
                             const SizedBox(width: 10),
                             MetricCard(
-                              label: 'Income',
+                              label: AppLocalizations.of(context)!.income,
                               value: fmt(totalInc),
                               color: kGreen,
                               icon: Icons.arrow_downward_rounded,
                               subtitle:
-                                  '${all.where((e) => e.isIncome).length} entries',
+                                  '${all.where((e) => e.isIncome).length} ${AppLocalizations.of(context)!.lastWeek}',
                             ),
                           ],
                         ),
@@ -146,8 +146,8 @@ class _H extends ConsumerState<HomeScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
-                                  'Last 7 days',
+                                Text(
+                                  AppLocalizations.of(context)!.last7Days,
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
@@ -155,9 +155,15 @@ class _H extends ConsumerState<HomeScreen> {
                                 ),
                                 Row(
                                   children: [
-                                    _Leg(kGreen, 'Income'),
+                                    _Leg(
+                                      kGreen,
+                                      AppLocalizations.of(context)!.income,
+                                    ),
                                     const SizedBox(width: 12),
-                                    _Leg(kAccent, 'Expense'),
+                                    _Leg(
+                                      kAccent,
+                                      AppLocalizations.of(context)!.expense,
+                                    ),
                                   ],
                                 ),
                               ],
@@ -210,7 +216,9 @@ class _H extends ConsumerState<HomeScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SectionLabel('Week comparison'),
+                            SectionLabel(
+                              AppLocalizations.of(context)!.weeklyComparsion,
+                            ),
                             const SizedBox(height: 14),
                             WeekCompareBar(thisWeek: thisW, lastWeek: lastW),
                           ],
@@ -220,12 +228,12 @@ class _H extends ConsumerState<HomeScreen> {
 
                       // ── Recent transactions ───────────────────────────
                       SectionLabel(
-                        'Recent',
+                        AppLocalizations.of(context)!.recent,
                         trailing: TextButton(
                           onPressed: () => _push(const StatementsScreen()),
-                          child: const Text(
-                            'All →',
-                            style: TextStyle(
+                          child: Text(
+                            AppLocalizations.of(context)!.all,
+                            style: const TextStyle(
                               fontSize: 12,
                               color: AppColors.primaryColor,
                             ),
@@ -240,10 +248,11 @@ class _H extends ConsumerState<HomeScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 32),
                           child: Column(
                             children: [
-                              const Text('💸', style: TextStyle(fontSize: 36)),
+                              Image.asset(Assets.salary, width: 64, height: 64),
+                              // const Text('💸', style: TextStyle(fontSize: 36)),
                               const SizedBox(height: 10),
-                              const Text(
-                                'No entries yet',
+                              Text(
+                                AppLocalizations.of(context)!.noEntryYet,
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w700,
@@ -251,7 +260,7 @@ class _H extends ConsumerState<HomeScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Tap + to add income or expense',
+                                AppLocalizations.of(context)!.tapToAddIncome,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: context.c.textMuted,
@@ -303,7 +312,7 @@ class _H extends ConsumerState<HomeScreen> {
     double lastW,
     String Function(double) fmt,
   ) {
-    if (thisW == 0) return "You haven't spent anything yet 🧘";
+    if (thisW == 0) return AppLocalizations.of(context)!.youHaventSpend;
     if (lastW == 0) return "${fmt(thisW)} spent this week 💸";
     final diff = thisW - lastW;
     if (diff > 0) return "Spent ${fmt(diff)} MORE than last week 😳";

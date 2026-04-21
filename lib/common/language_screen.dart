@@ -1,14 +1,15 @@
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
-import 'package:expensetracker/common/services/lang_provider.dart';
+import 'package:expensetracker/common/providers/theme_provider.dart';
 import 'package:expensetracker/profile/ui/currency_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LanguageScreen extends StatefulWidget {
+class LanguageScreen extends ConsumerStatefulWidget {
   const LanguageScreen({super.key});
   @override
-  State<LanguageScreen> createState() => _State();
+  ConsumerState<LanguageScreen> createState() => _State();
 }
 
 class _LangOption {
@@ -26,16 +27,15 @@ const _langs = [
   _LangOption('ne', '🇳🇵', 'नेपाली', 'Nepali', 'NPR'),
   _LangOption('en', '🇺🇸', 'English', 'English (US)', 'USD'),
   _LangOption('hi', '🇮🇳', 'हिन्दी', 'Hindi', 'INR'),
-  _LangOption('en', '🇬🇧', 'English (UK)', 'English (UK)', 'GBP'),
 ];
 
-class _State extends State<LanguageScreen> {
+class _State extends ConsumerState<LanguageScreen> {
   int _sel = 0; // index into _langs
 
   Future<void> _next() async {
     HapticFeedback.mediumImpact();
     final lang = _langs[_sel];
-    await LangProvider.set(Locale(lang.code));
+    ref.read(localeProvider.notifier).state = Locale(lang.code);
     if (!mounted) return;
     Navigator.pushReplacement(
       context,

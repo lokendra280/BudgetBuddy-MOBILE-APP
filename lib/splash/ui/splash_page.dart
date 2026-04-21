@@ -1,7 +1,7 @@
 import 'package:expensetracker/auth/services/biometric_service.dart';
 import 'package:expensetracker/auth/ui/lock_screen.dart';
 import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/common/onboard_screen.dart';
+import 'package:expensetracker/common/onboard/onboard_screen.dart';
 import 'package:expensetracker/common/services/app_version_service.dart';
 import 'package:expensetracker/dashboard/pages/dashboard_page.dart';
 import 'package:expensetracker/dashboard/widget/dashboard_widget.dart';

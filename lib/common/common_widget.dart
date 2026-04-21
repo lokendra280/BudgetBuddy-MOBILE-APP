@@ -2,6 +2,7 @@ import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/services/ads_service.dart';
 import 'package:expensetracker/expense/models/expense.dart';
 import 'package:expensetracker/expense/services/expenses_service.dart';
+import 'package:expensetracker/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -301,7 +302,7 @@ class BudgetBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Monthly budget',
+              AppLocalizations.of(context)!.monthlybudget,
               style: TextStyle(fontSize: 11, color: context.c.textMuted),
             ),
             Text(
@@ -343,9 +344,19 @@ class WeekCompareBar extends StatelessWidget {
     final max = [thisWeek, lastWeek, 1.0].reduce((a, b) => a > b ? a : b);
     return Row(
       children: [
-        _WBar('This week', thisWeek, thisWeek / max, AppColors.primaryColor),
+        _WBar(
+          AppLocalizations.of(context)!.thisweek,
+          thisWeek,
+          thisWeek / max,
+          AppColors.primaryColor,
+        ),
         const SizedBox(width: 12),
-        _WBar('Last week', lastWeek, lastWeek / max, context.c.textMuted),
+        _WBar(
+          AppLocalizations.of(context)!.lastWeek,
+          lastWeek,
+          lastWeek / max,
+          context.c.textMuted,
+        ),
       ],
     );
   }

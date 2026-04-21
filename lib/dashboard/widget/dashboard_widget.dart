@@ -7,6 +7,7 @@ import 'package:expensetracker/common/navigation_service.dart';
 import 'package:expensetracker/expense/ui/add_expense_screen.dart';
 import 'package:expensetracker/expense/ui/statemet_screen.dart';
 import 'package:expensetracker/home/ui/pages/home_screen.dart';
+import 'package:expensetracker/l10n/app_localizations.dart';
 import 'package:expensetracker/social/ui/social_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -118,12 +119,15 @@ class _DashboardWidgetState extends State<DashboardWidget>
   @override
   Widget build(BuildContext context) {
     // ignore: deprecated_member_use
+    final l10n = AppLocalizations.of(context)!;
+
     return WillPopScope(
       onWillPop: showExitPopup,
       child: Scaffold(
         bottomNavigationBar: NavigationBar(
           height: 80,
           elevation: 0,
+
           selectedIndex: _selectedIndex,
           onDestinationSelected: (index) {
             _pageController.animateToPage(
@@ -140,7 +144,7 @@ class _DashboardWidgetState extends State<DashboardWidget>
                     ? AppColors.primaryColor
                     : AppColors.darkGrey,
               ),
-              label: "Home",
+              label: l10n.home,
             ),
             NavigationDestination(
               icon: CommonSvgWidget(
@@ -149,7 +153,7 @@ class _DashboardWidgetState extends State<DashboardWidget>
                     ? AppColors.primaryColor
                     : AppColors.darkGrey,
               ),
-              label: "Statements",
+              label: l10n.statements,
             ),
             NavigationDestination(
               icon: CommonSvgWidget(
@@ -158,7 +162,7 @@ class _DashboardWidgetState extends State<DashboardWidget>
                     ? AppColors.primaryColor
                     : AppColors.darkGrey,
               ),
-              label: "Social",
+              label: l10n.social,
             ),
             NavigationDestination(
               icon: CommonSvgWidget(
@@ -167,7 +171,7 @@ class _DashboardWidgetState extends State<DashboardWidget>
                     ? AppColors.primaryColor
                     : AppColors.darkGrey,
               ),
-              label: "AI Insights",
+              label: l10n.aiInsight,
             ),
           ],
         ),

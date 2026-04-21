@@ -4,9 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import '../models/expense.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// EXPENSE NOTIFIER — owns the Hive box, exposes CRUD + computed values
-// ─────────────────────────────────────────────────────────────────────────────
 
 class ExpenseState {
   final List<Expense> all;
