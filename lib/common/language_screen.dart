@@ -1,7 +1,7 @@
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
 import 'package:expensetracker/common/providers/theme_provider.dart';
-import 'package:expensetracker/profile/ui/currency_screen.dart';
+import 'package:expensetracker/features/profile/ui/currency_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

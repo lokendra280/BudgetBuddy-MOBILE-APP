@@ -175,4 +175,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get other => 'Other';
+
+  @override
+  String get welcomeBack => 'Welcome back';
+
+  @override
+  String get signinContinue => 'Sign in to continue';
+
+  @override
+  String get signIn => 'Sign In';
+
+  @override
+  String get or => 'Or';
+
+  @override
+  String get continueGoogle => 'Continue with Google';
+
+  @override
+  String get continueWithoutAccount => 'Continue without account';
+
+  @override
+  String get newHere => 'New here? Create account';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get signUpToTrack => 'Sign up to track and sync your finances';
+
+  @override
+  String get alreadyHaveAn => 'Already have an account? Sign in';
+
+  @override
+  String get createdAccount => 'Account created';
 }

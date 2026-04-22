@@ -1,6 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:expensetracker/ai_screen/services/ai_services.dart';
-import 'package:expensetracker/expense/models/expense.dart';
+import 'package:expensetracker/features/ai_screen/services/ai_services.dart';
+import 'package:expensetracker/features/expense/models/expense.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';

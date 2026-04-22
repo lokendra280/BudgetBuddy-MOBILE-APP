@@ -175,4 +175,37 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get other => 'अन्य';
+
+  @override
+  String get welcomeBack => 'फेरि स्वागत छ';
+
+  @override
+  String get signinContinue => 'जारी राख्न साइन इन गर्नुहोस्';
+
+  @override
+  String get signIn => 'साइन इन';
+
+  @override
+  String get or => 'वा';
+
+  @override
+  String get continueGoogle => 'Google बाट जारी राख्नुहोस्';
+
+  @override
+  String get continueWithoutAccount => 'खाता बिना जारी राख्नुहोस्';
+
+  @override
+  String get newHere => 'नयाँ हुनुहुन्छ? खाता बनाउनुहोस्';
+
+  @override
+  String get createAccount => 'खाता बनाउनुहोस्';
+
+  @override
+  String get signUpToTrack => 'तपाईंको खर्च ट्र्याक गर्न र समक्रमण गर्न साइन अप गर्नुहोस्';
+
+  @override
+  String get alreadyHaveAn => 'पहिले नै खाता छ? साइन इन गर्नुहोस्';
+
+  @override
+  String get createdAccount => 'खाता सफलतापूर्वक सिर्जना भयो';
 }

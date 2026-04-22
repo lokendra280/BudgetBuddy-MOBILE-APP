@@ -56,5 +56,29 @@
   "entertainment": "Entertainment",
   "groceries": "Groceries",
   "food": "Food",
-  "other": "Other"
+  "other": "Other",
+  "welcomeBack": "Welcome back",
+  "signinContinue": "Sign in to continue",
+  "signIn": "Sign In",
+  "or": "Or",
+  "continueGoogle": "Continue with Google",
+  "continueWithoutAccount": "Continue without account",
+  "newHere": "New here? Create account",
+  "createAccount": "Create Account",
+  "signUpToTrack": "Sign up to track and sync your finances",
+  "alreadyHaveAn": "Already have an account? Sign in",
+  "createdAccount": "Account created"
+
+
+  "community": "Community",
+  "leaderboard": "LeaderBoard",
+  "challenges": "Challenges",
+  "invite": "Invite",
+  "guest": "Guest",
+  "youSpending": "Your Spending this Month",
+  "topSaver": "Top Savers This Month",
+  "loverSpending": "Lower Spending = better rank",
+  "dayStirks": "day Streak",
+  "activeChallenges": "Active Challenges",
+  
 }

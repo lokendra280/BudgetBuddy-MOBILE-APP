@@ -175,4 +175,37 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get other => 'अन्य';
+
+  @override
+  String get welcomeBack => 'वापसी पर स्वागत है';
+
+  @override
+  String get signinContinue => 'जारी रखने के लिए साइन इन करें';
+
+  @override
+  String get signIn => 'साइन इन';
+
+  @override
+  String get or => 'या';
+
+  @override
+  String get continueGoogle => 'Google के साथ जारी रखें';
+
+  @override
+  String get continueWithoutAccount => 'बिना खाते के जारी रखें';
+
+  @override
+  String get newHere => 'नए हैं? खाता बनाएं';
+
+  @override
+  String get createAccount => 'खाता बनाएं';
+
+  @override
+  String get signUpToTrack => 'अपने खर्च ट्रैक और सिंक करने के लिए साइन अप करें';
+
+  @override
+  String get alreadyHaveAn => 'पहले से खाता है? साइन इन करें';
+
+  @override
+  String get createdAccount => 'खाता बन गया';
 }

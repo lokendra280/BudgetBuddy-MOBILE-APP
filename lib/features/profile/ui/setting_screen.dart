@@ -1,0 +1,525 @@
+import 'package:expensetracker/features/auth/services/biometric_service.dart';
+import 'package:expensetracker/common/app_theme.dart';
+import 'package:expensetracker/common/common_svg_widget.dart';
+import 'package:expensetracker/common/common_widget.dart';
+import 'package:expensetracker/common/constant/constant_assets.dart';
+import 'package:expensetracker/common/language_screen.dart';
+import 'package:expensetracker/common/services/lang_provider.dart';
+import 'package:expensetracker/common/services/notification_service.dart';
+import 'package:expensetracker/common/theme_provider.dart';
+import 'package:expensetracker/features/expense/models/expense.dart';
+import 'package:expensetracker/features/expense/providers/expense_provider.dart';
+import 'package:expensetracker/features/expense/services/expenses_service.dart';
+import 'package:expensetracker/features/profile/ui/about_page.dart';
+import 'package:expensetracker/features/profile/ui/widgets/theme_toogle.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class SettingsScreen extends ConsumerStatefulWidget {
+  const SettingsScreen({super.key});
+  @override
+  ConsumerState<SettingsScreen> createState() => _State();
+}
+
+class _State extends ConsumerState<SettingsScreen> {
+  final _limitCtrl = TextEditingController();
+  bool _notif = false;
+  bool _biometric = false;
+  bool _bioAvail = false;
+  bool _obscure = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    final enabled = await BiometricService.isEnabled;
+    final avail = await BiometricService.isAvailable();
+    if (mounted)
+      setState(() {
+        _limitCtrl.text = ExpenseService.budget.monthlyLimit.toStringAsFixed(0);
+        _notif = prefs.getBool('notif') ?? false;
+        _biometric = enabled;
+        _bioAvail = avail;
+      });
+  }
+
+  Future<void> _saveLimit() async {
+    final val = double.tryParse(_limitCtrl.text.replaceAll(',', ''));
+    if (val == null || val <= 0) {
+      _snack('Enter a valid amount', kAccent);
+      return;
+    }
+    HapticFeedback.mediumImpact();
+    final b = ExpenseService.budget..monthlyLimit = val;
+    await b.save();
+    _snack('Budget updated ✓', kGreen);
+  }
+
+  Future<void> _toggleNotif(bool v) async {
+    setState(() => _notif = v);
+    final p = await SharedPreferences.getInstance();
+    await p.setBool('notif', v);
+    v
+        ? await NotificationService.scheduleDailyReminder()
+        : await NotificationService.cancelAll();
+  }
+
+  Future<void> _toggleBio(bool v) async {
+    if (v) {
+      final ok = await BiometricService.authenticate(
+        reason: 'Verify to enable biometric lock',
+      );
+      if (!ok) return;
+    }
+    await BiometricService.setEnabled(v);
+    if (mounted) setState(() => _biometric = v);
+  }
+
+  Future<void> _saveCurrency(String code) async {
+    await ref.read(expenseProvider.notifier).updateBudget(currency: code);
+    if (mounted) setState(() {}); // ← force this widget to re-read curInfo
+  }
+
+  Future<void> _selectCurrency() async {
+    final currentCode = ref.read(currencyProvider);
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: context.c.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 8),
+              Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: context.c.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 14),
+              const Text(
+                'Select Currency',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              ...kCurrencies.map((cur) {
+                final selected = cur.code == currentCode;
+                return ListTile(
+                  leading: Text(cur.flag, style: const TextStyle(fontSize: 24)),
+                  title: Text(
+                    '${cur.name} (${cur.code})',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: Text('Symbol: ${cur.symbol}'),
+                  trailing: selected
+                      ? const Icon(
+                          Icons.check_circle_rounded,
+                          color: AppColors.primaryColor,
+                        )
+                      : null,
+                  onTap: () async {
+                    await _saveCurrency(cur.code);
+                    if (mounted) {
+                      Navigator.pop(context);
+                      // Reload limit field in case symbol changed
+                      _limitCtrl.text = ExpenseService.budget.monthlyLimit
+                          .toStringAsFixed(0);
+                    }
+                  },
+                );
+              }),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _snack(String msg, Color col) =>
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(msg),
+          backgroundColor: col,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final budget = ref.watch(budgetProvider);
+    final curInfo = currencyOf(ref.watch(currencyProvider));
+    final locale = ref.watch(localeProvider);
+    final lang = locale.languageCode;
+    final native = LocaleNotifier.labels[lang]?.$1 ?? 'English';
+    final flag = LocaleNotifier.flags[lang] ?? '🇬🇧';
+
+    return Scaffold(
+      backgroundColor: c.bg,
+      appBar: AppBar(
+        backgroundColor: c.surface,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Settings',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+        ),
+        centerTitle: true,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(18),
+        children: [
+          // ── Appearance ───────────────────────────────────────────────────
+          _T('Appearance'), const SizedBox(height: 10),
+          ThemeToggle(), const SizedBox(height: 20),
+
+          // ── Language ─────────────────────────────────────────────────────
+          _T('Language'), const SizedBox(height: 10),
+          AppCard(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const LanguageScreen()),
+            ),
+            child: Row(
+              children: [
+                Text(flag, style: const TextStyle(fontSize: 24)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'App Language',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        native,
+                        style: TextStyle(fontSize: 11, color: c.textMuted),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right_rounded, color: c.textMuted, size: 20),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // ── Currency ─────────────────────────────────────────────────────
+          _T('Currency'), const SizedBox(height: 10),
+          AppCard(
+            onTap: _selectCurrency,
+            child: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: kAmber.withOpacity(0.10),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: Text(
+                      curInfo.flag,
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Display Currency',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        '${curInfo.name} · ${curInfo.symbol}',
+                        style: TextStyle(fontSize: 11, color: c.textMuted),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right_rounded, color: c.textMuted, size: 20),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // ── Security ─────────────────────────────────────────────────────
+          _T('Security'), const SizedBox(height: 10),
+          AppCard(
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryColor.withOpacity(0.10),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.fingerprint_rounded,
+                        color: AppColors.primaryColor,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Biometric lock',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            _bioAvail
+                                ? 'Require fingerprint or face to open'
+                                : 'Not available on this device',
+                            style: TextStyle(fontSize: 11, color: c.textMuted),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Switch(
+                      value: _biometric,
+                      onChanged: _bioAvail ? _toggleBio : null,
+                    ),
+                  ],
+                ),
+                if (_biometric) ...[
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: kGreen.withOpacity(0.07),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.shield_rounded,
+                          size: 14,
+                          color: kGreen,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'App is biometric-protected',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: kGreen,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // ── Budget ───────────────────────────────────────────────────────
+          _T('Monthly Budget'), const SizedBox(height: 10),
+          AppCard(
+            child: Column(
+              children: [
+                InputField(
+                  hint: 'Monthly spending limit',
+                  controller: _limitCtrl,
+                  keyboard: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  prefix: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Text(
+                      curInfo.symbol,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: AppColors.primaryColor,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                AppButton(
+                  label: 'Save Budget',
+                  onTap: _saveLimit,
+                  icon: Icons.check_rounded,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // ── Notifications ────────────────────────────────────────────────
+          _T('Notifications'), const SizedBox(height: 10),
+          AppCard(
+            child: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: kAccent.withOpacity(0.10),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: CommonSvgWidget(
+                    svgName: Assets.notification,
+                    height: 20,
+                    width: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Daily reminder',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        'Get reminded to log expenses',
+                        style: TextStyle(fontSize: 11, color: c.textMuted),
+                      ),
+                    ],
+                  ),
+                ),
+                Switch(value: _notif, onChanged: _toggleNotif),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // ── Streak ───────────────────────────────────────────────────────
+          _T('Activity'), const SizedBox(height: 10),
+          AppCard(
+            child: Row(
+              children: [
+                CommonSvgWidget(
+                  svgName: Assets.strike,
+                  height: 20,
+                  width: 20,
+                  color: kAccent,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${ExpenseService.budget.streakDays} day streak',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Text(
+                        'Keep logging daily to maintain it',
+                        style: TextStyle(fontSize: 11, color: c.textMuted),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // ── About ────────────────────────────────────────────────────────
+          _T('About'), const SizedBox(height: 10),
+          AppCard(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AboutScreen()),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColor.withOpacity(0.10),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: CommonSvgWidget(
+                    svgName: Assets.about,
+                    height: 20,
+                    width: 20,
+                    color: AppColors.primaryColor,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'About BudgetBuddy',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        'Version, markets, legal',
+                        style: TextStyle(fontSize: 11, color: c.textMuted),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right_rounded, color: c.textMuted, size: 20),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+}
+
+class _T extends StatelessWidget {
+  final String text;
+  const _T(this.text);
+  @override
+  Widget build(BuildContext context) => Text(
+    text,
+    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+  );
+}

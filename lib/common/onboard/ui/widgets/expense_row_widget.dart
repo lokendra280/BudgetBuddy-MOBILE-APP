@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/onboard/ui/widgets/cat_icons.dart';
 import 'package:expensetracker/common/onboard/ui/widgets/glass_widget.dart';
 import 'package:flutter/material.dart';
@@ -34,10 +35,7 @@ class ExpenseRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 1),
-              Text(
-                sub,
-                style: const TextStyle(fontSize: 10, color: Colors.white54),
-              ),
+              Text(sub, style: TextStyle(fontSize: 10, color: AppColors.white)),
             ],
           ),
         ),

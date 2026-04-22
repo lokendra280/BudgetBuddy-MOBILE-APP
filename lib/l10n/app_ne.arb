@@ -55,7 +55,18 @@
   "entertainment": "मनोरञ्जन",
   "groceries": "किराना",
   "food": "खाना",
-    "other": "अन्य"
+    "other": "अन्य",
+      "welcomeBack": "फेरि स्वागत छ",
+  "signinContinue": "जारी राख्न साइन इन गर्नुहोस्",
+  "signIn": "साइन इन",
+  "or": "वा",
+  "continueGoogle": "Google बाट जारी राख्नुहोस्",
+  "continueWithoutAccount": "खाता बिना जारी राख्नुहोस्",
+  "newHere": "नयाँ हुनुहुन्छ? खाता बनाउनुहोस्",
+  "createAccount": "खाता बनाउनुहोस्",
+  "signUpToTrack": "तपाईंको खर्च ट्र्याक गर्न र समक्रमण गर्न साइन अप गर्नुहोस्",
+  "alreadyHaveAn": "पहिले नै खाता छ? साइन इन गर्नुहोस्",
+  "createdAccount": "खाता सफलतापूर्वक सिर्जना भयो"
 
 
 }
