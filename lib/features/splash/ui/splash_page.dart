@@ -4,7 +4,6 @@ import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/onboard/onboard_screen.dart';
 import 'package:expensetracker/common/services/app_version_service.dart';
 import 'package:expensetracker/features/dashboard/pages/dashboard_page.dart';
-import 'package:expensetracker/features/dashboard/widget/dashboard_widget.dart';
 import 'package:expensetracker/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';

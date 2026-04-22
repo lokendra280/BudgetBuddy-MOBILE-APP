@@ -1,9 +1,12 @@
+import 'package:expensetracker/common/common_svg_widget.dart';
+import 'package:expensetracker/common/constant/constant_assets.dart';
 import 'package:expensetracker/features/auth/providers/auth_provider.dart';
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
 import 'package:expensetracker/features/profile/services/refers_service.dart';
 import 'package:expensetracker/features/social/providers/social_provider.dart';
 import 'package:expensetracker/features/social/services/share_service.dart';
+import 'package:expensetracker/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -108,13 +111,13 @@ class _InviteState extends ConsumerState<InviteTab> {
             children: [
               const Text('🎁', style: TextStyle(fontSize: 30)),
               const SizedBox(height: 10),
-              const Text(
-                'Invite Friends',
+              Text(
+                AppLocalizations.of(context)!.inviteFriends,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 4),
               Text(
-                'Both get +3 bonus streak days!',
+                AppLocalizations.of(context)!.bothGetBonus,
                 style: TextStyle(fontSize: 13, color: c.textMuted),
               ),
               const SizedBox(height: 18),
@@ -128,7 +131,7 @@ class _InviteState extends ConsumerState<InviteTab> {
               else if (code != null) ...[
                 // ── Your code ───────────────────────────────────────────────────
                 Text(
-                  'YOUR CODE',
+                  AppLocalizations.of(context)!.yourCode,
                   style: TextStyle(
                     fontSize: 10,
                     color: c.textMuted,
@@ -199,7 +202,7 @@ class _InviteState extends ConsumerState<InviteTab> {
                   children: [
                     Expanded(
                       child: AppButton(
-                        label: 'Share Invite',
+                        label: AppLocalizations.of(context)!.shareInvite,
                         icon: Icons.share_rounded,
                         onTap: () =>
                             ref2.read(referralProvider.notifier).share(),
@@ -432,7 +435,7 @@ class _InviteState extends ConsumerState<InviteTab> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Sign in to apply a referral code and earn streak days.',
+                    AppLocalizations.of(context)!.signIntoApply,
                     style: TextStyle(fontSize: 12, color: c.textMuted),
                   ),
                 ),
@@ -465,15 +468,15 @@ class _InviteState extends ConsumerState<InviteTab> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Share my report',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.shareReport,
+                      style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     Text(
-                      'Share monthly spending summary as image',
+                      AppLocalizations.of(context)!.shareMonthly,
                       style: TextStyle(fontSize: 11, color: c.textMuted),
                     ),
                   ],
@@ -481,8 +484,8 @@ class _InviteState extends ConsumerState<InviteTab> {
               ),
               TextButton(
                 onPressed: () => ShareService.shareReport(context),
-                child: const Text(
-                  'Share',
+                child: Text(
+                  AppLocalizations.of(context)!.share,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -500,7 +503,14 @@ class _InviteState extends ConsumerState<InviteTab> {
         AppCard(
           child: Row(
             children: [
-              const Text('👥', style: TextStyle(fontSize: 26)),
+              CommonSvgWidget(
+                svgName: Assets.social,
+                height: 20,
+                width: 20,
+                color: AppColors.primaryColor,
+              ),
+
+              // const Text('👥', style: TextStyle(fontSize: 26)),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -514,7 +524,7 @@ class _InviteState extends ConsumerState<InviteTab> {
                       ),
                     ),
                     Text(
-                      'Keep sharing to grow!',
+                      AppLocalizations.of(context)!.keepSharing,
                       style: TextStyle(fontSize: 11, color: c.textMuted),
                     ),
                   ],
@@ -546,13 +556,14 @@ class _InviteState extends ConsumerState<InviteTab> {
         const SizedBox(height: 20),
 
         // ── How it works ───────────────────────────────────────────────────────
-        const SectionLabel('How it works'), const SizedBox(height: 12),
+        SectionLabel(AppLocalizations.of(context)!.howItWork),
+        const SizedBox(height: 12),
         ...[
-          ('1️⃣', 'Share your code or spending report with friends'),
-          ('2️⃣', 'Friend downloads SpendSense and signs up'),
-          ('3️⃣', 'They go to Community → Invite and enter your code'),
-          ('4️⃣', 'Both get +3 bonus streak days 🔥'),
-          ('5️⃣', 'Compete together on the savings leaderboard 🏆'),
+          ('1️⃣', '${AppLocalizations.of(context)!.shareYourCode}'),
+          ('2️⃣', '${AppLocalizations.of(context)!.friendDownloads}'),
+          ('3️⃣', '${AppLocalizations.of(context)!.theyGoToCommunity}'),
+          ('4️⃣', '${AppLocalizations.of(context)!.bothGetBonus}'),
+          ('5️⃣', '${AppLocalizations.of(context)!.completeTogether}'),
         ].map(
           (s) => Padding(
             padding: const EdgeInsets.only(bottom: 12),

@@ -93,7 +93,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get social => 'Social';
 
   @override
-  String get aiInsight => 'AI Insights';
+  String get aiInsight => 'Ai Insights';
 
   @override
   String get netDeficit => 'Net Deficit';
@@ -208,4 +208,121 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createdAccount => 'Account created';
+
+  @override
+  String get community => 'Community';
+
+  @override
+  String get leaderboard => 'LeaderBoard';
+
+  @override
+  String get challenges => 'Challenges';
+
+  @override
+  String get invite => 'Invite';
+
+  @override
+  String get guest => 'Guest';
+
+  @override
+  String get youSpending => 'Your Spending this Month';
+
+  @override
+  String get topSaver => 'Top Savers This Month';
+
+  @override
+  String get loverSpending => 'Lower Spending = better rank';
+
+  @override
+  String get dayStirks => 'day Streak';
+
+  @override
+  String get activeChallenges => 'Active Challenges';
+
+  @override
+  String get inviteFriends => 'Invite Friends';
+
+  @override
+  String get bothGetBonus => 'Both get + 3 bonus streak days!';
+
+  @override
+  String get yourCode => 'YOUR CODE';
+
+  @override
+  String get shareInvite => 'Share Invite';
+
+  @override
+  String get signIntoApply => 'Sing in to apply a referral code and earn streak days';
+
+  @override
+  String get shareReport => 'Share my report';
+
+  @override
+  String get shareMonthly => 'Share monthly spending a summary as image';
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String get friendsInvited => 'Friends Invited';
+
+  @override
+  String get keepSharing => 'Keep Sharing to grow!';
+
+  @override
+  String get howItWork => 'How it works';
+
+  @override
+  String get shareYourCode => 'Share your code or spending report with friends';
+
+  @override
+  String get friendDownloads => 'Friend downloads BudgetBuddy and signs up';
+
+  @override
+  String get theyGoToCommunity => 'They go to Community -> Invite and enter your code';
+
+  @override
+  String get bothGet => 'Both get +3 bonus streak days';
+
+  @override
+  String get completeTogether => 'Complete together on the savings leaderboard';
+
+  @override
+  String get addEntry => 'Add Entry';
+
+  @override
+  String get category => 'CATEGORY';
+
+  @override
+  String get row => 'Row';
+
+  @override
+  String get ready => 'Ready';
+
+  @override
+  String get itemName => 'Item Name';
+
+  @override
+  String get addAnotherItems => 'Add Another Items';
+
+  @override
+  String get saveExpense => 'Save Expense';
+
+  @override
+  String get overView => 'OverView';
+
+  @override
+  String get budget => 'Budget';
+
+  @override
+  String get predict => 'Predict';
+
+  @override
+  String get goals => 'Goals';
+
+  @override
+  String get coach => 'Coach';
+
+  @override
+  String get saveIncome => 'Save Income';
 }

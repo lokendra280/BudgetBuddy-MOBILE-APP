@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// ── Pre-loaded prefs — populated in main() BEFORE runApp ─────────────────────
+// This guarantees both ThemeNotifier and LocaleNotifier read the correct saved
+// value on the very first frame, with no async gap and no flash of defaults.
 late SharedPreferences _prefs;
 
 Future<void> loadPrefsBeforeRunApp() async {

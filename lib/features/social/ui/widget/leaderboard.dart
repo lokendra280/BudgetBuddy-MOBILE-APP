@@ -4,6 +4,7 @@ import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
 import 'package:expensetracker/features/expense/providers/expense_provider.dart';
 import 'package:expensetracker/features/social/providers/social_provider.dart';
+import 'package:expensetracker/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -65,14 +66,16 @@ class LeaderboardTab extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          auth.isLoggedIn ? name : 'Guest',
+                          auth.isLoggedIn
+                              ? name
+                              : AppLocalizations.of(context)!.guest,
                           style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         Text(
-                          'Your spending this month',
+                          AppLocalizations.of(context)!.youSpending,
                           style: TextStyle(fontSize: 11, color: c.textMuted),
                         ),
                       ],
@@ -114,7 +117,7 @@ class LeaderboardTab extends ConsumerWidget {
                 ),
               )
             else ...[
-              const SectionLabel('Top Savers This Month'),
+              SectionLabel(AppLocalizations.of(context)!.topSaver),
               const SizedBox(height: 12),
               ...rows.asMap().entries.map((entry) {
                 final rank = entry.key + 1;
@@ -191,7 +194,7 @@ class LeaderboardTab extends ConsumerWidget {
                               ),
                               if (streak > 0)
                                 Text(
-                                  '🔥 $streak day streak',
+                                  '🔥 $streak ${AppLocalizations.of(context)!.dayStirks}',
                                   style: const TextStyle(
                                     fontSize: 10,
                                     color: kAmber,
@@ -216,7 +219,7 @@ class LeaderboardTab extends ConsumerWidget {
               const SizedBox(height: 8),
               Center(
                 child: Text(
-                  '*Lower spending = better rank 🏆',
+                  '*${AppLocalizations.of(context)!.loverSpending} 🏆',
                   style: TextStyle(fontSize: 11, color: c.textMuted),
                 ),
               ),

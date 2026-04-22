@@ -1,6 +1,6 @@
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
-import 'package:expensetracker/common/providers/theme_provider.dart';
+import 'package:expensetracker/common/theme_provider.dart';
 import 'package:expensetracker/features/profile/ui/currency_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class LanguageScreen extends ConsumerStatefulWidget {
   const LanguageScreen({super.key});
   @override
-  ConsumerState<LanguageScreen> createState() => _State();
+  ConsumerState<LanguageScreen> createState() => _State(); // ← was State<LanguageScreen>
 }
 
 class _LangOption {
@@ -27,15 +27,39 @@ const _langs = [
   _LangOption('ne', '🇳🇵', 'नेपाली', 'Nepali', 'NPR'),
   _LangOption('en', '🇺🇸', 'English', 'English (US)', 'USD'),
   _LangOption('hi', '🇮🇳', 'हिन्दी', 'Hindi', 'INR'),
+  _LangOption('en', '🇬🇧', 'English (UK)', 'English (UK)', 'GBP'),
 ];
 
 class _State extends ConsumerState<LanguageScreen> {
-  int _sel = 0; // index into _langs
+  int _sel = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Pre-select the language that is currently active so the screen
+    // doesn't always open on the first item.
+    final currentCode = ref.read(localeProvider).languageCode;
+    final idx = _langs.indexWhere((l) => l.code == currentCode);
+    if (idx >= 0) _sel = idx;
+  }
+
+  // BUG FIX 1a: change language INSTANTLY on tap — MaterialApp.locale is
+  // driven by localeProvider which SpendSenseApp watches. Calling setLocale()
+  // here means the whole widget tree rebuilds immediately with the new locale,
+  // so the user sees translated strings before they even press Next.
+  Future<void> _select(int index) async {
+    HapticFeedback.selectionClick();
+    setState(() => _sel = index);
+    // Instant language switch — MaterialApp.locale updates in the same frame
+    await ref
+        .read(localeProvider.notifier)
+        .setLocale(Locale(_langs[index].code));
+  }
 
   Future<void> _next() async {
     HapticFeedback.mediumImpact();
     final lang = _langs[_sel];
-    ref.read(localeProvider.notifier).state = Locale(lang.code);
+    // setLocale already called in _select — no need to call again
     if (!mounted) return;
     Navigator.pushReplacement(
       context,
@@ -48,6 +72,10 @@ class _State extends ConsumerState<LanguageScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    // Watch the provider so the screen itself rebuilds when locale changes
+    // (e.g. the title text would update if it used AppLocalizations)
+    ref.watch(localeProvider);
+
     return Scaffold(
       backgroundColor: c.bg,
       body: SafeArea(
@@ -56,7 +84,6 @@ class _State extends ConsumerState<LanguageScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Progress indicator (step 1 of 2)
               const SizedBox(height: 20),
               _StepIndicator(step: 1, total: 2),
               const SizedBox(height: 32),
@@ -83,10 +110,7 @@ class _State extends ConsumerState<LanguageScreen> {
                 final lang = e.value;
                 final sel = _sel == e.key;
                 return GestureDetector(
-                  onTap: () {
-                    HapticFeedback.selectionClick();
-                    setState(() => _sel = e.key);
-                  },
+                  onTap: () => _select(e.key), // ← calls setLocale immediately
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     margin: const EdgeInsets.only(bottom: 12),

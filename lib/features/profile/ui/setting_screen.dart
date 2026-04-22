@@ -1,17 +1,13 @@
-import 'package:expensetracker/features/auth/services/biometric_service.dart';
 import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/common/common_svg_widget.dart';
 import 'package:expensetracker/common/common_widget.dart';
-import 'package:expensetracker/common/constant/constant_assets.dart';
 import 'package:expensetracker/common/language_screen.dart';
-import 'package:expensetracker/common/services/lang_provider.dart';
 import 'package:expensetracker/common/services/notification_service.dart';
 import 'package:expensetracker/common/theme_provider.dart';
+import 'package:expensetracker/features/auth/services/biometric_service.dart';
 import 'package:expensetracker/features/expense/models/expense.dart';
 import 'package:expensetracker/features/expense/providers/expense_provider.dart';
-import 'package:expensetracker/features/expense/services/expenses_service.dart';
 import 'package:expensetracker/features/profile/ui/about_page.dart';
-import 'package:expensetracker/features/profile/ui/widgets/theme_toogle.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,7 +24,6 @@ class _State extends ConsumerState<SettingsScreen> {
   bool _notif = false;
   bool _biometric = false;
   bool _bioAvail = false;
-  bool _obscure = false;
 
   @override
   void initState() {
@@ -36,19 +31,30 @@ class _State extends ConsumerState<SettingsScreen> {
     _load();
   }
 
+  @override
+  void dispose() {
+    _limitCtrl.dispose();
+    super.dispose();
+  }
+
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
     final enabled = await BiometricService.isEnabled;
     final avail = await BiometricService.isAvailable();
-    if (mounted)
-      setState(() {
-        _limitCtrl.text = ExpenseService.budget.monthlyLimit.toStringAsFixed(0);
-        _notif = prefs.getBool('notif') ?? false;
-        _biometric = enabled;
-        _bioAvail = avail;
-      });
+    if (!mounted) return;
+    setState(() {
+      // Read budget limit from Riverpod provider — not static ExpenseService
+      _limitCtrl.text = ref
+          .read(budgetProvider)
+          .monthlyLimit
+          .toStringAsFixed(0);
+      _notif = prefs.getBool('notif') ?? false;
+      _biometric = enabled;
+      _bioAvail = avail;
+    });
   }
 
+  // ── Save budget limit via Riverpod notifier ─────────────────────────────────
   Future<void> _saveLimit() async {
     final val = double.tryParse(_limitCtrl.text.replaceAll(',', ''));
     if (val == null || val <= 0) {
@@ -56,11 +62,11 @@ class _State extends ConsumerState<SettingsScreen> {
       return;
     }
     HapticFeedback.mediumImpact();
-    final b = ExpenseService.budget..monthlyLimit = val;
-    await b.save();
+    await ref.read(expenseProvider.notifier).updateBudget(limit: val);
     _snack('Budget updated ✓', kGreen);
   }
 
+  // ── Notifications ──────────────────────────────────────────────────────────
   Future<void> _toggleNotif(bool v) async {
     setState(() => _notif = v);
     final p = await SharedPreferences.getInstance();
@@ -70,6 +76,7 @@ class _State extends ConsumerState<SettingsScreen> {
         : await NotificationService.cancelAll();
   }
 
+  // ── Biometric ──────────────────────────────────────────────────────────────
   Future<void> _toggleBio(bool v) async {
     if (v) {
       final ok = await BiometricService.authenticate(
@@ -81,72 +88,74 @@ class _State extends ConsumerState<SettingsScreen> {
     if (mounted) setState(() => _biometric = v);
   }
 
-  Future<void> _saveCurrency(String code) async {
-    await ref.read(expenseProvider.notifier).updateBudget(currency: code);
-    if (mounted) setState(() {}); // ← force this widget to re-read curInfo
-  }
-
-  Future<void> _selectCurrency() async {
-    final currentCode = ref.read(currencyProvider);
-    await showModalBottomSheet(
-      context: context,
-      backgroundColor: context.c.card,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 8),
-              Container(
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: context.c.border,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(height: 14),
-              const Text(
-                'Select Currency',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              ...kCurrencies.map((cur) {
-                final selected = cur.code == currentCode;
-                return ListTile(
-                  leading: Text(cur.flag, style: const TextStyle(fontSize: 24)),
-                  title: Text(
-                    '${cur.name} (${cur.code})',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+  Future<void> _selectCurrency() => showModalBottomSheet(
+    context: context,
+    backgroundColor: context.c.card,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (_) => Consumer(
+      // ← Consumer so the sheet watches the provider
+      builder: (ctx, ref, __) {
+        // Reads live from provider — reactive inside the sheet
+        final selectedCode = ref.watch(currencyProvider);
+        return SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 8),
+                Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: ctx.c.border,
+                    borderRadius: BorderRadius.circular(2),
                   ),
-                  subtitle: Text('Symbol: ${cur.symbol}'),
-                  trailing: selected
-                      ? const Icon(
-                          Icons.check_circle_rounded,
-                          color: AppColors.primaryColor,
-                        )
-                      : null,
-                  onTap: () async {
-                    await _saveCurrency(cur.code);
-                    if (mounted) {
-                      Navigator.pop(context);
-                      // Reload limit field in case symbol changed
-                      _limitCtrl.text = ExpenseService.budget.monthlyLimit
-                          .toStringAsFixed(0);
-                    }
-                  },
-                );
-              }),
-              const SizedBox(height: 8),
-            ],
+                ),
+                const SizedBox(height: 14),
+                const Text(
+                  'Select Currency',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 8),
+                ...kCurrencies.map((cur) {
+                  final selected = cur.code == selectedCode; // live, not stale
+                  return ListTile(
+                    leading: Text(
+                      cur.flag,
+                      style: const TextStyle(fontSize: 24),
+                    ),
+                    title: Text(
+                      '${cur.name} (${cur.code})',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    subtitle: Text('Symbol: ${cur.symbol}'),
+                    trailing: selected
+                        ? const Icon(
+                            Icons.check_circle_rounded,
+                            color: AppColors.primaryColor,
+                          )
+                        : null,
+                    onTap: () async {
+                      // Write to Hive + update expenseProvider state
+                      await ref
+                          .read(expenseProvider.notifier)
+                          .updateBudget(currency: cur.code);
+                      // Close sheet — parent already watching currencyProvider
+                      // will rebuild immediately showing the new currency
+                      if (ctx.mounted) Navigator.pop(ctx);
+                    },
+                  );
+                }),
+                const SizedBox(height: 8),
+              ],
+            ),
           ),
-        ),
-      ),
-    );
-  }
+        );
+      },
+    ),
+  );
 
   void _snack(String msg, Color col) =>
       ScaffoldMessenger.of(context).showSnackBar(
@@ -160,10 +169,13 @@ class _State extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+
+    // ── Watch providers — screen rebuilds when these change ──────────────────
     final budget = ref.watch(budgetProvider);
     final curInfo = currencyOf(ref.watch(currencyProvider));
     final locale = ref.watch(localeProvider);
     final lang = locale.languageCode;
+    // Safe lookup — fallback to 'en' if code not in labels
     final native = LocaleNotifier.labels[lang]?.$1 ?? 'English';
     final flag = LocaleNotifier.flags[lang] ?? '🇬🇧';
 
@@ -184,12 +196,13 @@ class _State extends ConsumerState<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(18),
         children: [
-          // ── Appearance ───────────────────────────────────────────────────
-          _T('Appearance'), const SizedBox(height: 10),
-          ThemeToggle(), const SizedBox(height: 20),
+          // ── Appearance ────────────────────────────────────────────────────────
+          const _T('Appearance'), const SizedBox(height: 10),
+          const _ThemeToggle(), // ConsumerWidget — reads themeProvider internally
+          const SizedBox(height: 20),
 
-          // ── Language ─────────────────────────────────────────────────────
-          _T('Language'), const SizedBox(height: 10),
+          // ── Language ──────────────────────────────────────────────────────────
+          const _T('Language'), const SizedBox(height: 10),
           AppCard(
             onTap: () => Navigator.push(
               context,
@@ -223,8 +236,8 @@ class _State extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 20),
 
-          // ── Currency ─────────────────────────────────────────────────────
-          _T('Currency'), const SizedBox(height: 10),
+          // ── Currency ──────────────────────────────────────────────────────────
+          const _T('Currency'), const SizedBox(height: 10),
           AppCard(
             onTap: _selectCurrency,
             child: Row(
@@ -268,8 +281,8 @@ class _State extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 20),
 
-          // ── Security ─────────────────────────────────────────────────────
-          _T('Security'), const SizedBox(height: 10),
+          // ── Security ──────────────────────────────────────────────────────────
+          const _T('Security'), const SizedBox(height: 10),
           AppCard(
             child: Column(
               children: [
@@ -323,14 +336,10 @@ class _State extends ConsumerState<SettingsScreen> {
                       color: kGreen.withOpacity(0.07),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Row(
+                    child: const Row(
                       children: [
-                        const Icon(
-                          Icons.shield_rounded,
-                          size: 14,
-                          color: kGreen,
-                        ),
-                        const SizedBox(width: 8),
+                        Icon(Icons.shield_rounded, size: 14, color: kGreen),
+                        SizedBox(width: 8),
                         Text(
                           'App is biometric-protected',
                           style: TextStyle(
@@ -348,8 +357,8 @@ class _State extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 20),
 
-          // ── Budget ───────────────────────────────────────────────────────
-          _T('Monthly Budget'), const SizedBox(height: 10),
+          // ── Monthly budget ────────────────────────────────────────────────────
+          const _T('Monthly Budget'), const SizedBox(height: 10),
           AppCard(
             child: Column(
               children: [
@@ -382,8 +391,8 @@ class _State extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 20),
 
-          // ── Notifications ────────────────────────────────────────────────
-          _T('Notifications'), const SizedBox(height: 10),
+          // ── Notifications ─────────────────────────────────────────────────────
+          const _T('Notifications'), const SizedBox(height: 10),
           AppCard(
             child: Row(
               children: [
@@ -394,10 +403,10 @@ class _State extends ConsumerState<SettingsScreen> {
                     color: kAccent.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: CommonSvgWidget(
-                    svgName: Assets.notification,
-                    height: 20,
-                    width: 20,
+                  child: const Icon(
+                    Icons.notifications_outlined,
+                    color: kAccent,
+                    size: 20,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -425,24 +434,32 @@ class _State extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 20),
 
-          // ── Streak ───────────────────────────────────────────────────────
-          _T('Activity'), const SizedBox(height: 10),
+          // ── Streak — reads from budgetProvider (reactive) ─────────────────────
+          const _T('Activity'), const SizedBox(height: 10),
           AppCard(
             child: Row(
               children: [
-                CommonSvgWidget(
-                  svgName: Assets.strike,
-                  height: 20,
-                  width: 20,
-                  color: kAccent,
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: kAccent.withOpacity(0.10),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.local_fire_department_rounded,
+                    color: kAccent,
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // ✅ Reads from budgetProvider — updates reactively
                       Text(
-                        '${ExpenseService.budget.streakDays} day streak',
+                        '${budget.streakDays} day streak',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -455,13 +472,32 @@ class _State extends ConsumerState<SettingsScreen> {
                     ],
                   ),
                 ),
+                if (budget.streakDays > 0)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: kAmber.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      '🔥 ${budget.streakDays}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: kAmber,
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
           const SizedBox(height: 20),
 
-          // ── About ────────────────────────────────────────────────────────
-          _T('About'), const SizedBox(height: 10),
+          // ── About ─────────────────────────────────────────────────────────────
+          const _T('About'), const SizedBox(height: 10),
           AppCard(
             onTap: () => Navigator.push(
               context,
@@ -476,11 +512,10 @@ class _State extends ConsumerState<SettingsScreen> {
                     color: AppColors.primaryColor.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: CommonSvgWidget(
-                    svgName: Assets.about,
-                    height: 20,
-                    width: 20,
+                  child: const Icon(
+                    Icons.info_outline_rounded,
                     color: AppColors.primaryColor,
+                    size: 20,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -489,7 +524,7 @@ class _State extends ConsumerState<SettingsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'About BudgetBuddy',
+                        'About SpendSense',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -512,6 +547,99 @@ class _State extends ConsumerState<SettingsScreen> {
       ),
     );
   }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// THEME TOGGLE — ConsumerWidget reads + writes themeProvider directly
+// No more ValueListenableBuilder(valueListenable: ThemeProvider.notifier)
+// ─────────────────────────────────────────────────────────────────────────────
+class _ThemeToggle extends ConsumerWidget {
+  const _ThemeToggle();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mode = ref.watch(themeProvider);
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: context.c.card,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.c.border),
+      ),
+      child: Row(
+        children: [
+          _B(
+            Icons.dark_mode_rounded,
+            'Dark',
+            mode == ThemeMode.dark,
+            () => ref.read(themeProvider.notifier).setMode(ThemeMode.dark),
+          ),
+          _B(
+            Icons.light_mode_rounded,
+            'Light',
+            mode == ThemeMode.light,
+            () => ref.read(themeProvider.notifier).setMode(ThemeMode.light),
+          ),
+          _B(
+            Icons.brightness_auto_rounded,
+            'System',
+            mode == ThemeMode.system,
+            () => ref.read(themeProvider.notifier).setMode(ThemeMode.system),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PRIVATE SHARED WIDGETS
+// ─────────────────────────────────────────────────────────────────────────────
+class _B extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool active;
+  final VoidCallback onTap;
+  const _B(this.icon, this.label, this.active, this.onTap);
+
+  @override
+  Widget build(BuildContext context) => Expanded(
+    child: GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        margin: const EdgeInsets.all(3),
+        padding: const EdgeInsets.symmetric(vertical: 11),
+        decoration: BoxDecoration(
+          color: active ? AppColors.primaryColor : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: active ? Colors.white : context.c.textMuted,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: active ? Colors.white : context.c.textMuted,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 class _T extends StatelessWidget {

@@ -3,36 +3,64 @@ import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
 import 'package:expensetracker/features/dashboard/pages/dashboard_page.dart';
 import 'package:expensetracker/features/expense/models/expense.dart';
-import 'package:expensetracker/features/expense/services/expenses_service.dart';
+import 'package:expensetracker/features/expense/providers/expense_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CurrencyScreen extends StatefulWidget {
+class CurrencyScreen extends ConsumerStatefulWidget {
   final String suggestedCurrency;
   const CurrencyScreen({super.key, required this.suggestedCurrency});
   @override
-  State<CurrencyScreen> createState() => _State();
+  ConsumerState<CurrencyScreen> createState() => _State();
 }
 
-class _State extends State<CurrencyScreen> {
+class _State extends ConsumerState<CurrencyScreen> {
   late String _sel;
-
+  bool _saving = false; // add this line
   @override
   void initState() {
     super.initState();
     _sel = widget.suggestedCurrency;
   }
 
+  // Future<void> _confirm() async {
+  //   HapticFeedback.mediumImpact();
+
+  //   // Save to Hive
+  //   // final b = ExpenseService.budget;
+  //   // b.currency = _sel;
+  //   // await b.save();
+  //   await ref.read(expenseProvider.notifier).updateBudget(currency: _sel);
+
+  //   // Save to Supabase user_profiles
+  //   await UserProfileService.saveProfile(currency: _sel);
+
+  //   if (!mounted) return;
+  //   Navigator.pushReplacement(
+  //     context,
+  //     MaterialPageRoute(builder: (_) => const DashboardPage()),
+  //   );
+  // }
   Future<void> _confirm() async {
     HapticFeedback.mediumImpact();
 
-    // Save to Hive
-    final b = ExpenseService.budget;
-    b.currency = _sel;
-    await b.save();
+    setState(() => _saving = true); // add bool _saving = false field
 
-    // Save to Supabase user_profiles
-    await UserProfileService.saveProfile(currency: _sel);
+    try {
+      await ref.read(expenseProvider.notifier).updateBudget(currency: _sel);
+      await UserProfileService.saveProfile(currency: _sel);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _saving = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to save: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     if (!mounted) return;
     Navigator.pushReplacement(

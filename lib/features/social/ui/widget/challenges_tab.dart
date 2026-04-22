@@ -2,6 +2,7 @@ import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
 import 'package:expensetracker/features/expense/providers/expense_provider.dart';
 import 'package:expensetracker/features/social/models/social_model.dart';
+import 'package:expensetracker/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -87,7 +88,7 @@ class ChallengesTab extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(18),
       children: [
-        const SectionLabel('Active Challenges'),
+        SectionLabel(AppLocalizations.of(context)!.activeChallenges),
         const SizedBox(height: 12),
         ...challenges.map(
           (ch) => Padding(

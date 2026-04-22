@@ -93,7 +93,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get social => 'सोशल';
 
   @override
-  String get aiInsight => 'एआई इनसाइट्स';
+  String get aiInsight => 'एआई अंतर्दृष्टि';
 
   @override
   String get netDeficit => 'कुल घाटा';
@@ -208,4 +208,121 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get createdAccount => 'खाता बन गया';
+
+  @override
+  String get community => 'समुदाय';
+
+  @override
+  String get leaderboard => 'लीडरबोर्ड';
+
+  @override
+  String get challenges => 'चुनौतियाँ';
+
+  @override
+  String get invite => 'आमंत्रित करें';
+
+  @override
+  String get guest => 'अतिथि';
+
+  @override
+  String get youSpending => 'इस महीने आपका खर्च';
+
+  @override
+  String get topSaver => 'इस महीने के शीर्ष बचतकर्ता';
+
+  @override
+  String get loverSpending => 'कम खर्च = बेहतर रैंक';
+
+  @override
+  String get dayStirks => 'दिन की स्ट्रीक';
+
+  @override
+  String get activeChallenges => 'सक्रिय चुनौतियाँ';
+
+  @override
+  String get inviteFriends => 'दोस्तों को आमंत्रित करें';
+
+  @override
+  String get bothGetBonus => 'दोनों को +3 बोनस स्ट्रीक दिन मिलते हैं!';
+
+  @override
+  String get yourCode => 'आपका कोड';
+
+  @override
+  String get shareInvite => 'आमंत्रण साझा करें';
+
+  @override
+  String get signIntoApply => 'रेफरल कोड लगाने के लिए साइन इन करें और स्ट्रीक दिन पाएं';
+
+  @override
+  String get shareReport => 'अपनी रिपोर्ट साझा करें';
+
+  @override
+  String get shareMonthly => 'मासिक खर्च सारांश को इमेज के रूप में साझा करें';
+
+  @override
+  String get share => 'साझा करें';
+
+  @override
+  String get friendsInvited => 'आमंत्रित मित्र';
+
+  @override
+  String get keepSharing => 'बढ़ने के लिए साझा करते रहें!';
+
+  @override
+  String get howItWork => 'यह कैसे काम करता है';
+
+  @override
+  String get shareYourCode => 'अपना कोड या खर्च रिपोर्ट दोस्तों के साथ साझा करें';
+
+  @override
+  String get friendDownloads => 'दोस्त BudgetBuddy डाउनलोड करके साइन अप करता है';
+
+  @override
+  String get theyGoToCommunity => 'वे Community → Invite में जाकर आपका कोड डालते हैं';
+
+  @override
+  String get bothGet => 'दोनों को +3 बोनस स्ट्रीक दिन मिलते हैं';
+
+  @override
+  String get completeTogether => 'बचत लीडरबोर्ड पर साथ में पूरा करें';
+
+  @override
+  String get addEntry => 'एंट्री जोड़ें';
+
+  @override
+  String get category => 'श्रेणी';
+
+  @override
+  String get row => 'पंक्ति';
+
+  @override
+  String get ready => 'तैयार';
+
+  @override
+  String get itemName => 'आइटम का नाम';
+
+  @override
+  String get addAnotherItems => 'एक और आइटम जोड़ें';
+
+  @override
+  String get saveExpense => 'खर्च सहेजें';
+
+  @override
+  String get overView => 'ओवरव्यू';
+
+  @override
+  String get budget => 'बजट';
+
+  @override
+  String get predict => 'पूर्वानुमान';
+
+  @override
+  String get goals => 'लक्ष्य';
+
+  @override
+  String get coach => 'मार्गदर्शक';
+
+  @override
+  String get saveIncome => 'आय सहेजें';
 }

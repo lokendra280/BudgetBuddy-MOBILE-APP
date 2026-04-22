@@ -8,6 +8,7 @@ import 'package:expensetracker/features/social/services/share_service.dart';
 import 'package:expensetracker/features/social/ui/widget/challenges_tab.dart';
 import 'package:expensetracker/features/social/ui/widget/invite_tab.dart';
 import 'package:expensetracker/features/social/ui/widget/leaderboard.dart';
+import 'package:expensetracker/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -66,8 +67,8 @@ class _SS extends ConsumerState<SocialScreen>
       appBar: AppBar(
         backgroundColor: c.surface,
 
-        title: const Text(
-          'Community',
+        title: Text(
+          AppLocalizations.of(context)!.community,
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
@@ -92,10 +93,10 @@ class _SS extends ConsumerState<SocialScreen>
             fontSize: 12,
             fontWeight: FontWeight.w700,
           ),
-          tabs: const [
-            Tab(text: 'Leaderboard'),
-            Tab(text: 'Challenges'),
-            Tab(text: 'Invite'),
+          tabs: [
+            Tab(text: AppLocalizations.of(context)!.leaderboard),
+            Tab(text: AppLocalizations.of(context)!.challenges),
+            Tab(text: AppLocalizations.of(context)!.invite),
           ],
         ),
       ),

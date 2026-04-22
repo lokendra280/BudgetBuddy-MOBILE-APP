@@ -268,7 +268,7 @@ abstract class AppLocalizations {
   /// No description provided for @aiInsight.
   ///
   /// In en, this message translates to:
-  /// **'AI Insights'**
+  /// **'Ai Insights'**
   String get aiInsight;
 
   /// No description provided for @netDeficit.
@@ -498,6 +498,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account created'**
   String get createdAccount;
+
+  /// No description provided for @community.
+  ///
+  /// In en, this message translates to:
+  /// **'Community'**
+  String get community;
+
+  /// No description provided for @leaderboard.
+  ///
+  /// In en, this message translates to:
+  /// **'LeaderBoard'**
+  String get leaderboard;
+
+  /// No description provided for @challenges.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenges'**
+  String get challenges;
+
+  /// No description provided for @invite.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite'**
+  String get invite;
+
+  /// No description provided for @guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get guest;
+
+  /// No description provided for @youSpending.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Spending this Month'**
+  String get youSpending;
+
+  /// No description provided for @topSaver.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Savers This Month'**
+  String get topSaver;
+
+  /// No description provided for @loverSpending.
+  ///
+  /// In en, this message translates to:
+  /// **'Lower Spending = better rank'**
+  String get loverSpending;
+
+  /// No description provided for @dayStirks.
+  ///
+  /// In en, this message translates to:
+  /// **'day Streak'**
+  String get dayStirks;
+
+  /// No description provided for @activeChallenges.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Challenges'**
+  String get activeChallenges;
+
+  /// No description provided for @inviteFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Friends'**
+  String get inviteFriends;
+
+  /// No description provided for @bothGetBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'Both get + 3 bonus streak days!'**
+  String get bothGetBonus;
+
+  /// No description provided for @yourCode.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR CODE'**
+  String get yourCode;
+
+  /// No description provided for @shareInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Invite'**
+  String get shareInvite;
+
+  /// No description provided for @signIntoApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Sing in to apply a referral code and earn streak days'**
+  String get signIntoApply;
+
+  /// No description provided for @shareReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Share my report'**
+  String get shareReport;
+
+  /// No description provided for @shareMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Share monthly spending a summary as image'**
+  String get shareMonthly;
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// No description provided for @friendsInvited.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends Invited'**
+  String get friendsInvited;
+
+  /// No description provided for @keepSharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Sharing to grow!'**
+  String get keepSharing;
+
+  /// No description provided for @howItWork.
+  ///
+  /// In en, this message translates to:
+  /// **'How it works'**
+  String get howItWork;
+
+  /// No description provided for @shareYourCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your code or spending report with friends'**
+  String get shareYourCode;
+
+  /// No description provided for @friendDownloads.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend downloads BudgetBuddy and signs up'**
+  String get friendDownloads;
+
+  /// No description provided for @theyGoToCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'They go to Community -> Invite and enter your code'**
+  String get theyGoToCommunity;
+
+  /// No description provided for @bothGet.
+  ///
+  /// In en, this message translates to:
+  /// **'Both get +3 bonus streak days'**
+  String get bothGet;
+
+  /// No description provided for @completeTogether.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete together on the savings leaderboard'**
+  String get completeTogether;
+
+  /// No description provided for @addEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Entry'**
+  String get addEntry;
+
+  /// No description provided for @category.
+  ///
+  /// In en, this message translates to:
+  /// **'CATEGORY'**
+  String get category;
+
+  /// No description provided for @row.
+  ///
+  /// In en, this message translates to:
+  /// **'Row'**
+  String get row;
+
+  /// No description provided for @ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready'**
+  String get ready;
+
+  /// No description provided for @itemName.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Name'**
+  String get itemName;
+
+  /// No description provided for @addAnotherItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Another Items'**
+  String get addAnotherItems;
+
+  /// No description provided for @saveExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Expense'**
+  String get saveExpense;
+
+  /// No description provided for @overView.
+  ///
+  /// In en, this message translates to:
+  /// **'OverView'**
+  String get overView;
+
+  /// No description provided for @budget.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget'**
+  String get budget;
+
+  /// No description provided for @predict.
+  ///
+  /// In en, this message translates to:
+  /// **'Predict'**
+  String get predict;
+
+  /// No description provided for @goals.
+  ///
+  /// In en, this message translates to:
+  /// **'Goals'**
+  String get goals;
+
+  /// No description provided for @coach.
+  ///
+  /// In en, this message translates to:
+  /// **'Coach'**
+  String get coach;
+
+  /// No description provided for @saveIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Income'**
+  String get saveIncome;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

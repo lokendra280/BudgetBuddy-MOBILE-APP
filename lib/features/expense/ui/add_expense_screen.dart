@@ -6,6 +6,7 @@ import 'package:expensetracker/common/constant/constant_assets.dart';
 import 'package:expensetracker/common/widgets/emoji_image.dart';
 import 'package:expensetracker/features/expense/services/category_services.dart';
 import 'package:expensetracker/features/expense/services/expenses_service.dart';
+import 'package:expensetracker/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -553,8 +554,8 @@ class _S extends State<AddExpenseScreen> {
           icon: const Icon(Icons.close_rounded, size: 22),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Add Entry',
+        title: Text(
+          AppLocalizations.of(context)!.addEntry,
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
@@ -595,7 +596,7 @@ class _S extends State<AddExpenseScreen> {
             child: Row(
               children: [
                 _Tog(
-                  '↑  Expense',
+                  '↑  ${AppLocalizations.of(context)!.expense}',
                   !_isIncome,
                   kAccent,
                   () => setState(() {
@@ -604,7 +605,7 @@ class _S extends State<AddExpenseScreen> {
                   }),
                 ),
                 _Tog(
-                  '↓  Income',
+                  '↓  ${AppLocalizations.of(context)!.income}',
                   _isIncome,
                   kGreen,
                   () => setState(() {
@@ -623,7 +624,7 @@ class _S extends State<AddExpenseScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'CATEGORY',
+                AppLocalizations.of(context)!.category,
                 style: TextStyle(
                   fontSize: 10,
                   color: c.textMuted,
@@ -705,7 +706,7 @@ class _S extends State<AddExpenseScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'ITEMS',
+                AppLocalizations.of(context)!.items,
                 style: TextStyle(
                   fontSize: 10,
                   color: c.textMuted,
@@ -714,7 +715,7 @@ class _S extends State<AddExpenseScreen> {
                 ),
               ),
               Text(
-                '${_rows.length} row${_rows.length == 1 ? '' : 's'} · $valid ready',
+                '${_rows.length} ${AppLocalizations.of(context)!.row}${_rows.length == 1 ? '' : 's'} · $valid ${AppLocalizations.of(context)!.ready}',
                 style: TextStyle(fontSize: 10, color: c.textMuted),
               ),
             ],
@@ -739,7 +740,7 @@ class _S extends State<AddExpenseScreen> {
           ),
           PrimaryButton(
             onPressed: _addRow,
-            title: 'Add Another Items',
+            title: AppLocalizations.of(context)!.addAnotherItems,
             radius: 8,
             height: 50,
             textSize: 18,
@@ -758,7 +759,9 @@ class _S extends State<AddExpenseScreen> {
         child: PrimaryButton(
           onPressed: _saveAll,
           title: _rows.length == 1
-              ? (_isIncome ? 'Save Income' : 'Save Expense')
+              ? (_isIncome
+                    ? AppLocalizations.of(context)!.saveIncome
+                    : AppLocalizations.of(context)!.saveExpense)
               : 'Save $valid Item${valid == 1 ? '' : 's'}',
           radius: 8,
           height: 50,
@@ -889,7 +892,7 @@ class _ItemRow extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                   decoration: InputDecoration(
-                    hintText: 'Item name',
+                    hintText: AppLocalizations.of(context)!.itemName,
                     hintStyle: TextStyle(
                       color: c.textMuted,
                       fontSize: 14,

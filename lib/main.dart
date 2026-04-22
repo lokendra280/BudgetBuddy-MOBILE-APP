@@ -21,10 +21,6 @@ int _lastRestartMs = 0;
 Future<void> _init() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ── Load SharedPreferences BEFORE runApp ──────────────────────────────────
-  // This means ThemeNotifier.build() and LocaleNotifier.build() can read the
-  // saved locale/theme synchronously on the very first frame — no flash of
-  // defaults, no "wrong language on hot restart".
   await loadPrefsBeforeRunApp();
 
   await dotenv.load(fileName: ".env");
@@ -100,11 +96,17 @@ class SpendSenseApp extends ConsumerWidget {
       supportedLocales: LocaleNotifier.supported,
       localizationsDelegates: const [
         AppLocalizations.delegate,
-
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      localeResolutionCallback: (deviceLocale, supported) {
+        if (deviceLocale == null) return const Locale('en');
+        for (final s in supported) {
+          if (s.languageCode == deviceLocale.languageCode) return s;
+        }
+        return const Locale('en');
+      },
       home: const SplashScreen(),
       builder: (ctx, child) {
         ErrorWidget.builder = (details) => _ErrorView(

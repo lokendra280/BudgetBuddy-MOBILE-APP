@@ -68,7 +68,7 @@ class _H extends ConsumerState<HomeScreen> {
     final (thisW, lastW) = ref.watch(weekComparisonProvider);
     final dailyData = ref.watch(daily7Provider);
     final syncStatus = ref.watch(syncProvider);
-    final fmt = ref.watch(fmtProvider); // String Function(double)
+    final fmt = ref.watch(fmtProvider); 
     final isLoggedIn = ref.watch(isLoggedInProvider);
 
     // ── Loading shimmer ───────────────────────────────────────────────────
