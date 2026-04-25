@@ -109,7 +109,7 @@ class _InviteState extends ConsumerState<InviteTab> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('🎁', style: TextStyle(fontSize: 30)),
+              Image.asset(Assets.gift, height: 60),
               const SizedBox(height: 10),
               Text(
                 AppLocalizations.of(context)!.inviteFriends,
@@ -457,11 +457,17 @@ class _InviteState extends ConsumerState<InviteTab> {
                   color: kGreen.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
-                  Icons.ios_share_rounded,
+                child: CommonSvgWidget(
+                  svgName: Assets.share,
+                  height: 18,
+                  width: 18,
                   color: kGreen,
-                  size: 20,
                 ),
+                // child: const Icon(
+                //   Icons.ios_share_rounded,
+                //   color: kGreen,
+                //   size: 20,
+                // ),
               ),
               const SizedBox(width: 12),
               Expanded(

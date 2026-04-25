@@ -255,7 +255,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signIntoApply => 'Sing in to apply a referral code and earn streak days';
 
   @override
-  String get shareReport => 'Share my report';
+  String get shareReport => 'Share Report';
 
   @override
   String get shareMonthly => 'Share monthly spending a summary as image';
@@ -325,4 +325,121 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveIncome => 'Save Income';
+
+  @override
+  String get haveAnFriendsCode => 'Have a friend\'s Code?';
+
+  @override
+  String get enterItToGiveThemCredit => 'Enter it to give them credit and earn +3 streak days for yourSelf';
+
+  @override
+  String get burnRateAndRunWay => 'Burn Rate & RunWay';
+
+  @override
+  String get dailySpend => 'Daily Spend';
+
+  @override
+  String get monthlyRate => 'Monthly Rate';
+
+  @override
+  String get runWay => 'Runway';
+
+  @override
+  String get aiSpendingInsight => 'Ai Spending Insight';
+
+  @override
+  String get addMoreExpenses => 'Add More Expenses';
+
+  @override
+  String get wellAnalysisPatternOnce => 'We Will analyses pattern once you have more data';
+
+  @override
+  String get subscriptions => 'subscriptions & Recurring';
+
+  @override
+  String get thisMonth => 'This Month';
+
+  @override
+  String get spend => 'Spend';
+
+  @override
+  String get saved => 'Saved';
+
+  @override
+  String get achieved => 'Achieved';
+
+  @override
+  String get autoCategorization => 'Auto-Categorization';
+
+  @override
+  String get budgetBuddyDetects => 'BudgetBuddy detect categories automatically from your entry title';
+
+  @override
+  String get nextMonthForecast => 'Next Month Forecast';
+
+  @override
+  String get predictSpend => 'Predicted Spend';
+
+  @override
+  String get predictedIncome => 'Predicated Income';
+
+  @override
+  String get estBalance => 'Est.Balance';
+
+  @override
+  String get categoryForecast => 'Category Forecast';
+
+  @override
+  String get addMoreExpenseAcross => 'Add More expenses across months to see predictions';
+
+  @override
+  String get incomeGrowth => 'Income Growth';
+
+  @override
+  String get logIncome => 'Log Income entries to track growth over time';
+
+  @override
+  String get savingGoal => 'Saving Goals';
+
+  @override
+  String get newGoal => 'New Goal';
+
+  @override
+  String get complete => 'Completed';
+
+  @override
+  String get target => 'Target';
+
+  @override
+  String get yourAiFinancialCoach => 'Your Ai Financial Coach';
+
+  @override
+  String get personalizedTips => 'Personalized tips from your spending pattern';
+
+  @override
+  String get personalAdvice => 'Personalized Advice';
+
+  @override
+  String get setARealisticBudget => 'Set a realistic budget';
+
+  @override
+  String get goToSettings => 'Go to settings Budget and set your monthly limit';
+
+  @override
+  String get impact => 'Impact';
+
+  @override
+  String get recurringExpenses => 'Recurring Expenses';
+
+  @override
+  String get noRecurringDetected => 'No recurring Detected';
+
+  @override
+  String get repeatedExpenses => 'Repeated Expenses appear here';
+
+  @override
+  String get insight => 'Insights';
+
+  @override
+  String get about => 'About';
 }

@@ -138,13 +138,13 @@ class _State extends ConsumerState<SettingsScreen> {
                           )
                         : null,
                     onTap: () async {
-                      // Write to Hive + update expenseProvider state
                       await ref
                           .read(expenseProvider.notifier)
                           .updateBudget(currency: cur.code);
-                      // Close sheet — parent already watching currencyProvider
-                      // will rebuild immediately showing the new currency
-                      if (ctx.mounted) Navigator.pop(ctx);
+                      if (mounted) {
+                        setState(() {});
+                        Navigator.pop(context);
+                      }
                     },
                   );
                 }),

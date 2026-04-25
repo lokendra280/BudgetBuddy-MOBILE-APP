@@ -1,3 +1,4 @@
+import 'package:expensetracker/common/hive_storages/hive_storage.dart';
 import 'package:expensetracker/features/ai_screen/services/ai_services.dart';
 import 'package:expensetracker/features/expense/providers/expense_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -77,7 +78,13 @@ class GoalsNotifier extends Notifier<List<SavingsGoal>> {
     double target,
     int daysLeft,
   ) async {
-    await AiService.addGoal(name, emoji, target, daysLeft);
+    await HiveStorage.addGoal(
+      name: name,
+      emoji: emoji,
+      target: target,
+      daysLeft: daysLeft,
+    );
+    // await AiService.addGoal(name, emoji, target, daysLeft);
     state = AiService.goals();
   }
 

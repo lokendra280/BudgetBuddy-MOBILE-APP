@@ -1,19 +1,21 @@
 import 'dart:async';
+import 'package:expensetracker/features/auth/providers/auth_provider.dart';
 import 'package:expensetracker/features/auth/services/auth_service.dart';
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/features/dashboard/pages/dashboard_page.dart';
 import 'package:expensetracker/features/home/services/sync_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class OtpScreen extends StatefulWidget {
+class OtpScreen extends ConsumerStatefulWidget {
   final String email;
   const OtpScreen({super.key, required this.email});
   @override
-  State<OtpScreen> createState() => _State();
+  ConsumerState<OtpScreen> createState() => _OtpScreenState();
 }
 
-class _State extends State<OtpScreen> {
+class _OtpScreenState extends ConsumerState<OtpScreen> {
   // 6 individual controllers + focus nodes for each digit box
   final _controllers = List.generate(6, (_) => TextEditingController());
   final _focuses = List.generate(6, (_) => FocusNode());
@@ -115,6 +117,8 @@ class _State extends State<OtpScreen> {
 
   // ── Resend ───────────────────────────────────────────────────────────────────
   Future<void> _resend() async {
+    final notifier = ref.read(authProvider.notifier);
+
     if (_resendSeconds > 0) return;
     setState(() {
       _resending = true;

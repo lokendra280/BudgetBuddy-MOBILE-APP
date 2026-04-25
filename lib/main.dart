@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:isolate';
 import 'package:expensetracker/common/app_theme.dart';
+import 'package:expensetracker/common/hive_storages/hive_storage.dart';
 import 'package:expensetracker/common/navigation_service.dart';
 import 'package:expensetracker/common/services/ads_service.dart';
 import 'package:expensetracker/common/services/notification_service.dart';
@@ -30,6 +31,7 @@ Future<void> _init() async {
   );
   await HiveMigrationService.initSafely();
   await AdService.init();
+  await HiveStorage.init();
   await NotificationService.init();
   AdService.preloadInterstitial();
   AdService.preloadRewarded();

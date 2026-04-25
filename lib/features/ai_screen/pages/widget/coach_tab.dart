@@ -140,12 +140,15 @@ class CoachTab extends ConsumerWidget {
                           'Impact: ',
                           style: TextStyle(fontSize: 11, color: c.textMuted),
                         ),
-                        Text(
-                          e.value.impact,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: Color(e.value.impactColor),
+                        Expanded(
+                          child: Text(
+                            e.value.impact,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: Color(e.value.impactColor),
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],

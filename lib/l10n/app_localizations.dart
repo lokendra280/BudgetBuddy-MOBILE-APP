@@ -592,7 +592,7 @@ abstract class AppLocalizations {
   /// No description provided for @shareReport.
   ///
   /// In en, this message translates to:
-  /// **'Share my report'**
+  /// **'Share Report'**
   String get shareReport;
 
   /// No description provided for @shareMonthly.
@@ -732,6 +732,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save Income'**
   String get saveIncome;
+
+  /// No description provided for @haveAnFriendsCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Have a friend\'s Code?'**
+  String get haveAnFriendsCode;
+
+  /// No description provided for @enterItToGiveThemCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter it to give them credit and earn +3 streak days for yourSelf'**
+  String get enterItToGiveThemCredit;
+
+  /// No description provided for @burnRateAndRunWay.
+  ///
+  /// In en, this message translates to:
+  /// **'Burn Rate & RunWay'**
+  String get burnRateAndRunWay;
+
+  /// No description provided for @dailySpend.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Spend'**
+  String get dailySpend;
+
+  /// No description provided for @monthlyRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Rate'**
+  String get monthlyRate;
+
+  /// No description provided for @runWay.
+  ///
+  /// In en, this message translates to:
+  /// **'Runway'**
+  String get runWay;
+
+  /// No description provided for @aiSpendingInsight.
+  ///
+  /// In en, this message translates to:
+  /// **'Ai Spending Insight'**
+  String get aiSpendingInsight;
+
+  /// No description provided for @addMoreExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Add More Expenses'**
+  String get addMoreExpenses;
+
+  /// No description provided for @wellAnalysisPatternOnce.
+  ///
+  /// In en, this message translates to:
+  /// **'We Will analyses pattern once you have more data'**
+  String get wellAnalysisPatternOnce;
+
+  /// No description provided for @subscriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'subscriptions & Recurring'**
+  String get subscriptions;
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This Month'**
+  String get thisMonth;
+
+  /// No description provided for @spend.
+  ///
+  /// In en, this message translates to:
+  /// **'Spend'**
+  String get spend;
+
+  /// No description provided for @saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get saved;
+
+  /// No description provided for @achieved.
+  ///
+  /// In en, this message translates to:
+  /// **'Achieved'**
+  String get achieved;
+
+  /// No description provided for @autoCategorization.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Categorization'**
+  String get autoCategorization;
+
+  /// No description provided for @budgetBuddyDetects.
+  ///
+  /// In en, this message translates to:
+  /// **'BudgetBuddy detect categories automatically from your entry title'**
+  String get budgetBuddyDetects;
+
+  /// No description provided for @nextMonthForecast.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Month Forecast'**
+  String get nextMonthForecast;
+
+  /// No description provided for @predictSpend.
+  ///
+  /// In en, this message translates to:
+  /// **'Predicted Spend'**
+  String get predictSpend;
+
+  /// No description provided for @predictedIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Predicated Income'**
+  String get predictedIncome;
+
+  /// No description provided for @estBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Est.Balance'**
+  String get estBalance;
+
+  /// No description provided for @categoryForecast.
+  ///
+  /// In en, this message translates to:
+  /// **'Category Forecast'**
+  String get categoryForecast;
+
+  /// No description provided for @addMoreExpenseAcross.
+  ///
+  /// In en, this message translates to:
+  /// **'Add More expenses across months to see predictions'**
+  String get addMoreExpenseAcross;
+
+  /// No description provided for @incomeGrowth.
+  ///
+  /// In en, this message translates to:
+  /// **'Income Growth'**
+  String get incomeGrowth;
+
+  /// No description provided for @logIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Log Income entries to track growth over time'**
+  String get logIncome;
+
+  /// No description provided for @savingGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving Goals'**
+  String get savingGoal;
+
+  /// No description provided for @newGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'New Goal'**
+  String get newGoal;
+
+  /// No description provided for @complete.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get complete;
+
+  /// No description provided for @target.
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get target;
+
+  /// No description provided for @yourAiFinancialCoach.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Ai Financial Coach'**
+  String get yourAiFinancialCoach;
+
+  /// No description provided for @personalizedTips.
+  ///
+  /// In en, this message translates to:
+  /// **'Personalized tips from your spending pattern'**
+  String get personalizedTips;
+
+  /// No description provided for @personalAdvice.
+  ///
+  /// In en, this message translates to:
+  /// **'Personalized Advice'**
+  String get personalAdvice;
+
+  /// No description provided for @setARealisticBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a realistic budget'**
+  String get setARealisticBudget;
+
+  /// No description provided for @goToSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to settings Budget and set your monthly limit'**
+  String get goToSettings;
+
+  /// No description provided for @impact.
+  ///
+  /// In en, this message translates to:
+  /// **'Impact'**
+  String get impact;
+
+  /// No description provided for @recurringExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring Expenses'**
+  String get recurringExpenses;
+
+  /// No description provided for @noRecurringDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'No recurring Detected'**
+  String get noRecurringDetected;
+
+  /// No description provided for @repeatedExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeated Expenses appear here'**
+  String get repeatedExpenses;
+
+  /// No description provided for @insight.
+  ///
+  /// In en, this message translates to:
+  /// **'Insights'**
+  String get insight;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -1,6 +1,6 @@
-import 'package:expensetracker/features/auth/services/user_profile_service.dart';
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
+import 'package:expensetracker/features/auth/services/user_profile_service.dart';
 import 'package:expensetracker/features/dashboard/pages/dashboard_page.dart';
 import 'package:expensetracker/features/expense/models/expense.dart';
 import 'package:expensetracker/features/expense/providers/expense_provider.dart';
@@ -17,50 +17,20 @@ class CurrencyScreen extends ConsumerStatefulWidget {
 
 class _State extends ConsumerState<CurrencyScreen> {
   late String _sel;
-  bool _saving = false; // add this line
+
   @override
   void initState() {
     super.initState();
     _sel = widget.suggestedCurrency;
   }
 
-  // Future<void> _confirm() async {
-  //   HapticFeedback.mediumImpact();
-
-  //   // Save to Hive
-  //   // final b = ExpenseService.budget;
-  //   // b.currency = _sel;
-  //   // await b.save();
-  //   await ref.read(expenseProvider.notifier).updateBudget(currency: _sel);
-
-  //   // Save to Supabase user_profiles
-  //   await UserProfileService.saveProfile(currency: _sel);
-
-  //   if (!mounted) return;
-  //   Navigator.pushReplacement(
-  //     context,
-  //     MaterialPageRoute(builder: (_) => const DashboardPage()),
-  //   );
-  // }
   Future<void> _confirm() async {
     HapticFeedback.mediumImpact();
 
-    setState(() => _saving = true); // add bool _saving = false field
+    await ref.read(expenseProvider.notifier).updateBudget(currency: _sel);
 
-    try {
-      await ref.read(expenseProvider.notifier).updateBudget(currency: _sel);
-      await UserProfileService.saveProfile(currency: _sel);
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _saving = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to save: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
+    // Save to Supabase user_profiles (unchanged)
+    await UserProfileService.saveProfile(currency: _sel);
 
     if (!mounted) return;
     Navigator.pushReplacement(
@@ -82,7 +52,6 @@ class _State extends ConsumerState<CurrencyScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Progress (step 2 of 2)
               const SizedBox(height: 20),
               _StepBar(step: 2, total: 2),
               const SizedBox(height: 32),
@@ -105,7 +74,7 @@ class _State extends ConsumerState<CurrencyScreen> {
 
               const SizedBox(height: 28),
 
-              // Currency grid
+              // ── Currency grid ────────────────────────────────────────────────
               Expanded(
                 child: GridView.count(
                   crossAxisCount: 2,
@@ -146,13 +115,12 @@ class _State extends ConsumerState<CurrencyScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   cur.flag,
                                   style: const TextStyle(fontSize: 22),
                                 ),
-
+                                const Spacer(),
                                 if (isSel)
                                   Container(
                                     width: 20,
@@ -167,12 +135,29 @@ class _State extends ConsumerState<CurrencyScreen> {
                                       color: Colors.white,
                                     ),
                                   ),
-                                Text(
-                                  cur.name,
-                                  style: TextStyle(fontSize: 12),
-                                  maxLines: 2,
-                                ),
                               ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              cur.symbol,
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w800,
+                                color: isSel
+                                    ? AppColors.primaryColor
+                                    : context.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              cur.name,
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: c.textMuted,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
@@ -184,7 +169,7 @@ class _State extends ConsumerState<CurrencyScreen> {
 
               const SizedBox(height: 20),
 
-              // Preview
+              // ── Preview ──────────────────────────────────────────────────────
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,

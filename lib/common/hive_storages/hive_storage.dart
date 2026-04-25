@@ -7,15 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HiveStorage — single source of truth for ALL local data
-//
-// Rules:
-//  1. Write to Hive first (offline-first, instant UI update)
-//  2. If online → sync to Supabase in background (fire & forget)
-//  3. Supabase Realtime / manual pull restores data on new device / login
-// ─────────────────────────────────────────────────────────────────────────────
-
 class HiveStorage {
   HiveStorage._();
 

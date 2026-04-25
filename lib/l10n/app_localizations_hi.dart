@@ -255,7 +255,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get signIntoApply => 'रेफरल कोड लगाने के लिए साइन इन करें और स्ट्रीक दिन पाएं';
 
   @override
-  String get shareReport => 'अपनी रिपोर्ट साझा करें';
+  String get shareReport => 'रिपोर्ट साझा करें';
 
   @override
   String get shareMonthly => 'मासिक खर्च सारांश को इमेज के रूप में साझा करें';
@@ -325,4 +325,121 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get saveIncome => 'आय सहेजें';
+
+  @override
+  String get haveAnFriendsCode => 'क्या आपके पास दोस्त का कोड है?';
+
+  @override
+  String get enterItToGiveThemCredit => 'उन्हें क्रेडिट देने और खुद के लिए +3 स्ट्रीक दिन पाने के लिए कोड दर्ज करें';
+
+  @override
+  String get burnRateAndRunWay => 'खर्च दर और रनवे';
+
+  @override
+  String get dailySpend => 'दैनिक खर्च';
+
+  @override
+  String get monthlyRate => 'मासिक दर';
+
+  @override
+  String get runWay => 'रनवे';
+
+  @override
+  String get aiSpendingInsight => 'एआई खर्च विश्लेषण';
+
+  @override
+  String get addMoreExpenses => 'और खर्च जोड़ें';
+
+  @override
+  String get wellAnalysisPatternOnce => 'We Will analyses pattern once you have more data';
+
+  @override
+  String get subscriptions => 'सब्सक्रिप्शन और आवर्ती खर्च';
+
+  @override
+  String get thisMonth => 'इस महीने';
+
+  @override
+  String get spend => 'खर्च';
+
+  @override
+  String get saved => 'बचत';
+
+  @override
+  String get achieved => 'प्राप्त';
+
+  @override
+  String get autoCategorization => 'स्वचालित वर्गीकरण';
+
+  @override
+  String get budgetBuddyDetects => 'BudgetBuddy detect categories automatically from your entry title';
+
+  @override
+  String get nextMonthForecast => 'अगले महीने का पूर्वानुमान';
+
+  @override
+  String get predictSpend => 'अनुमानित खर्च';
+
+  @override
+  String get predictedIncome => 'अनुमानित आय';
+
+  @override
+  String get estBalance => 'Est.Balance';
+
+  @override
+  String get categoryForecast => 'श्रेणी पूर्वानुमान';
+
+  @override
+  String get addMoreExpenseAcross => 'पूर्वानुमान देखने के लिए अलग-अलग महीनों में और खर्च जोड़ें';
+
+  @override
+  String get incomeGrowth => 'आय वृद्धि';
+
+  @override
+  String get logIncome => 'समय के साथ वृद्धि ट्रैक करने के लिए आय दर्ज करें';
+
+  @override
+  String get savingGoal => 'बचत लक्ष्य';
+
+  @override
+  String get newGoal => 'नया लक्ष्य';
+
+  @override
+  String get complete => 'पूर्ण';
+
+  @override
+  String get target => 'लक्ष्य';
+
+  @override
+  String get yourAiFinancialCoach => 'आपका एआई वित्तीय कोच';
+
+  @override
+  String get personalizedTips => 'आपके खर्च पैटर्न के आधार पर व्यक्तिगत सुझाव';
+
+  @override
+  String get personalAdvice => 'व्यक्तिगत सलाह';
+
+  @override
+  String get setARealisticBudget => 'एक यथार्थ बजट सेट करें';
+
+  @override
+  String get goToSettings => 'सेटिंग्स में जाएं और अपना मासिक बजट सेट करें';
+
+  @override
+  String get impact => 'प्रभाव';
+
+  @override
+  String get recurringExpenses => 'Recurring Expenses';
+
+  @override
+  String get noRecurringDetected => 'कोई आवर्ती खर्च नहीं मिला';
+
+  @override
+  String get repeatedExpenses => 'दोहराए गए खर्च यहां दिखाई देंगे';
+
+  @override
+  String get insight => 'अंतर्दृष्टि';
+
+  @override
+  String get about => 'के बारे में';
 }

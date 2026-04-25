@@ -1,11 +1,10 @@
-import 'package:expensetracker/features/ai_screen/pages/widget/shared_wdiget.dart';
-import 'package:expensetracker/features/ai_screen/providers/ai_providers.dart';
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
+import 'package:expensetracker/features/ai_screen/pages/widget/shared_wdiget.dart';
+import 'package:expensetracker/features/ai_screen/providers/ai_providers.dart';
 import 'package:expensetracker/features/expense/providers/expense_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 class OverviewTab extends ConsumerWidget {
   const OverviewTab({super.key});
@@ -351,65 +350,56 @@ class OverviewTab extends ConsumerWidget {
         const SectionLabel('Subscriptions & Recurring'),
         const SizedBox(height: 10),
         // combine subscriptions and recurring items, take up to 5 and render each as a card
-        ...[...subs, ...rec].take(5).map(
-          (i) {
-            final dyn = i as dynamic;
-            final title = dyn.title ?? dyn.name ?? dyn.label ?? '';
-            final subtitle = dyn.schedule ?? dyn.period ?? dyn.recurring ?? '';
-            final emoji = (dyn.emoji ?? '💳') as String;
-            final color = dyn.color != null ? Color(dyn.color) : AppColors.primaryColor.withOpacity(0.12);
-            final amountVal = dyn.amount ?? dyn.price ?? dyn.cost ?? 0;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: AppCard(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 11,
-                ),
-                child: Row(
-                  children: [
-                    EmojiBox(
-                      emoji,
-                      color,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+        ...[...subs, ...rec].take(5).map((i) {
+          final dyn = i as dynamic;
+          final title = dyn.title ?? dyn.name ?? dyn.label ?? '';
+          final subtitle = dyn.schedule ?? dyn.period ?? dyn.recurring ?? '';
+          final emoji = (dyn.emoji ?? '💳') as String;
+          final color = dyn.color != null
+              ? Color(dyn.color)
+              : AppColors.primaryColor.withOpacity(0.12);
+          final amountVal = dyn.amount ?? dyn.price ?? dyn.cost ?? 0;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: AppCard(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+              child: Row(
+                children: [
+                  EmojiBox(emoji, color),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
                           ),
-                          Text(
-                            subtitle,
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: c.textMuted,
-                            ),
-                          ),
-                        ],
-                      ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          subtitle,
+                          style: TextStyle(fontSize: 10, color: c.textMuted),
+                        ),
+                      ],
                     ),
-                    Text(
-                      fmt(amountVal),
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.primaryColor,
-                      ),
+                  ),
+                  Text(
+                    fmt(amountVal),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primaryColor,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            );
-          },
-        ).toList(),
+            ),
+          );
+        }).toList(),
       ],
     );
   }
