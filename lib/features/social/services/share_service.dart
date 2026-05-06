@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:expensetracker/features/auth/providers/auth_service.dart';
+import 'package:expensetracker/features/auth/services/auth_service.dart';
 import 'package:expensetracker/features/expense/services/expenses_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';

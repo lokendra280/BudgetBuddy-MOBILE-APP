@@ -1,7 +1,8 @@
+import 'package:expensetracker/common/constant/constant_assets.dart';
 import 'package:expensetracker/features/ai_screen/pages/widget/shared_wdiget.dart';
 import 'package:expensetracker/features/ai_screen/providers/ai_providers.dart';
 import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/common/common_widget.dart';
+import 'package:expensetracker/common/common_widget.dart' hide BudgetBar;
 import 'package:expensetracker/features/expense/providers/expense_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,39 +28,38 @@ class BudgetTab extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               IconLabel(
-                '💰',
+                Assets.saving,
                 'Smart Budget — 50/30/20 Rule',
                 sub:
                     'Based on ${b.income > 0 ? "your income" : "budget limit"}',
               ),
               const SizedBox(height: 16),
-              // BudgetBar(
-              //   'Needs (50%)',
-              //   b.needsBudget,
-              //   b.currentSpend,
-              //   AppColors.primaryColor,
-              //   sym,
-              //   'Rent, food, bills, transport',
-              //   percent: 20,
-              // ),
-              // const SizedBox(height: 12),
-              // BudgetBar(
-              //   'Wants (30%)',
-              //   b.wantsBudget,
-              //   b.currentSpend * 0.3,
-              //   kAmber,
-              //   sym,
-              //   'Entertainment, shopping, dining out',
-              // ),
-              // const SizedBox(height: 12),
-              // BudgetBar(
-              //   'Savings (20%)',
-              //   b.savingsGoal,
-              //   rem,
-              //   kGreen,
-              //   sym,
-              //   'Emergency fund, investments, goals',
-              // ),
+              BudgetBar(
+                'Needs (50%)',
+                b.needsBudget,
+                b.currentSpend,
+                AppColors.primaryColor,
+                sym,
+                'Rent, food, bills, transport',
+              ),
+              const SizedBox(height: 12),
+              BudgetBar(
+                'Wants (30%)',
+                b.wantsBudget,
+                b.currentSpend * 0.3,
+                kAmber,
+                sym,
+                'Entertainment, shopping, dining out',
+              ),
+              const SizedBox(height: 12),
+              BudgetBar(
+                'Savings (20%)',
+                b.savingsGoal,
+                rem,
+                kGreen,
+                sym,
+                'Emergency fund, investments, goals',
+              ),
             ],
           ),
         ),
@@ -128,54 +128,54 @@ class BudgetTab extends ConsumerWidget {
         const SizedBox(height: 14),
 
         // ── Auto-categorization tip ──────────────────────────────────────────────
-        AppCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const IconLabel('🏷️', 'Auto-Categorization'),
-              const SizedBox(height: 12),
-              Text(
-                'SpendSense detects categories automatically from your entry titles:',
-                style: TextStyle(fontSize: 12, color: c.textMuted),
-              ),
-              const SizedBox(height: 10),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children:
-                    [
-                          'Uber → Transport 🚗',
-                          'Netflix → Entertainment 🎬',
-                          "McDonald's → Food 🍜",
-                          'Pharmacy → Health 💊',
-                          'Amazon → Shopping 🛍',
-                          'Salary → Income 💼',
-                        ]
-                        .map(
-                          (ex) => Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 5,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryColor.withOpacity(0.07),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              ex,
-                              style: const TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primaryColor,
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-              ),
-            ],
-          ),
-        ),
+        // AppCard(
+        //   child: Column(
+        //     crossAxisAlignment: CrossAxisAlignment.start,
+        //     children: [
+        //       const IconLabel('🏷️', 'Auto-Categorization'),
+        //       const SizedBox(height: 12),
+        //       Text(
+        //         'SpendSense detects categories automatically from your entry titles:',
+        //         style: TextStyle(fontSize: 12, color: c.textMuted),
+        //       ),
+        //       const SizedBox(height: 10),
+        //       Wrap(
+        //         spacing: 8,
+        //         runSpacing: 8,
+        //         children:
+        //             [
+        //                   'Uber → Transport 🚗',
+        //                   'Netflix → Entertainment 🎬',
+        //                   "McDonald's → Food 🍜",
+        //                   'Pharmacy → Health 💊',
+        //                   'Amazon → Shopping 🛍',
+        //                   'Salary → Income 💼',
+        //                 ]
+        //                 .map(
+        //                   (ex) => Container(
+        //                     padding: const EdgeInsets.symmetric(
+        //                       horizontal: 10,
+        //                       vertical: 5,
+        //                     ),
+        //                     decoration: BoxDecoration(
+        //                       color: AppColors.primaryColor.withOpacity(0.07),
+        //                       borderRadius: BorderRadius.circular(20),
+        //                     ),
+        //                     child: Text(
+        //                       ex,
+        //                       style: const TextStyle(
+        //                         fontSize: 11,
+        //                         fontWeight: FontWeight.w600,
+        //                         color: AppColors.primaryColor,
+        //                       ),
+        //                     ),
+        //                   ),
+        //                 )
+        //                 .toList(),
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ],
     );
   }

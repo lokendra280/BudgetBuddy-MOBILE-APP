@@ -1,3 +1,6 @@
+import 'package:expensetracker/common/button.dart';
+import 'package:expensetracker/common/common_svg_widget.dart';
+import 'package:expensetracker/common/constant/constant_assets.dart';
 import 'package:expensetracker/features/ai_screen/pages/widget/shared_wdiget.dart';
 import 'package:expensetracker/features/ai_screen/providers/ai_providers.dart';
 import 'package:expensetracker/features/ai_screen/services/ai_services.dart';
@@ -15,18 +18,22 @@ class GoalsTab extends ConsumerStatefulWidget {
 }
 
 class _GoalsState extends ConsumerState<GoalsTab> {
-  static const _emojis = [
-    '🎯',
-    '🏠',
-    '🚗',
-    '✈️',
-    '💍',
-    '📱',
-    '🎓',
-    '💰',
-    '🏖️',
-    '🎮',
-  ];
+  // static const _emojis = [
+  //   // '🎯',
+  //   // '🏠',
+  //   // '🚗',
+  //   // '✈️',
+  //   // '💍',
+  //   // '📱',
+  //   // '🎓',
+  //   // '💰',
+  //   // '🏖️',
+  //   // '🎮',
+  //   Assets.home,
+  //   Assets.transport,
+  //   Assets.travel,
+  //   Assets.food,
+  // ];
 
   // ── Add goal bottom sheet ──────────────────────────────────────────────────
   void _showAdd() {
@@ -74,43 +81,44 @@ class _GoalsState extends ConsumerState<GoalsTab> {
               const SizedBox(height: 16),
 
               // Emoji picker
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: _emojis
-                    .map(
-                      (e) => GestureDetector(
-                        onTap: () {
-                          HapticFeedback.selectionClick();
-                          ss(() => emoji = e);
-                        },
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: emoji == e
-                                ? AppColors.primaryColor.withOpacity(0.12)
-                                : ctx.c.bg,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: emoji == e
-                                  ? AppColors.primaryColor
-                                  : ctx.c.border,
-                              width: emoji == e ? 1.5 : 1,
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              e,
-                              style: const TextStyle(fontSize: 20),
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-              const SizedBox(height: 14),
+              // Wrap(
+              //   spacing: 8,
+              //   runSpacing: 8,
+              //   children: _emojis
+              //       .map(
+              //         (e) => GestureDetector(
+              //           onTap: () {
+              //             HapticFeedback.selectionClick();
+              //             ss(() => emoji = e);
+              //           },
+              //           child: Container(
+              //             width: 40,
+              //             height: 40,
+              //             decoration: BoxDecoration(
+              //               color: emoji == e
+              //                   ? AppColors.primaryColor.withOpacity(0.12)
+              //                   : ctx.c.bg,
+              //               borderRadius: BorderRadius.circular(10),
+              //               border: Border.all(
+              //                 color: emoji == e
+              //                     ? AppColors.primaryColor
+              //                     : ctx.c.border,
+              //                 width: emoji == e ? 1.5 : 1,
+              //               ),
+              //             ),
+              //             child: Center(
+              //               child: CommonSvgWidget(svgName: e),
+              //               // child: Text(
+              //               //   e,
+              //               //   style: const TextStyle(fontSize: 20),
+              //               // ),
+              //             ),
+              //           ),
+              //         ),
+              //       )
+              //       .toList(),
+              // ),
+              // const SizedBox(height: 14),
 
               // Name field
               _Field(name, ctx, 'Goal name (e.g. New Phone)'),
@@ -145,10 +153,13 @@ class _GoalsState extends ConsumerState<GoalsTab> {
               const SizedBox(height: 16),
 
               // Create button
-              AppButton(
-                label: 'Create Goal',
-                icon: Icons.add_rounded,
-                onTap: () async {
+              PrimaryButton(
+                title: 'Create Goal',
+                color: AppColors.primaryColor,
+                icon: CommonSvgWidget(svgName: Assets.add),
+                height: 50,
+                radius: 10,
+                onPressed: () async {
                   if (name.text.isEmpty || target.text.isEmpty) return;
                   final t = double.tryParse(target.text) ?? 0;
                   if (t <= 0) return;
@@ -280,7 +291,7 @@ class _GoalsState extends ConsumerState<GoalsTab> {
             padding: const EdgeInsets.symmetric(vertical: 32),
             child: Column(
               children: [
-                const Text('🎯', style: TextStyle(fontSize: 40)),
+                CommonSvgWidget(svgName: Assets.goal, height: 70),
                 const SizedBox(height: 12),
                 const Text(
                   'No savings goals yet',
@@ -293,10 +304,13 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
-                AppButton(
-                  label: 'Create my first goal',
-                  icon: Icons.add_rounded,
-                  onTap: _showAdd,
+                PrimaryButton(
+                  color: AppColors.primaryColor,
+                  width: 90,
+                  height: 45,
+                  radius: 8,
+                  title: 'Create my first goal',
+                  onPressed: _showAdd,
                 ),
               ],
             ),

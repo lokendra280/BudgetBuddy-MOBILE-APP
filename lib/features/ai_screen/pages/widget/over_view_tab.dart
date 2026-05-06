@@ -1,5 +1,8 @@
 import 'package:expensetracker/common/app_theme.dart';
+import 'package:expensetracker/common/common_svg_widget.dart';
 import 'package:expensetracker/common/common_widget.dart';
+import 'package:expensetracker/common/constant/constant_assets.dart';
+import 'package:expensetracker/features/ai_screen/pages/widget/score_test_animation.dart';
 import 'package:expensetracker/features/ai_screen/pages/widget/shared_wdiget.dart';
 import 'package:expensetracker/features/ai_screen/providers/ai_providers.dart';
 import 'package:expensetracker/features/expense/providers/expense_provider.dart';
@@ -40,42 +43,7 @@ class OverviewTab extends ConsumerWidget {
           child: Row(
             children: [
               // Score ring
-              SizedBox(
-                width: 90,
-                height: 90,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                      value: score.score / 100,
-                      strokeWidth: 8,
-                      backgroundColor: c.border,
-                      valueColor: AlwaysStoppedAnimation(score.color),
-                    ),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '${score.score}',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w900,
-                            color: score.color,
-                          ),
-                        ),
-                        Text(
-                          score.grade,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: score.color,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+              AwesomeScoreWidget(score: score),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -104,7 +72,7 @@ class OverviewTab extends ConsumerWidget {
                         padding: const EdgeInsets.only(bottom: 6),
                         child: Row(
                           children: [
-                            Text(f.emoji, style: const TextStyle(fontSize: 12)),
+                            CommonSvgWidget(svgName: f.emoji),
                             const SizedBox(width: 6),
                             Expanded(
                               child: Column(
@@ -158,7 +126,7 @@ class OverviewTab extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const IconLabel('🔥', 'Burn Rate & Runway'),
+              const IconLabel(Assets.strike, 'Burn Rate & Runway'),
               const SizedBox(height: 14),
               Row(
                 children: [
@@ -190,13 +158,14 @@ class OverviewTab extends ConsumerWidget {
                 ),
                 child: Row(
                   children: [
-                    Text(
-                      burn.runwayDays < 30
-                          ? '⚠️'
+                    CommonSvgWidget(
+                      svgName: burn.runwayDays < 30
+                          ? Assets.warning
                           : burn.runwayDays < 90
-                          ? '💡'
-                          : '✅',
-                      style: const TextStyle(fontSize: 14),
+                          ? Assets.blub
+                          : Assets.correct,
+                      width: 18,
+                      height: 18,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -302,7 +271,7 @@ class OverviewTab extends ConsumerWidget {
         const SizedBox(height: 10),
         if (insights.isEmpty)
           const EmptyCard(
-            '✨',
+            Assets.star,
             'Add more expenses',
             'We\'ll analyse patterns once you have more data.',
           )

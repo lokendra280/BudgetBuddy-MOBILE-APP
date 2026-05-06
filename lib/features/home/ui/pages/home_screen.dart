@@ -1,3 +1,4 @@
+import 'package:expensetracker/common/common_svg_widget.dart';
 import 'package:expensetracker/features/auth/providers/auth_provider.dart';
 import 'package:expensetracker/features/auth/ui/login_screen.dart';
 import 'package:expensetracker/common/app_theme.dart';
@@ -68,7 +69,7 @@ class _H extends ConsumerState<HomeScreen> {
     final (thisW, lastW) = ref.watch(weekComparisonProvider);
     final dailyData = ref.watch(daily7Provider);
     final syncStatus = ref.watch(syncProvider);
-    final fmt = ref.watch(fmtProvider); 
+    final fmt = ref.watch(fmtProvider);
     final isLoggedIn = ref.watch(isLoggedInProvider);
 
     // ── Loading shimmer ───────────────────────────────────────────────────
@@ -189,9 +190,10 @@ class _H extends ConsumerState<HomeScreen> {
                                 borderRadius: BorderRadius.circular(11),
                               ),
                               child: const Center(
-                                child: Text(
-                                  '💡',
-                                  style: TextStyle(fontSize: 18),
+                                child: CommonSvgWidget(
+                                  svgName: Assets.blub,
+                                  height: 20,
+                                  width: 20,
                                 ),
                               ),
                             ),

@@ -1,3 +1,4 @@
+import 'package:expensetracker/common/constant/constant_assets.dart';
 import 'package:expensetracker/features/ai_screen/pages/widget/shared_wdiget.dart';
 import 'package:expensetracker/features/ai_screen/providers/ai_providers.dart';
 import 'package:expensetracker/common/app_theme.dart';
@@ -166,7 +167,7 @@ class CoachTab extends ConsumerWidget {
         // ── Recurring ──────────────────────────────────────────────────────────
         if (rec.isEmpty)
           const EmptyCard(
-            '🔄',
+            Assets.refresh,
             'No recurring detected',
             'Repeated expenses appear here.',
           )

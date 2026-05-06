@@ -1,9 +1,12 @@
 import 'package:expensetracker/common/app_theme.dart';
 import 'package:expensetracker/common/common_widget.dart';
 import 'package:expensetracker/common/language_screen.dart';
+import 'package:expensetracker/common/navigation_service.dart';
 import 'package:expensetracker/common/services/notification_service.dart';
 import 'package:expensetracker/common/theme_provider.dart';
 import 'package:expensetracker/features/auth/services/biometric_service.dart';
+import 'package:expensetracker/features/auth/services/user_profile_service.dart';
+import 'package:expensetracker/features/dashboard/pages/dashboard_page.dart';
 import 'package:expensetracker/features/expense/models/expense.dart';
 import 'package:expensetracker/features/expense/providers/expense_provider.dart';
 import 'package:expensetracker/features/profile/ui/about_page.dart';
@@ -95,7 +98,6 @@ class _State extends ConsumerState<SettingsScreen> {
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     builder: (_) => Consumer(
-      // ← Consumer so the sheet watches the provider
       builder: (ctx, ref, __) {
         // Reads live from provider — reactive inside the sheet
         final selectedCode = ref.watch(currencyProvider);
@@ -120,7 +122,7 @@ class _State extends ConsumerState<SettingsScreen> {
                 ),
                 const SizedBox(height: 8),
                 ...kCurrencies.map((cur) {
-                  final selected = cur.code == selectedCode; // live, not stale
+                  final selected = cur.code == selectedCode;
                   return ListTile(
                     leading: Text(
                       cur.flag,
@@ -141,9 +143,12 @@ class _State extends ConsumerState<SettingsScreen> {
                       await ref
                           .read(expenseProvider.notifier)
                           .updateBudget(currency: cur.code);
+
+                      await UserProfileService.saveProfile(currency: cur.code);
+
                       if (mounted) {
                         setState(() {});
-                        Navigator.pop(context);
+                        NavigationService.push(target: DashboardPage());
                       }
                     },
                   );

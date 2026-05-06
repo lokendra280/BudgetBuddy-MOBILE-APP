@@ -1,3 +1,5 @@
+import 'package:expensetracker/common/common_svg_widget.dart';
+import 'package:expensetracker/common/constant/constant_assets.dart';
 import 'package:expensetracker/common/widgets/shimmer_widget.dart';
 import 'package:expensetracker/features/auth/providers/auth_provider.dart';
 import 'package:expensetracker/common/app_theme.dart';
@@ -101,7 +103,8 @@ class LeaderboardTab extends ConsumerWidget {
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     children: [
-                      const Text('🏆', style: TextStyle(fontSize: 40)),
+                      CommonSvgWidget(svgName: Assets.trophy, height: 40),
+                      // const Text('🏆', style: TextStyle(fontSize: 40)),
                       const SizedBox(height: 8),
                       Text(
                         'No one on leaderboard yet',

@@ -3,6 +3,7 @@
 library;
 
 import 'package:expensetracker/common/app_theme.dart';
+import 'package:expensetracker/common/common_svg_widget.dart';
 import 'package:flutter/material.dart';
 
 // ── Progress bar ─────────────────────────────────────────────────────────────
@@ -71,7 +72,7 @@ class IconLabel extends StatelessWidget {
           color: AppColors.primaryColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Center(child: Text(emoji, style: const TextStyle(fontSize: 18))),
+        child: Center(child: CommonSvgWidget(svgName: emoji)),
       ),
       const SizedBox(width: 12),
       Expanded(
@@ -104,7 +105,7 @@ class EmptyCard extends StatelessWidget {
     alignment: Alignment.center,
     child: Column(
       children: [
-        Text(emoji, style: const TextStyle(fontSize: 32)),
+        CommonSvgWidget(svgName: emoji, height: 30, width: 30),
         const SizedBox(height: 8),
         Text(
           title,

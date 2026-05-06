@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:expensetracker/common/constant/constant_assets.dart';
 import 'package:expensetracker/features/expense/models/expense.dart';
 import 'package:expensetracker/features/expense/services/expenses_service.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -334,7 +335,7 @@ class AiService {
         : total >= 60
         ? 'Good — keep improving 👍'
         : total >= 40
-        ? 'Needs attention ⚠️'
+        ? 'Needs attention '
         : 'Take action now 🚨';
 
     return FinancialHealthScore(
@@ -344,7 +345,7 @@ class AiService {
       factors: [
         ScoreFactor(
           label: 'Savings Rate',
-          emoji: '💰',
+          emoji: Assets.saving,
           score: savingsScore.round().clamp(0, 25) * 4,
           detail: income > 0
               ? '${((income - spent) / income * 100).clamp(0, 100).toInt()}% saved'
@@ -352,7 +353,7 @@ class AiService {
         ),
         ScoreFactor(
           label: 'Budget Control',
-          emoji: '🎯',
+          emoji: Assets.goal,
           score: budgetScore.round().clamp(0, 25) * 4,
           detail: budget.monthlyLimit > 0
               ? '${(spent / budget.monthlyLimit * 100).toInt()}% of limit used'
@@ -360,7 +361,7 @@ class AiService {
         ),
         ScoreFactor(
           label: 'Expense Balance',
-          emoji: '⚖️',
+          emoji: Assets.balance,
           score: controlScore.round().clamp(0, 25) * 4,
           detail: cats.isNotEmpty
               ? 'Top: ${cats.keys.first} ${(cats.values.first / (spent > 0 ? spent : 1) * 100).toInt()}%'
@@ -368,7 +369,7 @@ class AiService {
         ),
         ScoreFactor(
           label: 'Consistency',
-          emoji: '🔥',
+          emoji: Assets.strike,
           score: streakScore.round().clamp(0, 25) * 4,
           detail: '${budget.streakDays} day streak',
         ),

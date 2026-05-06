@@ -29,6 +29,15 @@ class Assets {
   static const String pdf = "$_basePathSvg/pdf$_svg";
   static const String nodata = "$_basePathSvg/no-data$_svg";
   // static const String home = "$_basePathSvg/home$_svg";
+  static const String goal = "$_basePathSvg/goal$_svg";
+  static const String refresh = "$_basePathSvg/refresh$_svg";
+  static const String warning = "$_basePathSvg/warning$_svg";
+  static const String blub = "$_basePathSvg/blub$_svg";
+  static const String correct = "$_basePathSvg/correct$_svg";
+  static const String star = "$_basePathSvg/star$_svg";
+  static const String balance = "$_basePathSvg/balance$_svg";
+  static const String saving = "$_basePathSvg/saving$_svg";
+  static const String trophy = "$_basePathSvg/trophy$_svg";
 
   /// Png Images
   static const String food = "$_basePath/food$_png";
