@@ -9,7 +9,7 @@
 	<key>GADApplicationIdentifier</key>
 <string>ca-app-pub-9380499381640640~4680265625</string>
 	<key>CFBundleDisplayName</key>
-	<string>Expensetracker</string>
+	<string>BudgetBuddy</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

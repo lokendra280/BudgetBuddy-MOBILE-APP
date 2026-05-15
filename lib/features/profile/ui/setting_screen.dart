@@ -145,11 +145,7 @@ class _State extends ConsumerState<SettingsScreen> {
                           .updateBudget(currency: cur.code);
 
                       await UserProfileService.saveProfile(currency: cur.code);
-
-                      if (mounted) {
-                        setState(() {});
-                        NavigationService.push(target: DashboardPage());
-                      }
+                      if (ctx.mounted) Navigator.pop(ctx);
                     },
                   );
                 }),

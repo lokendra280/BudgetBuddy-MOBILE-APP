@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import '../models/expense.dart';
 
-
 class ExpenseState {
   final List<Expense> all;
   final Budget budget;

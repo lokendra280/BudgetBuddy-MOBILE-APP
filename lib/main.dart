@@ -38,41 +38,41 @@ Future<void> _init() async {
   await CategoryService.init();
 }
 
-void _scheduleRestart() {
-  final now = DateTime.now().millisecondsSinceEpoch;
-  if (now - _lastRestartMs < 5000) return;
-  _lastRestartMs = now;
-  Future.delayed(const Duration(seconds: 3), () {
-    NavigationService.navigationKey.currentState?.pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const SplashScreen()),
-      (_) => false,
-    );
-  });
-}
+// void _scheduleRestart() {
+//   final now = DateTime.now().millisecondsSinceEpoch;
+//   if (now - _lastRestartMs < 5000) return;
+//   _lastRestartMs = now;
+//   Future.delayed(const Duration(seconds: 3), () {
+//     NavigationService.navigationKey.currentState?.pushAndRemoveUntil(
+//       MaterialPageRoute(builder: (_) => const SplashScreen()),
+//       (_) => false,
+//     );
+//   });
+// }
 
 void main() {
   runZonedGuarded(
     () async {
       await _init();
 
-      FlutterError.onError = (details) {
-        FlutterError.presentError(details);
-        debugPrint('[FlutterError] ${details.exceptionAsString()}');
-        _scheduleRestart();
-      };
+      // FlutterError.onError = (details) {
+      //   FlutterError.presentError(details);
+      //   debugPrint('[FlutterError] ${details.exceptionAsString()}');
+      //   _scheduleRestart();
+      // };
 
-      Isolate.current.addErrorListener(
-        RawReceivePort((pair) {
-          debugPrint('[IsolateError] ${(pair as List)[0]}');
-          _scheduleRestart();
-        }).sendPort,
-      );
+      // Isolate.current.addErrorListener(
+      //   RawReceivePort((pair) {
+      //     debugPrint('[IsolateError] ${(pair as List)[0]}');
+      //     _scheduleRestart();
+      //   }).sendPort,
+      // );
 
       runApp(const ProviderScope(child: SpendSenseApp()));
     },
     (error, stack) {
       debugPrint('[ZonedError] $error\n$stack');
-      _scheduleRestart();
+      // _scheduleRestart();
     },
   );
 }
@@ -113,7 +113,8 @@ class SpendSenseApp extends ConsumerWidget {
       builder: (ctx, child) {
         ErrorWidget.builder = (details) => _ErrorView(
           error: details.exceptionAsString(),
-          onRestart: _scheduleRestart,
+          // onRestart: _scheduleRestart,
+          onRestart: () {},
         );
         return child ?? const SizedBox.shrink();
       },
