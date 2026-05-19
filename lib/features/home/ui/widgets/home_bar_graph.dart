@@ -1,6 +1,6 @@
-import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/features/expense/providers/expense_provider.dart';
-import 'package:expensetracker/l10n/app_localizations.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

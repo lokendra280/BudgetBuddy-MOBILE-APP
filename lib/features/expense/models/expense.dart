@@ -1,4 +1,4 @@
-import 'package:expensetracker/common/constant/constant_assets.dart';
+import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 part 'expense.g.dart';

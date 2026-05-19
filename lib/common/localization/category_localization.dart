@@ -1,4 +1,4 @@
-import 'package:expensetracker/l10n/app_localizations.dart';
+import 'package:budgetBuddy/l10n/app_localizations.dart';
 
 class CategoryLocalization {
   static String getName(AppLocalizations l10n, String key) {

@@ -1,5 +1,5 @@
-import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/common/theme_provider.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/common/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

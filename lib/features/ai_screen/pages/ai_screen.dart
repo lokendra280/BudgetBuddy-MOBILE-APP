@@ -1,10 +1,10 @@
-import 'package:expensetracker/features/ai_screen/pages/widget/budget_tab.dart';
-import 'package:expensetracker/features/ai_screen/pages/widget/coach_tab.dart';
-import 'package:expensetracker/features/ai_screen/pages/widget/goal_tab.dart';
-import 'package:expensetracker/features/ai_screen/pages/widget/over_view_tab.dart';
-import 'package:expensetracker/features/ai_screen/pages/widget/predict.dart';
-import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/l10n/app_localizations.dart';
+import 'package:budgetBuddy/features/ai_screen/pages/widget/budget_tab.dart';
+import 'package:budgetBuddy/features/ai_screen/pages/widget/coach_tab.dart';
+import 'package:budgetBuddy/features/ai_screen/pages/widget/goal_tab.dart';
+import 'package:budgetBuddy/features/ai_screen/pages/widget/over_view_tab.dart';
+import 'package:budgetBuddy/features/ai_screen/pages/widget/predict.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

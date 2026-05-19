@@ -1,8 +1,8 @@
-import 'package:expensetracker/features/ai_screen/pages/widget/shared_wdiget.dart';
-import 'package:expensetracker/features/ai_screen/providers/ai_providers.dart';
-import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/common/common_widget.dart';
-import 'package:expensetracker/features/expense/providers/expense_provider.dart';
+import 'package:budgetBuddy/features/ai_screen/pages/widget/shared_wdiget.dart';
+import 'package:budgetBuddy/features/ai_screen/providers/ai_providers.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/common/common_widget.dart';
+import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

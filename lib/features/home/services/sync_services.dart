@@ -1,6 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:expensetracker/features/auth/services/auth_service.dart';
-import 'package:expensetracker/features/expense/models/expense.dart';
+import 'package:budgetBuddy/features/auth/services/auth_service.dart';
+import 'package:budgetBuddy/features/expense/models/expense.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

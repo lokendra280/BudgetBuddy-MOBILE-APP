@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'package:expensetracker/features/auth/providers/auth_provider.dart';
-import 'package:expensetracker/features/auth/services/auth_service.dart';
-import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/features/dashboard/pages/dashboard_page.dart';
-import 'package:expensetracker/features/home/services/sync_services.dart';
+import 'package:budgetBuddy/features/auth/providers/auth_provider.dart';
+import 'package:budgetBuddy/features/auth/services/auth_service.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/features/dashboard/pages/dashboard_page.dart';
+import 'package:budgetBuddy/features/home/services/sync_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

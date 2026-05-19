@@ -1,12 +1,12 @@
 import 'dart:math' as math;
 
-import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/common/common_svg_widget.dart';
-import 'package:expensetracker/common/constant/constant_assets.dart';
-import 'package:expensetracker/common/onboard/ui/widgets/fact_bar_widget.dart';
-import 'package:expensetracker/common/onboard/ui/widgets/glass_widget.dart';
-import 'package:expensetracker/common/onboard/ui/widgets/mini_stat_widget.dart';
-import 'package:expensetracker/common/onboard/ui/widgets/ring_painter.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/common/common_svg_widget.dart';
+import 'package:budgetBuddy/common/constant/constant_assets.dart';
+import 'package:budgetBuddy/common/onboard/ui/widgets/fact_bar_widget.dart';
+import 'package:budgetBuddy/common/onboard/ui/widgets/glass_widget.dart';
+import 'package:budgetBuddy/common/onboard/ui/widgets/mini_stat_widget.dart';
+import 'package:budgetBuddy/common/onboard/ui/widgets/ring_painter.dart';
 import 'package:flutter/material.dart';
 
 class AnalyseIllustration extends StatelessWidget {

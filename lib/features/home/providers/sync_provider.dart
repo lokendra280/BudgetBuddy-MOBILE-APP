@@ -1,8 +1,8 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:expensetracker/features/ai_screen/providers/goals_provider.dart';
-import 'package:expensetracker/features/auth/providers/auth_provider.dart';
-import 'package:expensetracker/features/expense/models/expense.dart';
-import 'package:expensetracker/features/expense/providers/expense_provider.dart';
+import 'package:budgetBuddy/features/ai_screen/providers/goals_provider.dart';
+import 'package:budgetBuddy/features/auth/providers/auth_provider.dart';
+import 'package:budgetBuddy/features/expense/models/expense.dart';
+import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

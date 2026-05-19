@@ -1,12 +1,12 @@
-import 'package:expensetracker/features/auth/providers/auth_provider.dart';
-import 'package:expensetracker/features/auth/ui/otp_screen.dart';
-import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/common/common_widget.dart';
-import 'package:expensetracker/common/constant/constant_assets.dart';
-import 'package:expensetracker/features/dashboard/widget/dashboard_widget.dart';
-import 'package:expensetracker/features/home/providers/sync_provider.dart';
-import 'package:expensetracker/features/home/ui/pages/home_screen.dart';
-import 'package:expensetracker/l10n/app_localizations.dart';
+import 'package:budgetBuddy/features/auth/providers/auth_provider.dart';
+import 'package:budgetBuddy/features/auth/ui/otp_screen.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/common/common_widget.dart';
+import 'package:budgetBuddy/common/constant/constant_assets.dart';
+import 'package:budgetBuddy/features/dashboard/widget/dashboard_widget.dart';
+import 'package:budgetBuddy/features/home/providers/sync_provider.dart';
+import 'package:budgetBuddy/features/home/ui/pages/home_screen.dart';
+import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

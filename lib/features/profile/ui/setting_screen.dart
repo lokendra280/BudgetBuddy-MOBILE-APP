@@ -1,15 +1,15 @@
-import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/common/common_widget.dart';
-import 'package:expensetracker/common/language_screen.dart';
-import 'package:expensetracker/common/navigation_service.dart';
-import 'package:expensetracker/common/services/notification_service.dart';
-import 'package:expensetracker/common/theme_provider.dart';
-import 'package:expensetracker/features/auth/services/biometric_service.dart';
-import 'package:expensetracker/features/auth/services/user_profile_service.dart';
-import 'package:expensetracker/features/dashboard/pages/dashboard_page.dart';
-import 'package:expensetracker/features/expense/models/expense.dart';
-import 'package:expensetracker/features/expense/providers/expense_provider.dart';
-import 'package:expensetracker/features/profile/ui/about_page.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/common/common_widget.dart';
+import 'package:budgetBuddy/common/language_screen.dart';
+import 'package:budgetBuddy/common/navigation_service.dart';
+import 'package:budgetBuddy/common/services/notification_service.dart';
+import 'package:budgetBuddy/common/theme_provider.dart';
+import 'package:budgetBuddy/features/auth/services/biometric_service.dart';
+import 'package:budgetBuddy/features/auth/services/user_profile_service.dart';
+import 'package:budgetBuddy/features/dashboard/pages/dashboard_page.dart';
+import 'package:budgetBuddy/features/expense/models/expense.dart';
+import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetBuddy/features/profile/ui/about_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

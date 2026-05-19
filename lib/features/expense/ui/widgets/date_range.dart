@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:expensetracker/common/app_theme.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

@@ -1,4 +1,4 @@
-# expensetracker
+# budgetBuddy
 
 A new Flutter project.
 

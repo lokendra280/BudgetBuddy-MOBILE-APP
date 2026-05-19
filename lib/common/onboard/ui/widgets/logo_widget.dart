@@ -1,5 +1,5 @@
-import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/common/constant/constant_assets.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:flutter/material.dart';
 
 class LogoWidget extends StatelessWidget {

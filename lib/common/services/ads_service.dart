@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:expensetracker/common/services/premium_service.dart';
+import 'package:budgetBuddy/common/services/premium_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'dart:io';
 

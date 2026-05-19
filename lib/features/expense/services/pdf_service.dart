@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:expensetracker/features/expense/services/expenses_service.dart';
+import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';

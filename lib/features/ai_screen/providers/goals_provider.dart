@@ -1,5 +1,5 @@
-import 'package:expensetracker/features/ai_screen/services/ai_services.dart';
-import 'package:expensetracker/common/hive_storages/hive_storage.dart';
+import 'package:budgetBuddy/features/ai_screen/services/ai_services.dart';
+import 'package:budgetBuddy/common/hive_storages/hive_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 

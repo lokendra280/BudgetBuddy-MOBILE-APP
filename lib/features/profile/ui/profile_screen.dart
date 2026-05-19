@@ -1,8 +1,8 @@
-import 'package:expensetracker/features/auth/services/auth_service.dart';
-import 'package:expensetracker/features/auth/ui/login_screen.dart';
-import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/common/common_widget.dart';
-import 'package:expensetracker/features/home/services/sync_services.dart';
+import 'package:budgetBuddy/features/auth/services/auth_service.dart';
+import 'package:budgetBuddy/features/auth/ui/login_screen.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/common/common_widget.dart';
+import 'package:budgetBuddy/features/home/services/sync_services.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {

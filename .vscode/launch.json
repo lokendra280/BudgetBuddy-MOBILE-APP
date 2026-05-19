@@ -6,18 +6,18 @@
     "configurations": [
     
         {
-            "name": "expensetracker",
+            "name": "budgetBuddy",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "expensetracker (profile mode)",
+            "name": "budgetBuddy (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "expensetracker (release mode)",
+            "name": "budgetBuddy (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

@@ -1,8 +1,8 @@
 import 'dart:ui';
 
-import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/common/onboard/ui/widgets/cat_icons.dart';
-import 'package:expensetracker/common/onboard/ui/widgets/glass_widget.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/common/onboard/ui/widgets/cat_icons.dart';
+import 'package:budgetBuddy/common/onboard/ui/widgets/glass_widget.dart';
 import 'package:flutter/material.dart';
 
 class ExpenseRow extends StatelessWidget {

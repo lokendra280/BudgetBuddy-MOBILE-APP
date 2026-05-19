@@ -1,12 +1,12 @@
-import 'package:expensetracker/common/common_svg_widget.dart';
-import 'package:expensetracker/common/constant/constant_assets.dart';
-import 'package:expensetracker/common/widgets/shimmer_widget.dart';
-import 'package:expensetracker/features/auth/providers/auth_provider.dart';
-import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/common/common_widget.dart';
-import 'package:expensetracker/features/expense/providers/expense_provider.dart';
-import 'package:expensetracker/features/social/providers/social_provider.dart';
-import 'package:expensetracker/l10n/app_localizations.dart';
+import 'package:budgetBuddy/common/common_svg_widget.dart';
+import 'package:budgetBuddy/common/constant/constant_assets.dart';
+import 'package:budgetBuddy/common/widgets/shimmer_widget.dart';
+import 'package:budgetBuddy/features/auth/providers/auth_provider.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/common/common_widget.dart';
+import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetBuddy/features/social/providers/social_provider.dart';
+import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

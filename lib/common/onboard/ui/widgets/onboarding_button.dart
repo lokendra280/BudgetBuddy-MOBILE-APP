@@ -1,4 +1,4 @@
-import 'package:expensetracker/common/app_theme.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class OnBoardingButton extends StatelessWidget {

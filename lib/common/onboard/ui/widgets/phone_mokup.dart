@@ -1,5 +1,5 @@
-import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/common/onboard/ui/widgets/corner_widget.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/common/onboard/ui/widgets/corner_widget.dart';
 import 'package:flutter/material.dart';
 
 class PhoneMockup extends StatelessWidget {

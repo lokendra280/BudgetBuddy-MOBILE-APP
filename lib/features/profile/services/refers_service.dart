@@ -1,6 +1,6 @@
 import 'dart:math';
-import 'package:expensetracker/features/auth/services/auth_service.dart';
-import 'package:expensetracker/features/expense/services/expenses_service.dart';
+import 'package:budgetBuddy/features/auth/services/auth_service.dart';
+import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

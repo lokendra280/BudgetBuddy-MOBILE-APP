@@ -1,7 +1,7 @@
 import 'dart:math';
-import 'package:expensetracker/common/constant/constant_assets.dart';
-import 'package:expensetracker/features/expense/models/expense.dart';
-import 'package:expensetracker/features/expense/services/expenses_service.dart';
+import 'package:budgetBuddy/common/constant/constant_assets.dart';
+import 'package:budgetBuddy/features/expense/models/expense.dart';
+import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';

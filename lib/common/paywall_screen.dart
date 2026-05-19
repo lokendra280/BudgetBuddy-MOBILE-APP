@@ -1,6 +1,6 @@
-// import 'package:expensetracker/common/app_theme.dart';
-// import 'package:expensetracker/common/common_widget.dart';
-// import 'package:expensetracker/common/services/premium_service.dart';
+// import 'package:budgetBuddy/common/app_theme.dart';
+// import 'package:budgetBuddy/common/common_widget.dart';
+// import 'package:budgetBuddy/common/services/premium_service.dart';
 // import 'package:flutter/material.dart';
 // import 'package:in_app_purchase/in_app_purchase.dart';
 

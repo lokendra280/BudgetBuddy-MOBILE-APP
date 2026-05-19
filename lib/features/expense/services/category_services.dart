@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:expensetracker/common/constant/constant_assets.dart';
+import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -165,8 +165,7 @@ class CategoryService {
       isIncome: false,
     ),
   ];
-  
-  
+
   static final _fallbackIncome = [
     AppCategory(
       id: 'sal',

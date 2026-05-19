@@ -1,6 +1,6 @@
-import 'package:expensetracker/common/hive_storages/hive_storage.dart';
-import 'package:expensetracker/features/ai_screen/services/ai_services.dart';
-import 'package:expensetracker/features/expense/providers/expense_provider.dart';
+import 'package:budgetBuddy/common/hive_storages/hive_storage.dart';
+import 'package:budgetBuddy/features/ai_screen/services/ai_services.dart';
+import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ── All AI features as derived providers ─────────────────────────────────────

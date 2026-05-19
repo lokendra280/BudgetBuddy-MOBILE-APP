@@ -1,5 +1,5 @@
-import 'package:expensetracker/features/auth/services/biometric_service.dart';
-import 'package:expensetracker/common/app_theme.dart';
+import 'package:budgetBuddy/features/auth/services/biometric_service.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class LockScreen extends StatefulWidget {

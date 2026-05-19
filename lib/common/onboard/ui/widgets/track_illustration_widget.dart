@@ -1,9 +1,9 @@
 import 'dart:math' as math;
 
-import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/common/constant/constant_assets.dart';
-import 'package:expensetracker/common/onboard/ui/widgets/expense_row_widget.dart';
-import 'package:expensetracker/common/onboard/ui/widgets/phone_mokup.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/common/constant/constant_assets.dart';
+import 'package:budgetBuddy/common/onboard/ui/widgets/expense_row_widget.dart';
+import 'package:budgetBuddy/common/onboard/ui/widgets/phone_mokup.dart';
 import 'package:flutter/material.dart';
 
 class TrackIllustration extends StatelessWidget {

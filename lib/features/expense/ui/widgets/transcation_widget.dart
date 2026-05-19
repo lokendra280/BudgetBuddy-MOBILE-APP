@@ -1,9 +1,9 @@
-import 'package:expensetracker/common/app_theme.dart';
-import 'package:expensetracker/common/common_widget.dart';
-import 'package:expensetracker/common/constant/constant_assets.dart';
-import 'package:expensetracker/common/localization/category_localization.dart';
-import 'package:expensetracker/features/expense/models/expense.dart';
-import 'package:expensetracker/l10n/app_localizations.dart';
+import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/common/common_widget.dart';
+import 'package:budgetBuddy/common/constant/constant_assets.dart';
+import 'package:budgetBuddy/common/localization/category_localization.dart';
+import 'package:budgetBuddy/features/expense/models/expense.dart';
+import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
