@@ -27,7 +27,6 @@ const _langs = [
   _LangOption('ne', '🇳🇵', 'नेपाली', 'Nepali', 'NPR'),
   _LangOption('en', '🇺🇸', 'English', 'English (US)', 'USD'),
   _LangOption('hi', '🇮🇳', 'हिन्दी', 'Hindi', 'INR'),
-  _LangOption('en', '🇬🇧', 'English (UK)', 'English (UK)', 'GBP'),
 ];
 
 class _State extends ConsumerState<LanguageScreen> {

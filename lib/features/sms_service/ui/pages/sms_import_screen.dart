@@ -1,5 +1,7 @@
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
+import 'package:budgetBuddy/common/constant/constant_assets.dart';
+import 'package:budgetBuddy/features/expense/models/expense.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetBuddy/features/sms_service/providers/sms_import_provider.dart';
 import 'package:budgetBuddy/features/sms_service/services/sms_parser_service.dart';
@@ -370,7 +372,7 @@ class _SmsTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.c;
     final col = tx.isIncome ? kGreen : kAccent;
-    final catEmoji = _emoji(tx.category);
+    // final catEmoji = _emoji(tx.category);
 
     return GestureDetector(
       onTap: onTap,
@@ -419,7 +421,11 @@ class _SmsTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Center(
-                child: Text(catEmoji, style: const TextStyle(fontSize: 18)),
+                child: Image.asset(
+                  kCatEmoji[tx.category] ?? Assets.nodata,
+                  width: 20,
+                  height: 20,
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -439,32 +445,28 @@ class _SmsTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 1,
-                        ),
-                        decoration: BoxDecoration(
-                          color: c.border.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          tx.bank,
-                          style: TextStyle(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w600,
-                            color: c.textMuted,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        DateFormat('MMM d, yyyy').format(tx.date),
-                        style: TextStyle(fontSize: 10, color: c.textMuted),
-                      ),
-                    ],
+                  // Container(
+                  //   padding: const EdgeInsets.symmetric(
+                  //     horizontal: 6,
+                  //     vertical: 1,
+                  //   ),
+                  //   decoration: BoxDecoration(
+                  //     color: c.border.withOpacity(0.5),
+                  //     borderRadius: BorderRadius.circular(4),
+                  //   ),
+                  //   child: Text(
+                  //     tx.bank,
+                  //     style: TextStyle(
+                  //       fontSize: 9,
+                  //       fontWeight: FontWeight.w600,
+                  //       color: c.textMuted,
+                  //     ),
+                  //     overflow: TextOverflow.ellipsis,
+                  //   ),
+                  // ),
+                  Text(
+                    DateFormat('MMM d, yyyy').format(tx.date),
+                    style: TextStyle(fontSize: 10, color: c.textMuted),
                   ),
                 ],
               ),
@@ -512,22 +514,22 @@ class _SmsTile extends StatelessWidget {
     );
   }
 
-  String _emoji(String category) {
-    const m = {
-      'Food': '🍜',
-      'Transport': '🚗',
-      'Shopping': '🛍',
-      'Health': '💊',
-      'Bills': '⚡',
-      'Entertainment': '🎬',
-      'Salary': '💼',
-      'Freelance': '💻',
-      'Investment': '📈',
-      'Gift': '🎁',
-      'Other': '📦',
-    };
-    return m[category] ?? '📦';
-  }
+  // String _emoji(String category) {
+  //   const m = {
+  //     'Food': '🍜',
+  //     'Transport': '🚗',
+  //     'Shopping': '🛍',
+  //     'Health': '💊',
+  //     'Bills': '⚡',
+  //     'Entertainment': '🎬',
+  //     'Salary': '💼',
+  //     'Freelance': '💻',
+  //     'Investment': '📈',
+  //     'Gift': '🎁',
+  //     'Other': '📦',
+  //   };
+  //   return m[category] ?? '📦';
+  // }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

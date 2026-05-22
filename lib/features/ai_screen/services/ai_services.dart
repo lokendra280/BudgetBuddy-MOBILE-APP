@@ -148,6 +148,8 @@ class SmartAlert {
 class SubscriptionItem {
   final String name, emoji, category;
   final double amount;
+  final int color;
+
   final String frequency; // monthly / yearly
   const SubscriptionItem({
     required this.name,
@@ -155,7 +157,10 @@ class SubscriptionItem {
     required this.category,
     required this.amount,
     required this.frequency,
+    required this.color,
   });
+  String get title => name;
+  String get schedule => frequency;
   double get monthlyEquivalent => frequency == 'yearly' ? amount / 12 : amount;
 }
 
@@ -752,6 +757,7 @@ class AiService {
             emoji: _catEmoji(r.category),
             category: r.category,
             amount: r.avgAmount,
+            color: Random(r.title.hashCode).nextInt(0xFFFFFF) + 0xFF000000,
             frequency: r.occurrences >= 12 ? 'monthly' : 'monthly',
           ),
         );
@@ -980,14 +986,15 @@ class AiService {
           ? (daysBetween / (list.length - 1)).round()
           : 30;
       final nextDate = list.last.date.add(Duration(days: avgInterval));
+      final first = list.isNotEmpty ? list.first : null;
       results.add(
         RecurringExpense(
-          title: list.first.title,
-          category: list.first.category,
+          title: first?.title ?? '',
+          category: first?.category ?? '',
           avgAmount: avg,
           occurrences: list.length,
           nextEstimate: nextDate,
-          emoji: _catEmoji(list.first.category),
+          emoji: _catEmoji(list.first?.category ?? ''),
         ),
       );
     });

@@ -6,6 +6,8 @@
 <uses-permission android:name="android.permission.INTERNET"/>
 <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
 <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+<uses-permission android:name="android.permission.SEND_SMS"/>
+<uses-permission android:name="android.permission.READ_SMS"/>
     <application
         android:label="Budget Buddy"
         android:name="${applicationName}"
@@ -68,7 +70,13 @@
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
 
-        </receiver> <!-- ✅ FIX ADDED HERE -->
+        </receiver> 
+        <receiver android:name="com.shounakmulay.telephony.sms.IncomingSmsReceiver"
+		    android:permission="android.permission.BROADCAST_SMS" android:exported="true">
+		    <intent-filter>
+			<action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+		    </intent-filter>
+		</receiver>
       <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-9380499381640640~4680265625"/>

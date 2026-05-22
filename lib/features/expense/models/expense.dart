@@ -82,6 +82,7 @@ const kCategories = [
   'Health',
   'Bills',
   'Entertainment',
+  'Bank',
   'Other',
 ];
 const kIncomeCategories = [
@@ -109,4 +110,5 @@ const kCatEmoji = {
   'Education': Assets.education,
   'Groceries': Assets.groceries,
   'Travel': Assets.travel,
+  'Bank': Assets.bank,
 };

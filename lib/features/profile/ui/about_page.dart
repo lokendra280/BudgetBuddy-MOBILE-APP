@@ -74,7 +74,7 @@ class _State extends State<AboutScreen> {
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'SpendSense',
+                  'BudgetBuddy',
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 4),
@@ -111,7 +111,7 @@ class _State extends State<AboutScreen> {
           _Section('Our Mission'),
           AppCard(
             child: const Text(
-              'SpendSense helps you track every rupee, understand your spending habits, '
+              'BudgetBuddy helps you track every rupee, understand your spending habits, '
               'and make smarter financial decisions — whether you\'re in Kathmandu, Mumbai, London, or New York.',
               style: TextStyle(fontSize: 13, height: 1.6),
             ),

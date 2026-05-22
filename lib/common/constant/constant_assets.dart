@@ -38,6 +38,7 @@ class Assets {
   static const String balance = "$_basePathSvg/balance$_svg";
   static const String saving = "$_basePathSvg/saving$_svg";
   static const String trophy = "$_basePathSvg/trophy$_svg";
+  static const String sms = "$_basePathSvg/sms$_svg";
 
   /// Png Images
   static const String food = "$_basePath/food$_png";
@@ -50,7 +51,7 @@ class Assets {
   static const String travel = "$_basePath/travel$_png";
   static const String groceries = "$_basePath/groceries$_png";
   static const String other = "$_basePath/other$_png";
-
+  static const String bank = "$_basePath/bank$_png";
   static const String salary = "$_basePath/salary$_png";
   static const String freelance = "$_basePath/computer$_png";
   static const String investment = "$_basePath/invest$_png";

@@ -3,9 +3,11 @@ import 'package:budgetBuddy/common/button.dart';
 import 'package:budgetBuddy/common/common_svg_widget.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
 import 'package:budgetBuddy/common/constant/constant_assets.dart';
+import 'package:budgetBuddy/common/navigation_service.dart';
 import 'package:budgetBuddy/common/widgets/emoji_image.dart';
 import 'package:budgetBuddy/features/expense/services/category_services.dart';
 import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
+import 'package:budgetBuddy/features/sms_service/ui/pages/sms_import_screen.dart';
 import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -559,6 +561,7 @@ class _S extends State<AddExpenseScreen> {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
+
         // actions: [
         //   Padding(
         //     padding: const EdgeInsets.only(right: 8),
@@ -581,6 +584,30 @@ class _S extends State<AddExpenseScreen> {
         //     ),
         //   ),
         // ],
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton(
+              icon: _scanning
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.primaryColor,
+                      ),
+                    )
+                  : const Icon(
+                      Icons.document_scanner_outlined,
+                      color: AppColors.primaryColor,
+                    ),
+              tooltip: 'Scan bill',
+              onPressed: () {
+                NavigationService.push(target: SmsImportScreen());
+              },
+            ),
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(18, 16, 18, 120),
@@ -747,9 +774,26 @@ class _S extends State<AddExpenseScreen> {
             color: AppColors.primaryColor,
             icon: CommonSvgWidget(
               svgName: Assets.add,
-              height: 18,
-              width: 18,
+              height: 20,
+              width: 20,
               color: AppColors.white,
+            ),
+          ),
+          SizedBox(height: 20),
+          PrimaryButton(
+            onPressed: () {
+              NavigationService.push(target: SmsImportScreen());
+            },
+            title: "Import from SMS",
+            radius: 8,
+            height: 50,
+            textSize: 18,
+            color: AppColors.darkGrey,
+            icon: CommonSvgWidget(
+              svgName: Assets.sms,
+              height: 20,
+              width: 20,
+              color: AppColors.primaryColor,
             ),
           ),
         ],

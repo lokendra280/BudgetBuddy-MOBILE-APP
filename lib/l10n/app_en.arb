@@ -152,8 +152,11 @@
   "shareReport": "Share Report",
   "settings": "Settings",
   "about": "About"
-  
 
+  "ImportSms": "Import From SMS",
+  "AiSpending": "AI Spending Insights",
+  "subscriptions": "subscriptions & Recurring",
+  "SavingGoals" :"Saving Goals",
 
 
 }
