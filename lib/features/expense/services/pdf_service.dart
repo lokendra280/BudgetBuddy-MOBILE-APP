@@ -244,7 +244,7 @@ class PdfService {
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
           pw.Text(
-            'SpendSense — Personal Finance Tracker',
+            'BudgetBuddy Personal Finance Tracker',
             style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey400),
           ),
           pw.Text(

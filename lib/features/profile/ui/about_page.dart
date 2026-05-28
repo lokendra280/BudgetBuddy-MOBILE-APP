@@ -188,6 +188,7 @@ class _State extends State<AboutScreen> {
                 _TechChip('Lottie', '🎬'),
                 _TechChip('FL Chart', '📊'),
                 _TechChip('Local Auth', '🔒'),
+                _TechChip('SMS Import', '🔒'),
               ],
             ),
           ),
@@ -235,7 +236,7 @@ class _State extends State<AboutScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '© ${DateTime.now().year} SpendSense. All rights reserved.',
+                  '© ${DateTime.now().year} BudgetBuddy. All rights reserved.',
                   style: TextStyle(fontSize: 11, color: c.textMuted),
                 ),
               ],

@@ -1,16 +1,13 @@
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
 import 'package:budgetBuddy/common/language_screen.dart';
-import 'package:budgetBuddy/common/navigation_service.dart';
 import 'package:budgetBuddy/common/services/notification_service.dart';
 import 'package:budgetBuddy/common/theme_provider.dart';
 import 'package:budgetBuddy/features/auth/services/biometric_service.dart';
 import 'package:budgetBuddy/features/auth/services/user_profile_service.dart';
-import 'package:budgetBuddy/features/dashboard/pages/dashboard_page.dart';
 import 'package:budgetBuddy/features/expense/models/expense.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetBuddy/features/profile/ui/about_page.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,7 +43,6 @@ class _State extends ConsumerState<SettingsScreen> {
     final avail = await BiometricService.isAvailable();
     if (!mounted) return;
     setState(() {
-      // Read budget limit from Riverpod provider — not static ExpenseService
       _limitCtrl.text = ref
           .read(budgetProvider)
           .monthlyLimit
@@ -57,7 +53,6 @@ class _State extends ConsumerState<SettingsScreen> {
     });
   }
 
-  // ── Save budget limit via Riverpod notifier ─────────────────────────────────
   Future<void> _saveLimit() async {
     final val = double.tryParse(_limitCtrl.text.replaceAll(',', ''));
     if (val == null || val <= 0) {
@@ -66,10 +61,9 @@ class _State extends ConsumerState<SettingsScreen> {
     }
     HapticFeedback.mediumImpact();
     await ref.read(expenseProvider.notifier).updateBudget(limit: val);
-    _snack('Budget updated ✓', kGreen);
+    _snack('Budget updated ', kGreen);
   }
 
-  // ── Notifications ──────────────────────────────────────────────────────────
   Future<void> _toggleNotif(bool v) async {
     setState(() => _notif = v);
     final p = await SharedPreferences.getInstance();
@@ -79,7 +73,6 @@ class _State extends ConsumerState<SettingsScreen> {
         : await NotificationService.cancelAll();
   }
 
-  // ── Biometric ──────────────────────────────────────────────────────────────
   Future<void> _toggleBio(bool v) async {
     if (v) {
       final ok = await BiometricService.authenticate(
@@ -91,6 +84,7 @@ class _State extends ConsumerState<SettingsScreen> {
     if (mounted) setState(() => _biometric = v);
   }
 
+  // ── Currency picker ────────────────────────────────────────────────────────
   Future<void> _selectCurrency() => showModalBottomSheet(
     context: context,
     backgroundColor: context.c.card,
@@ -99,7 +93,7 @@ class _State extends ConsumerState<SettingsScreen> {
     ),
     builder: (_) => Consumer(
       builder: (ctx, ref, __) {
-        // Reads live from provider — reactive inside the sheet
+        // Reactive: rebuilds inside the sheet when currency changes
         final selectedCode = ref.watch(currencyProvider);
         return SafeArea(
           child: SingleChildScrollView(
@@ -140,11 +134,14 @@ class _State extends ConsumerState<SettingsScreen> {
                           )
                         : null,
                     onTap: () async {
+                      // 1. Save to Hive + update ALL providers instantly
                       await ref
                           .read(expenseProvider.notifier)
                           .updateBudget(currency: cur.code);
 
+                      // 2. Sync to Supabase (fire & forget)
                       await UserProfileService.saveProfile(currency: cur.code);
+
                       if (ctx.mounted) Navigator.pop(ctx);
                     },
                   );
@@ -170,13 +167,10 @@ class _State extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-
-    // ── Watch providers — screen rebuilds when these change ──────────────────
     final budget = ref.watch(budgetProvider);
     final curInfo = currencyOf(ref.watch(currencyProvider));
     final locale = ref.watch(localeProvider);
     final lang = locale.languageCode;
-    // Safe lookup — fallback to 'en' if code not in labels
     final native = LocaleNotifier.labels[lang]?.$1 ?? 'English';
     final flag = LocaleNotifier.flags[lang] ?? '🇬🇧';
 
@@ -197,13 +191,13 @@ class _State extends ConsumerState<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(18),
         children: [
-          // ── Appearance ────────────────────────────────────────────────────────
-          const _T('Appearance'), const SizedBox(height: 10),
-          const _ThemeToggle(), // ConsumerWidget — reads themeProvider internally
+          const _T('Appearance'),
+          const SizedBox(height: 10),
+          const _ThemeToggle(),
           const SizedBox(height: 20),
 
-          // ── Language ──────────────────────────────────────────────────────────
-          const _T('Language'), const SizedBox(height: 10),
+          const _T('Language'),
+          const SizedBox(height: 10),
           AppCard(
             onTap: () => Navigator.push(
               context,
@@ -237,8 +231,8 @@ class _State extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 20),
 
-          // ── Currency ──────────────────────────────────────────────────────────
-          const _T('Currency'), const SizedBox(height: 10),
+          const _T('Currency'),
+          const SizedBox(height: 10),
           AppCard(
             onTap: _selectCurrency,
             child: Row(
@@ -269,6 +263,7 @@ class _State extends ConsumerState<SettingsScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
+                      // ✅ Watches currencyProvider — updates instantly when sheet closes
                       Text(
                         '${curInfo.name} · ${curInfo.symbol}',
                         style: TextStyle(fontSize: 11, color: c.textMuted),
@@ -282,8 +277,8 @@ class _State extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 20),
 
-          // ── Security ──────────────────────────────────────────────────────────
-          const _T('Security'), const SizedBox(height: 10),
+          const _T('Security'),
+          const SizedBox(height: 10),
           AppCard(
             child: Column(
               children: [
@@ -358,8 +353,8 @@ class _State extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 20),
 
-          // ── Monthly budget ────────────────────────────────────────────────────
-          const _T('Monthly Budget'), const SizedBox(height: 10),
+          const _T('Monthly Budget'),
+          const SizedBox(height: 10),
           AppCard(
             child: Column(
               children: [
@@ -392,8 +387,8 @@ class _State extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 20),
 
-          // ── Notifications ─────────────────────────────────────────────────────
-          const _T('Notifications'), const SizedBox(height: 10),
+          const _T('Notifications'),
+          const SizedBox(height: 10),
           AppCard(
             child: Row(
               children: [
@@ -435,8 +430,8 @@ class _State extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 20),
 
-          // ── Streak — reads from budgetProvider (reactive) ─────────────────────
-          const _T('Activity'), const SizedBox(height: 10),
+          const _T('Activity'),
+          const SizedBox(height: 10),
           AppCard(
             child: Row(
               children: [
@@ -458,7 +453,6 @@ class _State extends ConsumerState<SettingsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // ✅ Reads from budgetProvider — updates reactively
                       Text(
                         '${budget.streakDays} day streak',
                         style: const TextStyle(
@@ -497,8 +491,8 @@ class _State extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 20),
 
-          // ── About ─────────────────────────────────────────────────────────────
-          const _T('About'), const SizedBox(height: 10),
+          const _T('About'),
+          const SizedBox(height: 10),
           AppCard(
             onTap: () => Navigator.push(
               context,
@@ -542,7 +536,6 @@ class _State extends ConsumerState<SettingsScreen> {
               ],
             ),
           ),
-
           const SizedBox(height: 40),
         ],
       ),
@@ -550,13 +543,8 @@ class _State extends ConsumerState<SettingsScreen> {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// THEME TOGGLE — ConsumerWidget reads + writes themeProvider directly
-// No more ValueListenableBuilder(valueListenable: ThemeProvider.notifier)
-// ─────────────────────────────────────────────────────────────────────────────
 class _ThemeToggle extends ConsumerWidget {
   const _ThemeToggle();
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mode = ref.watch(themeProvider);
@@ -593,16 +581,12 @@ class _ThemeToggle extends ConsumerWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PRIVATE SHARED WIDGETS
-// ─────────────────────────────────────────────────────────────────────────────
 class _B extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool active;
   final VoidCallback onTap;
   const _B(this.icon, this.label, this.active, this.onTap);
-
   @override
   Widget build(BuildContext context) => Expanded(
     child: GestureDetector(

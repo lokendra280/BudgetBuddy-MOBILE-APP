@@ -22,7 +22,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+  final Function(bool)? onDrawerChanged;
+
+  const HomeScreen({super.key, this.onDrawerChanged});
   @override
   ConsumerState<HomeScreen> createState() => _H();
 }
@@ -83,8 +85,9 @@ class _H extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-
-      // ── Drawer (reads its own providers internally) ───────────────────
+      onDrawerChanged: (isOpened) {
+        widget.onDrawerChanged?.call(isOpened);
+      },
       drawer: AppDrawer(
         onPush: _push,
         onShare: () => ShareService.shareReport(context),

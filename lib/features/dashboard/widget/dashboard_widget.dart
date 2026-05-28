@@ -68,7 +68,7 @@ class _DashboardWidgetState extends State<DashboardWidget>
     with WidgetsBindingObserver {
   late PageController _pageController;
   int _selectedIndex = 0;
-
+  bool _hideBottomNav = false;
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -124,86 +124,96 @@ class _DashboardWidgetState extends State<DashboardWidget>
     return WillPopScope(
       onWillPop: showExitPopup,
       child: Scaffold(
-        bottomNavigationBar: NavigationBar(
-          height: 80,
-          elevation: 0,
+        bottomNavigationBar: _hideBottomNav
+            ? null
+            : NavigationBar(
+                height: 80,
+                elevation: 0,
 
-          selectedIndex: _selectedIndex,
-          onDestinationSelected: (index) {
-            _pageController.animateToPage(
-              index,
-              duration: const Duration(milliseconds: 400),
-              curve: Curves.ease,
-            );
-          },
-          destinations: [
-            NavigationDestination(
-              icon: CommonSvgWidget(
-                svgName: Assets.home,
-                color: _selectedIndex == 0
-                    ? AppColors.primaryColor
-                    : AppColors.darkGrey,
+                selectedIndex: _selectedIndex,
+                onDestinationSelected: (index) {
+                  _pageController.animateToPage(
+                    index,
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.ease,
+                  );
+                },
+                destinations: [
+                  NavigationDestination(
+                    icon: CommonSvgWidget(
+                      svgName: Assets.home,
+                      color: _selectedIndex == 0
+                          ? AppColors.primaryColor
+                          : AppColors.darkGrey,
+                    ),
+                    label: l10n.home,
+                  ),
+                  NavigationDestination(
+                    icon: CommonSvgWidget(
+                      svgName: Assets.statements,
+                      color: _selectedIndex == 1
+                          ? AppColors.primaryColor
+                          : AppColors.darkGrey,
+                    ),
+                    label: l10n.statements,
+                  ),
+                  NavigationDestination(
+                    icon: CommonSvgWidget(
+                      svgName: Assets.social,
+                      color: _selectedIndex == 2
+                          ? AppColors.primaryColor
+                          : AppColors.darkGrey,
+                    ),
+                    label: l10n.social,
+                  ),
+                  NavigationDestination(
+                    icon: CommonSvgWidget(
+                      svgName: Assets.ai,
+                      color: _selectedIndex == 3
+                          ? AppColors.primaryColor
+                          : AppColors.darkGrey,
+                    ),
+                    label: l10n.aiInsight,
+                  ),
+                ],
               ),
-              label: l10n.home,
-            ),
-            NavigationDestination(
-              icon: CommonSvgWidget(
-                svgName: Assets.statements,
-                color: _selectedIndex == 1
-                    ? AppColors.primaryColor
-                    : AppColors.darkGrey,
-              ),
-              label: l10n.statements,
-            ),
-            NavigationDestination(
-              icon: CommonSvgWidget(
-                svgName: Assets.social,
-                color: _selectedIndex == 2
-                    ? AppColors.primaryColor
-                    : AppColors.darkGrey,
-              ),
-              label: l10n.social,
-            ),
-            NavigationDestination(
-              icon: CommonSvgWidget(
-                svgName: Assets.ai,
-                color: _selectedIndex == 3
-                    ? AppColors.primaryColor
-                    : AppColors.darkGrey,
-              ),
-              label: l10n.aiInsight,
-            ),
-          ],
-        ),
         body: PageView(
           controller: _pageController,
           physics: const NeverScrollableScrollPhysics(),
           onPageChanged: _onPageChanged,
           children: [
-            const HomeScreen(),
+            HomeScreen(
+              onDrawerChanged: (opened) {
+                setState(() {
+                  _hideBottomNav = opened;
+                });
+              },
+            ),
             const StatementsScreen(),
             const SocialScreen(),
             const AiScreen(),
           ],
         ),
-        floatingActionButton: SizedBox(
-          height: 50,
-          width: 50,
+        floatingActionButton: _hideBottomNav
+            ? null
+            : SizedBox(
+                height: 50,
+                width: 50,
 
-          child: FloatingActionButton(
-            elevation: 2,
-            backgroundColor: AppColors.primaryColor,
-            // mini: false,
-            child: CommonSvgWidget(
-              svgName: Assets.add,
-              color: Colors.white,
-              height: 25,
-            ),
-            onPressed: () {
-              NavigationService.push(target: AddExpenseScreen());
-            },
-          ),
-        ),
+                child: FloatingActionButton(
+                  elevation: 2,
+                  backgroundColor: AppColors.primaryColor,
+                  // mini: false,
+                  child: CommonSvgWidget(
+                    svgName: Assets.add,
+                    color: Colors.white,
+                    height: 25,
+                  ),
+                  onPressed: () {
+                    NavigationService.push(target: AddExpenseScreen());
+                  },
+                ),
+              ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );

@@ -1,27 +1,32 @@
-import 'package:budgetBuddy/features/auth/services/biometric_service.dart';
-import 'package:budgetBuddy/features/auth/ui/lock_screen.dart';
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/onboard/onboard_screen.dart';
 import 'package:budgetBuddy/common/services/app_version_service.dart';
+import 'package:budgetBuddy/features/auth/services/biometric_service.dart';
+import 'package:budgetBuddy/features/auth/ui/lock_screen.dart';
 import 'package:budgetBuddy/features/dashboard/pages/dashboard_page.dart';
+import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetBuddy/features/home/ui/pages/home_screen.dart';
+import 'package:budgetBuddy/features/sms_service/services/sms_auto_sync_service.dart';
 import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
   @override
-  State<SplashScreen> createState() => _State();
+  ConsumerState<SplashScreen> createState() => _State();
 }
 
-class _State extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _State extends ConsumerState<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
 
   @override
   void initState() {
     super.initState();
     _ctrl = AnimationController(vsync: this);
-    _navigate();
+    _boot();
   }
 
   @override
@@ -30,13 +35,13 @@ class _State extends State<SplashScreen> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  Future<void> _navigate() async {
-    // Wait for animation + version check in parallel
+  Future<void> _boot() async {
+    // Theme + locale are now read directly from SharedPreferences in
+    // ThemeNotifier.build() and LocaleNotifier.build() — no init() needed.
     await Future.wait([
       Future.delayed(const Duration(milliseconds: 2800)),
-      AppVersionService.checkAndResetIfNeeded(), // resets onboarding on new build
+      AppVersionService.checkAndResetIfNeeded(),
     ]);
-
     if (!mounted) return;
 
     final onboarded = await AppVersionService.isOnboarded();
@@ -54,6 +59,27 @@ class _State extends State<SplashScreen> with SingleTickerProviderStateMixin {
         transitionDuration: const Duration(milliseconds: 400),
       ),
     );
+
+    // ── Silent SMS auto-sync after navigation (non-blocking) ─────────────────
+    // Runs in background — user already granted permission from SmsImportScreen.
+    // Imports only NEW SMS since last sync. Does not show any UI.
+    if (onboarded) {
+      Future.microtask(() async {
+        try {
+          final notifier = ref.read(expenseProvider.notifier);
+          final existing = ref.read(expenseProvider).all;
+          final count = await SmsAutoSyncService.sync(
+            addExpense: notifier.addExpense,
+            existingExpenses: existing,
+          );
+          if (count > 0) {
+            debugPrint('[Splash] Auto-imported $count new SMS transactions');
+          }
+        } catch (e) {
+          debugPrint('[Splash] SMS auto-sync error: $e');
+        }
+      });
+    }
   }
 
   @override
@@ -61,7 +87,6 @@ class _State extends State<SplashScreen> with SingleTickerProviderStateMixin {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0A0A0F) : Colors.white,
-
       body: SafeArea(
         child: Center(
           child: Column(
