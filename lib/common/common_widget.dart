@@ -515,53 +515,53 @@ class ExpenseTile extends StatelessWidget {
 }
 
 // ── BannerAdWidget ────────────────────────────────────────────────────────────
-class BannerAdWidget extends StatefulWidget {
-  const BannerAdWidget({super.key});
-  @override
-  State<BannerAdWidget> createState() => _BannerAdState();
-}
+// class BannerAdWidget extends StatefulWidget {
+//   const BannerAdWidget({super.key});
+//   @override
+//   State<BannerAdWidget> createState() => _BannerAdState();
+// }
 
-class _BannerAdState extends State<BannerAdWidget> {
-  BannerAd? _ad;
-  bool _loaded = false;
+// class _BannerAdState extends State<BannerAdWidget> {
+//   BannerAd? _ad;
+//   bool _loaded = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _ad = BannerAd(
-      adUnitId: AdService.createBanner().adUnitId,
-      size: AdSize.banner,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (_) {
-          if (mounted) setState(() => _loaded = true);
-        },
-        onAdFailedToLoad: (ad, _) => ad.dispose(),
-      ),
-    )..load();
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     _ad = BannerAd(
+//       adUnitId: AdService.createBanner().adUnitId,
+//       size: AdSize.banner,
+//       request: const AdRequest(),
+//       listener: BannerAdListener(
+//         onAdLoaded: (_) {
+//           if (mounted) setState(() => _loaded = true);
+//         },
+//         onAdFailedToLoad: (ad, _) => ad.dispose(),
+//       ),
+//     )..load();
+//   }
 
-  @override
-  void dispose() {
-    _ad?.dispose();
-    super.dispose();
-  }
+//   @override
+//   void dispose() {
+//     _ad?.dispose();
+//     super.dispose();
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (!_loaded || _ad == null) return const SizedBox.shrink();
-    return Container(
-      alignment: Alignment.center,
-      width: _ad!.size.width.toDouble(),
-      height: _ad!.size.height.toDouble(),
-      decoration: BoxDecoration(
-        color: context.c.surface,
-        border: Border(top: BorderSide(color: context.c.border)),
-      ),
-      child: AdWidget(ad: _ad!),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     if (!_loaded || _ad == null) return const SizedBox.shrink();
+//     return Container(
+//       alignment: Alignment.center,
+//       width: _ad!.size.width.toDouble(),
+//       height: _ad!.size.height.toDouble(),
+//       decoration: BoxDecoration(
+//         color: context.c.surface,
+//         border: Border(top: BorderSide(color: context.c.border)),
+//       ),
+//       child: AdWidget(ad: _ad!),
+//     );
+//   }
+// }
 
 // ── ShareCard ─────────────────────────────────────────────────────────────────
 class ShareCard extends StatelessWidget {

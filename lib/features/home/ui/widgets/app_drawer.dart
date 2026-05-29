@@ -1,4 +1,3 @@
-import 'package:budgetBuddy/features/ai_screen/pages/ai_screen.dart';
 import 'package:budgetBuddy/features/auth/providers/auth_provider.dart';
 import 'package:budgetBuddy/features/auth/ui/login_screen.dart';
 import 'package:budgetBuddy/common/app_theme.dart';
@@ -6,7 +5,8 @@ import 'package:budgetBuddy/common/common_svg_widget.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
 import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
-import 'package:budgetBuddy/features/expense/ui/statemet_screen.dart';
+import 'package:budgetBuddy/features/forecast/ui/forecast_screen.dart';
+import 'package:budgetBuddy/features/heatmap/ui/pages/heatmap_screen.dart';
 import 'package:budgetBuddy/features/home/ui/inslight_screen.dart';
 import 'package:budgetBuddy/features/profile/ui/about_page.dart';
 import 'package:budgetBuddy/features/profile/ui/profile_screen.dart';
@@ -117,7 +117,14 @@ class AppDrawer extends ConsumerWidget {
                     Navigator.pop(context);
                     onPush(const InsightsScreen());
                   }),
-
+                  _DrawerItem(Assets.insights, 'HeatMap', null, () {
+                    Navigator.pop(context);
+                    onPush(const HeatmapScreen());
+                  }),
+                  _DrawerItem(Assets.insights, 'Forecast', null, () {
+                    Navigator.pop(context);
+                    onPush(const ForecastScreen());
+                  }),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     child: Divider(),

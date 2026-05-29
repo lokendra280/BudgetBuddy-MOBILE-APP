@@ -52,7 +52,7 @@ class _H extends ConsumerState<HomeScreen> {
 
   void _startBackgroundServices() {
     AdService.init();
-    AdService.preloadInterstitial();
+    // AdService.preloadInterstitial();
     NotificationService.init();
     CategoryService.init(); // pre-warms Supabase category cache
   }
@@ -293,7 +293,7 @@ class _H extends ConsumerState<HomeScreen> {
                               await ref
                                   .read(syncProvider.notifier)
                                   .deleteExpense(e);
-                              AdService.trackAction();
+                              // AdService.trackAction();
                             },
                           ),
                         );

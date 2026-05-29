@@ -1,42 +1,51 @@
-import 'dart:ui';
-
-import 'package:budgetBuddy/common/services/premium_service.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'dart:io';
+import 'package:budgetBuddy/common/remote_config/config_env.dart';
+import 'package:budgetBuddy/common/providers/remote_config_provider.dart';
+import 'package:flutter/foundation.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// ── Ad Unit IDs (swap test → real before release) ──────────────────────────
+// ── Ad Unit IDs from .env ─────────────────────────────────────────
 class _AdIds {
-  static String get banner => Platform.isAndroid
-      ? 'ca-app-pub-3940256099942544/6300978111' // test
-      : 'ca-app-pub-3940256099942544/2934735716';
-
-  static String get interstitial => Platform.isAndroid
-      ? 'ca-app-pub-3940256099942544/1033173712'
-      : 'ca-app-pub-3940256099942544/4411468910';
-
-  static String get rewarded => Platform.isAndroid
-      ? 'ca-app-pub-3940256099942544/5224354917'
-      : 'ca-app-pub-3940256099942544/1712485313';
+  static String get banner =>
+      Platform.isAndroid ? Env.bannerAndroid : Env.bannerIos;
+  static String get interstitial =>
+      Platform.isAndroid ? Env.interstitialAndroid : Env.interstitialIos;
+  static String get rewarded =>
+      Platform.isAndroid ? Env.rewardedAndroid : Env.rewardedIos;
 }
 
-// ── Ad Service ────────────────────────────────────────────────────────────────
+// ── Ad Service ────────────────────────────────────────────────────
 class AdService {
+  AdService(this._ref);
+  final Ref _ref;
+
   static InterstitialAd? _interstitial;
   static RewardedAd? _rewarded;
   static int _actionCount = 0;
 
   static Future<void> init() => MobileAds.instance.initialize();
 
-  // ── Banner ──────────────────────────────────────────────────────────────────
-  static BannerAd createBanner() => BannerAd(
-    adUnitId: _AdIds.banner,
-    size: AdSize.banner,
-    request: const AdRequest(),
-    listener: BannerAdListener(onAdFailedToLoad: (ad, err) => ad.dispose()),
-  )..load();
+  // ── Remote config helpers ─────────────────────────────────────
+  bool get _adsEnabled => _ref.read(adsEnabledProvider);
+  bool get _rewardedEnabled => _ref.read(rewardedAdsEnabledProvider);
+  int get _interstitialFreq =>
+      _ref.read(remoteConfigProvider).valueOrNull?.interstitialFreq ?? 3;
 
-  // ── Interstitial (every 3 actions) ─────────────────────────────────────────
-  static void preloadInterstitial() {
+  // ── Banner ────────────────────────────────────────────────────
+  BannerAd? createBanner() {
+    if (!_adsEnabled) return null;
+    return BannerAd(
+      adUnitId: _AdIds.banner,
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(onAdFailedToLoad: (ad, _) => ad.dispose()),
+    )..load();
+  }
+
+  // ── Interstitial ──────────────────────────────────────────────
+  void preloadInterstitial() {
+    if (!_adsEnabled) return;
     InterstitialAd.load(
       adUnitId: _AdIds.interstitial,
       request: const AdRequest(),
@@ -47,14 +56,17 @@ class AdService {
     );
   }
 
-  static void trackAction() {
-    // if (PremiumService.isPremium) return;
+  void trackAction() {
+    if (!_adsEnabled) return;
     _actionCount++;
-    if (_actionCount % 3 == 0) showInterstitial();
+    if (_actionCount % _interstitialFreq == 0) showInterstitial();
   }
 
-  static void showInterstitial({VoidCallback? onDismissed}) {
-    // if (PremiumService.isPremium || _interstitial == null) return;
+  void showInterstitial({VoidCallback? onDismissed}) {
+    if (!_adsEnabled || _interstitial == null) {
+      onDismissed?.call();
+      return;
+    }
     _interstitial!.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: (ad) {
         ad.dispose();
@@ -65,13 +77,15 @@ class AdService {
       onAdFailedToShowFullScreenContent: (ad, _) {
         ad.dispose();
         _interstitial = null;
+        onDismissed?.call();
       },
     );
     _interstitial!.show();
   }
 
-  // ── Rewarded (unlock advanced insight) ─────────────────────────────────────
-  static void preloadRewarded() {
+  // ── Rewarded ──────────────────────────────────────────────────
+  void preloadRewarded() {
+    if (!_rewardedEnabled) return;
     RewardedAd.load(
       adUnitId: _AdIds.rewarded,
       request: const AdRequest(),
@@ -82,11 +96,11 @@ class AdService {
     );
   }
 
-  static void showRewarded({required VoidCallback onRewarded}) {
-    if (_rewarded == null) {
-      onRewarded();
+  void showRewarded({required VoidCallback onRewarded}) {
+    if (!_rewardedEnabled || _rewarded == null) {
+      onRewarded(); // graceful fallback
       return;
-    } // graceful fallback
+    }
     _rewarded!.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: (ad) {
         ad.dispose();
@@ -101,8 +115,11 @@ class AdService {
     _rewarded!.show(onUserEarnedReward: (_, __) => onRewarded());
   }
 
-  static void dispose() {
+  void dispose() {
     _interstitial?.dispose();
-    _rewarded?.dispose();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+    _rewarded?.dispose();
   }
 }
+
+// ── Provider ──────────────────────────────────────────────────────
+final adServiceProvider = Provider<AdService>((ref) => AdService(ref));

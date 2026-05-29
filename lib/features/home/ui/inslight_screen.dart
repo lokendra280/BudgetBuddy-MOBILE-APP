@@ -28,7 +28,7 @@ class _State extends State<InsightsScreen> {
   void initState() {
     super.initState();
     // _advancedUnlocked = PremiumService.isPremium;
-    AdService.preloadRewarded();
+    // AdService.preloadRewarded();
     if (widget.showShare) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _share());
     }

@@ -33,8 +33,8 @@ Future<void> _init() async {
   await AdService.init();
   await HiveStorage.init();
   await NotificationService.init();
-  AdService.preloadInterstitial();
-  AdService.preloadRewarded();
+
+  await AdService.init();
   await CategoryService.init();
 }
 
