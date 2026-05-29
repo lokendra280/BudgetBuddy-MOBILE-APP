@@ -103,6 +103,6 @@ class AdService {
 
   static void dispose() {
     _interstitial?.dispose();
-    _rewarded?.dispose();
+    _rewarded?.dispose();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
   }
 }

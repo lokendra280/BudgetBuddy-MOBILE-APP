@@ -1,7 +1,6 @@
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/button.dart';
 import 'package:budgetBuddy/common/common_svg_widget.dart';
-import 'package:budgetBuddy/common/common_widget.dart';
 import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:budgetBuddy/common/navigation_service.dart';
 import 'package:budgetBuddy/common/widgets/emoji_image.dart';
@@ -10,6 +9,7 @@ import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
 import 'package:budgetBuddy/features/expense/ui/widgets/item_row.dart';
 import 'package:budgetBuddy/features/expense/ui/widgets/row.dart';
 import 'package:budgetBuddy/features/sms_service/ui/pages/sms_import_screen.dart';
+import 'package:budgetBuddy/features/voice_expense/view/voice_expense_screen.dart';
 import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -142,7 +142,7 @@ class _S extends State<AddExpenseScreen> {
                     ),
               tooltip: 'Scan bill',
               onPressed: () {
-                NavigationService.push(target: SmsImportScreen());
+                NavigationService.push(target: VoiceExpenseScreen());
               },
             ),
           ),

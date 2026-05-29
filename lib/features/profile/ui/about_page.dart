@@ -1,5 +1,8 @@
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
+import 'package:budgetBuddy/common/navigation_service.dart';
+import 'package:budgetBuddy/features/profile/ui/privacy_policy_page.dart';
+import 'package:budgetBuddy/features/profile/ui/term_service_page.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -189,6 +192,7 @@ class _State extends State<AboutScreen> {
                 _TechChip('FL Chart', '📊'),
                 _TechChip('Local Auth', '🔒'),
                 _TechChip('SMS Import', '🔒'),
+                _TechChip('Speech Recognition', '🎙️'),
               ],
             ),
           ),
@@ -216,9 +220,21 @@ class _State extends State<AboutScreen> {
           AppCard(
             child: Column(
               children: [
-                _LegalRow('Privacy Policy', Icons.privacy_tip_outlined),
+                _LegalRow(
+                  'Privacy Policy',
+                  Icons.privacy_tip_outlined,
+                  onTap: () {
+                    NavigationService.push(target: PrivacyPolicyPage());
+                  },
+                ),
                 Divider(color: context.c.border, height: 16),
-                _LegalRow('Terms of Service', Icons.description_outlined),
+                _LegalRow(
+                  'Terms of Service',
+                  Icons.description_outlined,
+                  onTap: () {
+                    NavigationService.push(target: TermsOfServicePage());
+                  },
+                ),
                 Divider(color: context.c.border, height: 16),
                 _LegalRow('Open Source Licenses', Icons.code_rounded),
               ],
@@ -230,10 +246,6 @@ class _State extends State<AboutScreen> {
           Center(
             child: Column(
               children: [
-                Text(
-                  'Made with ❤️ for Nepal & the world',
-                  style: TextStyle(fontSize: 12, color: c.textMuted),
-                ),
                 const SizedBox(height: 4),
                 Text(
                   '© ${DateTime.now().year} BudgetBuddy. All rights reserved.',
@@ -395,23 +407,27 @@ class _LangBadge extends StatelessWidget {
 class _LegalRow extends StatelessWidget {
   final String label;
   final IconData icon;
-  const _LegalRow(this.label, this.icon);
+  final Function()? onTap;
+  const _LegalRow(this.label, this.icon, {this.onTap});
   @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      Icon(icon, size: 18, color: context.c.textMuted),
-      const SizedBox(width: 12),
-      Expanded(
-        child: Text(
-          label,
-          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+  Widget build(BuildContext context) => GestureDetector(
+    onTap: onTap,
+    child: Row(
+      children: [
+        Icon(icon, size: 18, color: context.c.textMuted),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+          ),
         ),
-      ),
-      Icon(
-        Icons.arrow_forward_ios_rounded,
-        size: 13,
-        color: context.c.textMuted,
-      ),
-    ],
+        Icon(
+          Icons.arrow_forward_ios_rounded,
+          size: 13,
+          color: context.c.textMuted,
+        ),
+      ],
+    ),
   );
 }
