@@ -14,14 +14,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 int _lastRestartMs = 0;
 
 Future<void> _init() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final binding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: binding);
+  FlutterNativeSplash.remove(); // ← must be called before runApp or app stays frozen
 
+  await Future.delayed(Duration(milliseconds: 500));
   await loadPrefsBeforeRunApp();
 
   await dotenv.load(fileName: ".env");
@@ -33,7 +37,9 @@ Future<void> _init() async {
   await AdService.init();
   await HiveStorage.init();
   await NotificationService.init();
+  // await NotificationService.requestPermission();
 
+  // await NotificationService.scheduleDailyReminder();
   await AdService.init();
   await CategoryService.init();
 }
@@ -209,3 +215,6 @@ class _ErrorView extends StatelessWidget {
     ),
   );
 }
+
+
+//flutter build apk --split-per-abi

@@ -1,0 +1,26 @@
+flutter_native_splash:
+  # ── Light mode ────────────────────────────────────────────────
+  color: "#10B981"
+  image: assets/app_icon.png
+  icon_background_color: "#10B981"
+
+  # ── Dark mode ─────────────────────────────────────────────────
+  color_dark: "#10B981"
+  image_dark: assets/app_icon.png
+  icon_background_color_dark: "#10B981"
+
+  # ── Options ───────────────────────────────────────────────────
+  fullscreen: true
+  android: true
+  ios: true
+  info_plist_files:
+    - "ios/Runner/Info.plist"
+
+  # ── Android 12+ ───────────────────────────────────────────────
+  android_12:
+    color: "#10B981"
+    image: assets/app_icon.png
+    icon_background_color: "#10B981"
+    color_dark: "#10B981"
+    image_dark: assets/app_icon.png
+    icon_background_color_dark: "#10B981"

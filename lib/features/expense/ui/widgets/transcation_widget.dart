@@ -42,7 +42,7 @@ class TransactionWidget extends StatelessWidget {
               ),
               child: Center(
                 child: Image.asset(
-                  kCatEmoji[e.category] ?? Assets.nodata,
+                  kCatEmoji[e.category] ?? Assets.noDataFound,
                   width: 20,
                   height: 20,
                 ),

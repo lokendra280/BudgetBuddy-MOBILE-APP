@@ -1,28 +1,18 @@
 import 'dart:ui';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
   static final _plugin = FlutterLocalNotificationsPlugin();
 
-  // ── Android notification details (reused) ──────────────────────────────────
   static const _androidDetails = AndroidNotificationDetails(
-    'daily_reminder', // channel id
-    'Daily Reminder', // channel name
+    'daily_reminder',
+    'Daily Reminder',
     channelDescription: 'Reminds you to log daily expenses',
     importance: Importance.high,
     priority: Priority.high,
-    // FIX: use '@drawable/ic_notification' — a flat monochrome drawable
-    // in android/app/src/main/res/drawable/ic_notification.xml
-    //
-    // '@mipmap/ic_launcher' is an ADAPTIVE launcher icon (has foreground +
-    // background layers). Android rejects it as a notification icon because:
-    //   1. Adaptive icons cannot be used as notification icons
-    //   2. Mipmap is for launcher icons; drawables are for notifications
-    // This caused: PlatformException(invalid_icon, ...)
-    icon: '@drawable/ic_notification',
-    color: Color(0xFF6366F1), // indigo accent for the notification
+    icon: '@mipmap/ic_launcher',
+    color: Color(0xFF6366F1),
   );
 
   static const _notifDetails = NotificationDetails(
@@ -34,44 +24,40 @@ class NotificationService {
     ),
   );
 
-  // ── Initialise ─────────────────────────────────────────────────────────────
+  // ── Init + request permission in one call ─────────────
   static Future<void> init() async {
     try {
       await _plugin.initialize(
         settings: InitializationSettings(
-          // FIX: '@drawable/ic_notification' instead of '@mipmap/ic_launcher'
-          android: AndroidInitializationSettings('@drawable/ic_notification'),
+          android: const AndroidInitializationSettings('@mipmap/ic_launcher'),
           iOS: DarwinInitializationSettings(
-            requestAlertPermission: false, // ask permission separately
-            requestBadgePermission: false,
-            requestSoundPermission: false,
+            requestAlertPermission: true, // ← was false before
+            requestBadgePermission: true, // ← was false before
+            requestSoundPermission: true, // ← was false before
           ),
         ),
+        onDidReceiveNotificationResponse: (details) {
+          debugPrint('[NotificationService] tapped: ${details.payload}');
+        },
       );
-    } catch (e) {
-      // Don't crash the app if notifications fail to init
-      debugPrint('[NotificationService] init error: $e');
-    }
-  }
 
-  // ── Request permission (iOS 14+ / Android 13+) ─────────────────────────────
-  static Future<bool> requestPermission() async {
-    try {
-      // Android 13+ (API 33) requires explicit permission
+      // Request Android 13+ permission
       final android = _plugin
           .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin
           >();
-      final granted = await android?.requestNotificationsPermission() ?? false;
-      return granted;
-    } catch (_) {
-      return false;
+      await android?.requestNotificationsPermission();
+
+      debugPrint('[NotificationService] init complete');
+    } catch (e) {
+      debugPrint('[NotificationService] init error: $e');
     }
   }
 
-  // ── Schedule daily reminder ────────────────────────────────────────────────
+  // ── Schedule daily reminder ───────────────────────────
   static Future<void> scheduleDailyReminder() async {
     try {
+      // await _plugin.cancel(0);
       await _plugin.periodicallyShow(
         id: 0,
         title: 'BudgetBuddy',
@@ -80,12 +66,14 @@ class NotificationService {
         notificationDetails: _notifDetails,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       );
+      debugPrint('[NotificationService] daily reminder scheduled');
     } catch (e) {
       debugPrint('[NotificationService] schedule error: $e');
     }
   }
-
-  // ── Show immediate notification (for testing) ──────────────────────────────
+/// over expenses
+/// 
+  // ── Show immediate (for testing) ──────────────────────
   static Future<void> showNow({
     String title = 'BudgetBuddy',
     String body = 'Your finances are waiting!',
@@ -98,11 +86,11 @@ class NotificationService {
         notificationDetails: _notifDetails,
       );
     } catch (e) {
-      debugPrint('[NotificationService] show error: $e');
+      debugPrint('[NotificationService] showNow error: $e');
     }
   }
 
-  // ── Cancel all ─────────────────────────────────────────────────────────────
+  // ── Cancel all ────────────────────────────────────────
   static Future<void> cancelAll() async {
     try {
       await _plugin.cancelAll();

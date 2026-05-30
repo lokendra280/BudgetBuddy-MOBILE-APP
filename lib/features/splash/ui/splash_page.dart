@@ -131,7 +131,6 @@ class _State extends ConsumerState<SplashScreen>
               ),
 
               const SizedBox(height: 60),
-
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 80),
                 child: ClipRRect(
