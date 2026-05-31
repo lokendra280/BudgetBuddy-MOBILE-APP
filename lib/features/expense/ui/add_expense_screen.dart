@@ -4,6 +4,8 @@ import 'package:budgetBuddy/common/common_svg_widget.dart';
 import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:budgetBuddy/common/navigation_service.dart';
 import 'package:budgetBuddy/common/widgets/emoji_image.dart';
+import 'package:budgetBuddy/features/bill_reminder/ui/pages/bill_reminder_screen.dart';
+import 'package:budgetBuddy/features/expense/models/expense.dart';
 import 'package:budgetBuddy/features/expense/services/category_services.dart';
 import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
 import 'package:budgetBuddy/features/expense/ui/widgets/item_row.dart';
@@ -15,7 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
-import '../models/expense.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({super.key});
@@ -179,6 +180,9 @@ class _S extends State<AddExpenseScreen> {
                     _reload();
                   }),
                 ),
+                _Tog('Emi', false, c.border, () {
+                  NavigationService.push(target: BillReminderScreen());
+                }),
               ],
             ),
           ),

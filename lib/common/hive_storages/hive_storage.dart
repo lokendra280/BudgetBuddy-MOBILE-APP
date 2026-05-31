@@ -1,3 +1,4 @@
+import 'package:budgetBuddy/features/bill_reminder/models/bill_reminder.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:budgetBuddy/features/ai_screen/services/ai_services.dart';
 import 'package:budgetBuddy/features/expense/models/expense.dart';
@@ -14,7 +15,8 @@ class HiveStorage {
   static Box<Expense> get expenses => Hive.box<Expense>('expenses');
   static Box<Budget> get budget => Hive.box<Budget>('budget');
   static Box<GoalEntry> get goals => Hive.box<GoalEntry>('goals');
-
+  static Box<BillReminder> get billReminders =>
+      Hive.box<BillReminder>('bill_reminders');
   static SupabaseClient get _sb => Supabase.instance.client;
 
   // ── Connectivity ────────────────────────────────────────────────────────────
@@ -52,6 +54,9 @@ class HiveStorage {
     if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(ExpenseAdapter());
     if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(BudgetAdapter());
     if (!Hive.isAdapterRegistered(2)) Hive.registerAdapter(GoalEntryAdapter());
+    if (!Hive.isAdapterRegistered(3)) {
+      Hive.registerAdapter(BillReminderAdapter());
+    }
   }
 
   static Future<void> _openWithRecovery() async {
@@ -59,6 +64,7 @@ class HiveStorage {
       await Hive.openBox<Expense>('expenses');
       await Hive.openBox<Budget>('budget');
       await Hive.openBox<GoalEntry>('goals');
+      await Hive.openBox<BillReminder>('bill_reminders');
     } catch (e) {
       debugPrint('[HiveStorage] Open failed: $e — wiping');
       await _wipeAndRebuild();
@@ -66,7 +72,7 @@ class HiveStorage {
   }
 
   static Future<void> _wipeAndRebuild() async {
-    for (final name in ['expenses', 'budget', 'goals']) {
+    for (final name in ['expenses', 'budget', 'goals', 'bill_reminders']) {
       try {
         if (Hive.isBoxOpen(name)) await Hive.box(name).close();
       } catch (_) {}
@@ -75,6 +81,7 @@ class HiveStorage {
     await Hive.openBox<Expense>('expenses');
     await Hive.openBox<Budget>('budget');
     await Hive.openBox<GoalEntry>('goals');
+    await Hive.openBox<BillReminder>('bill_reminders');
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -259,5 +266,28 @@ class HiveStorage {
     } catch (err) {
       debugPrint('[HiveStorage] pullGoals error: $err');
     }
+  }
+  // ─────────────────────────────────────────────────────────────────────────────
+  // BILL REMINDER OPERATIONS
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  static Future<void> saveBillReminder(BillReminder bill) async {
+    await billReminders.put(bill.id, bill);
+  }
+
+  static Future<void> deleteBillReminder(String id) async {
+    await billReminders.delete(id);
+  }
+
+  static BillReminder? getBillReminder(String id) {
+    return billReminders.get(id);
+  }
+
+  static List<BillReminder> allBillReminders() {
+    return billReminders.values.toList();
+  }
+
+  static List<BillReminder> activeBillReminders() {
+    return billReminders.values.where((b) => b.isActive).toList();
   }
 }
