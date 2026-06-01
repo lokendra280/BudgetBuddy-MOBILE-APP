@@ -6,9 +6,9 @@ import 'package:budgetBuddy/features/ai_screen/providers/ai_providers.dart';
 import 'package:budgetBuddy/features/ai_screen/services/ai_services.dart';
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
+import 'package:budgetBuddy/features/ai_screen/services/goal_service.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GoalsTab extends ConsumerStatefulWidget {
@@ -18,24 +18,6 @@ class GoalsTab extends ConsumerStatefulWidget {
 }
 
 class _GoalsState extends ConsumerState<GoalsTab> {
-  // static const _emojis = [
-  //   // '🎯',
-  //   // '🏠',
-  //   // '🚗',
-  //   // '✈️',
-  //   // '💍',
-  //   // '📱',
-  //   // '🎓',
-  //   // '💰',
-  //   // '🏖️',
-  //   // '🎮',
-  //   Assets.home,
-  //   Assets.transport,
-  //   Assets.travel,
-  //   Assets.food,
-  // ];
-
-  // ── Add goal bottom sheet ──────────────────────────────────────────────────
   void _showAdd() {
     final name = TextEditingController();
     final target = TextEditingController();
@@ -62,7 +44,6 @@ class _GoalsState extends ConsumerState<GoalsTab> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Handle
               Center(
                 child: Container(
                   width: 36,
@@ -79,52 +60,8 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 16),
-
-              // Emoji picker
-              // Wrap(
-              //   spacing: 8,
-              //   runSpacing: 8,
-              //   children: _emojis
-              //       .map(
-              //         (e) => GestureDetector(
-              //           onTap: () {
-              //             HapticFeedback.selectionClick();
-              //             ss(() => emoji = e);
-              //           },
-              //           child: Container(
-              //             width: 40,
-              //             height: 40,
-              //             decoration: BoxDecoration(
-              //               color: emoji == e
-              //                   ? AppColors.primaryColor.withOpacity(0.12)
-              //                   : ctx.c.bg,
-              //               borderRadius: BorderRadius.circular(10),
-              //               border: Border.all(
-              //                 color: emoji == e
-              //                     ? AppColors.primaryColor
-              //                     : ctx.c.border,
-              //                 width: emoji == e ? 1.5 : 1,
-              //               ),
-              //             ),
-              //             child: Center(
-              //               child: CommonSvgWidget(svgName: e),
-              //               // child: Text(
-              //               //   e,
-              //               //   style: const TextStyle(fontSize: 20),
-              //               // ),
-              //             ),
-              //           ),
-              //         ),
-              //       )
-              //       .toList(),
-              // ),
-              // const SizedBox(height: 14),
-
-              // Name field
               _Field(name, ctx, 'Goal name (e.g. New Phone)'),
               const SizedBox(height: 10),
-
-              // Target + Days row
               Row(
                 children: [
                   Expanded(
@@ -151,8 +88,6 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                 ],
               ),
               const SizedBox(height: 16),
-
-              // Create button
               PrimaryButton(
                 title: 'Create Goal',
                 color: AppColors.primaryColor,
@@ -163,7 +98,6 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                   if (name.text.isEmpty || target.text.isEmpty) return;
                   final t = double.tryParse(target.text) ?? 0;
                   if (t <= 0) return;
-                  // ✅ Saves to Hive immediately, Supabase sync happens in background
                   await ref
                       .read(goalsNotifierProvider.notifier)
                       .add(
@@ -182,7 +116,6 @@ class _GoalsState extends ConsumerState<GoalsTab> {
     );
   }
 
-  // ── Add savings amount bottom sheet ───────────────────────────────────────
   void _showAddAmount(SavingsGoal g) {
     final ctrl = TextEditingController();
     final sym = ref.read(symbolProvider);
@@ -224,7 +157,6 @@ class _GoalsState extends ConsumerState<GoalsTab> {
               onTap: () async {
                 final amt = double.tryParse(ctrl.text) ?? 0;
                 if (amt <= 0) return;
-                // ✅ Updates Hive immediately, Supabase sync in background
                 await ref
                     .read(goalsNotifierProvider.notifier)
                     .addAmount(g.id, amt);
@@ -239,16 +171,13 @@ class _GoalsState extends ConsumerState<GoalsTab> {
 
   @override
   Widget build(BuildContext context) {
-    final goals = ref.watch(
-      goalsNotifierProvider,
-    ); // reactive from Hive listenable
+    final goals = ref.watch(goalsNotifierProvider);
     final sym = ref.watch(symbolProvider);
     final c = context.c;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(18, 16, 18, 40),
       children: [
-        // Header row
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -285,7 +214,6 @@ class _GoalsState extends ConsumerState<GoalsTab> {
         ),
         const SizedBox(height: 12),
 
-        // Empty state
         if (goals.isEmpty)
           AppCard(
             padding: const EdgeInsets.symmetric(vertical: 32),
@@ -315,7 +243,6 @@ class _GoalsState extends ConsumerState<GoalsTab> {
               ],
             ),
           )
-        // Goal cards
         else
           ...goals.map(
             (g) => Padding(
@@ -324,7 +251,6 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Name + delete
                     Row(
                       children: [
                         Container(
@@ -369,17 +295,13 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                             size: 18,
                             color: c.textMuted,
                           ),
-                          // ✅ Deletes from Hive, Supabase delete in background
                           onPressed: () => ref
                               .read(goalsNotifierProvider.notifier)
                               .delete(g.id),
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 12),
-
-                    // Amounts
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -397,8 +319,6 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                       ],
                     ),
                     const SizedBox(height: 6),
-
-                    // Progress bar
                     ProgressBar(
                       g.progress,
                       g.progress >= 1 ? kGreen : AppColors.primaryColor,
@@ -406,8 +326,6 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                       clip: 6,
                     ),
                     const SizedBox(height: 6),
-
-                    // Completion % + add savings button
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -455,7 +373,6 @@ class _GoalsState extends ConsumerState<GoalsTab> {
   }
 }
 
-// ── Text field helper ──────────────────────────────────────────────────────────
 Widget _Field(
   TextEditingController c,
   BuildContext ctx,

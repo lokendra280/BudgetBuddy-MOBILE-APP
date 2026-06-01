@@ -65,17 +65,16 @@ class HomeBarGraph extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Row(
-            children: [
-              _LegendDot(color: kGreen, label: 'Income'),
-              const SizedBox(width: 14),
-              _LegendDot(color: kAccent, label: 'Expense'),
-            ],
-          ),
-        ),
-
+        // Padding(
+        //   padding: const EdgeInsets.only(bottom: 8),
+        //   child: Row(
+        //     children: [
+        //       _LegendDot(color: kGreen, label: 'Income'),
+        //       const SizedBox(width: 14),
+        //       _LegendDot(color: kAccent, label: 'Expense'),
+        //     ],
+        //   ),
+        // ),
         SizedBox(
           height: 160,
           child: BarChart(

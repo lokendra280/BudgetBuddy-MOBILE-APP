@@ -6,8 +6,11 @@ import 'package:budgetBuddy/common/navigation_service.dart';
 import 'package:budgetBuddy/common/services/ads_service.dart';
 import 'package:budgetBuddy/common/services/notification_service.dart';
 import 'package:budgetBuddy/common/theme_provider.dart';
+import 'package:budgetBuddy/features/bill_reminder/ui/pages/bill_reminder_screen.dart';
+import 'package:budgetBuddy/features/dashboard/pages/dashboard_page.dart';
 import 'package:budgetBuddy/features/expense/services/category_services.dart';
 import 'package:budgetBuddy/features/expense/services/hive_migrate_service.dart';
+import 'package:budgetBuddy/features/home/ui/pages/home_screen.dart';
 import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:budgetBuddy/features/splash/ui/splash_page.dart';
 import 'package:flutter/foundation.dart';
@@ -114,6 +117,10 @@ class SpendSenseApp extends ConsumerWidget {
           if (s.languageCode == deviceLocale.languageCode) return s;
         }
         return const Locale('en');
+      },
+      routes: {
+        '/home': (_) => const DashboardPage(),
+        '/bills': (_) => const BillReminderScreen(),
       },
       home: const SplashScreen(),
       builder: (ctx, child) {

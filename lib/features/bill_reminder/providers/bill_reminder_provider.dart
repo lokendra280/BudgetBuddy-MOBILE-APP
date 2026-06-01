@@ -4,12 +4,8 @@ import 'package:budgetBuddy/features/bill_reminder/models/bill_reminder.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// BILL REMINDER PROVIDER — manages Hive storage + notification scheduling
-// ─────────────────────────────────────────────────────────────────────────────
 
 const _pageSize = 10;
 

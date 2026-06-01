@@ -17,7 +17,6 @@ import 'package:uuid/uuid.dart';
 //   3. App Drawer badge showing count of due-soon bills
 //   4. Notifications → tapping opens this screen directly
 // ─────────────────────────────────────────────────────────────────────────────
-
 class BillReminderScreen extends ConsumerWidget {
   const BillReminderScreen({super.key});
 

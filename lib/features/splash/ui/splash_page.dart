@@ -5,7 +5,6 @@ import 'package:budgetBuddy/features/auth/services/biometric_service.dart';
 import 'package:budgetBuddy/features/auth/ui/lock_screen.dart';
 import 'package:budgetBuddy/features/dashboard/pages/dashboard_page.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
-import 'package:budgetBuddy/features/home/ui/pages/home_screen.dart';
 import 'package:budgetBuddy/features/sms_service/services/sms_auto_sync_service.dart';
 import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';

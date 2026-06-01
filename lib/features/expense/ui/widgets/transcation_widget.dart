@@ -21,7 +21,7 @@ class TransactionWidget extends StatelessWidget {
         ? kGreen
         : kCatColors[cidx < 0 ? 0 : cidx % kCatColors.length];
 
-    // ✅ Each expense uses its own saved currency — immune to global changes
+    // ✅ Each expense uses its own saved currency — immune to global changesptr
     final ownSym = currencyOf(e.currency).symbol;
     final amountStr =
         '${isInc ? '+' : '-'}$ownSym${e.amount.toStringAsFixed(0)}';

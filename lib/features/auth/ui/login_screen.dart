@@ -3,6 +3,7 @@ import 'package:budgetBuddy/features/auth/ui/otp_screen.dart';
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
 import 'package:budgetBuddy/common/constant/constant_assets.dart';
+import 'package:budgetBuddy/features/dashboard/pages/dashboard_page.dart';
 import 'package:budgetBuddy/features/dashboard/widget/dashboard_widget.dart';
 import 'package:budgetBuddy/features/home/providers/sync_provider.dart';
 import 'package:budgetBuddy/features/home/ui/pages/home_screen.dart';
@@ -170,7 +171,7 @@ class _State extends ConsumerState<LoginScreen> {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => const DashboardPage()),
       );
     }
   }
@@ -285,7 +286,7 @@ class _State extends ConsumerState<LoginScreen> {
                     InputField(
                       hint: 'Confirm password',
                       controller: _confirmCtrl,
-                      obscure: _obscure,
+                      obscure: true,
                       prefix: Icon(
                         Icons.lock_outline_rounded,
                         size: 18,

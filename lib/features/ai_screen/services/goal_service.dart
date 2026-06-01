@@ -4,10 +4,12 @@ import 'package:budgetBuddy/features/ai_screen/services/ai_services.dart';
 import 'package:budgetBuddy/features/home/services/sync_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// ── Display model ─────────────────────────────────────────────────
 class SavingsGoal {
   final String id, name, emoji;
   final double target, saved, dailySuggestion;
   final int daysLeft;
+
   const SavingsGoal({
     required this.id,
     required this.name,
@@ -17,6 +19,7 @@ class SavingsGoal {
     required this.dailySuggestion,
     required this.daysLeft,
   });
+
   double get progress => target > 0 ? (saved / target).clamp(0.0, 1.0) : 0;
 }
 
@@ -36,6 +39,7 @@ SavingsGoal _toGoal(GoalEntry g) {
   );
 }
 
+// ── Notifier ──────────────────────────────────────────────────────
 class GoalsNotifier extends Notifier<List<SavingsGoal>> {
   @override
   List<SavingsGoal> build() => _read();
@@ -75,7 +79,3 @@ class GoalsNotifier extends Notifier<List<SavingsGoal>> {
 
 final goalsNotifierProvider =
     NotifierProvider<GoalsNotifier, List<SavingsGoal>>(GoalsNotifier.new);
-
-final goalsProvider = Provider<List<SavingsGoal>>(
-  (ref) => ref.watch(goalsNotifierProvider),
-);
