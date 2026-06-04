@@ -106,10 +106,18 @@ class AuthNotifier extends Notifier<AuthState> {
         token: token.trim(),
         type: OtpType.email,
       );
-      state = r.user != null
-          ? state.loggedIn(r.user!)
-          : state.withError('Invalid or expired code');
-      return null;
+
+      // ── Check session OR current user — verifyOTP sometimes returns
+      // a response with null user but the session is set
+      final user = r.user ?? _sb.auth.currentUser;
+
+      if (user != null) {
+        state = state.loggedIn(user);
+        return null; // ← success
+      }
+
+      state = state.withError('Verification failed');
+      return 'Verification failed';
     } catch (e) {
       state = state.withError(e.toString());
       return e.toString();

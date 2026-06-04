@@ -519,7 +519,7 @@ class _State extends ConsumerState<SettingsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'About SpendSense',
+                        'About BudgetBuddy',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -536,6 +536,49 @@ class _State extends ConsumerState<SettingsScreen> {
               ],
             ),
           ),
+
+          // const SizedBox(height: 20),
+          // AppCard(
+          //   color: kAccent.withOpacity(0.07),
+          //   child: Row(
+          //     children: [
+          //       Container(
+          //         width: 36,
+          //         height: 36,
+          //         decoration: BoxDecoration(
+          //           color: kAccent.withOpacity(0.20),
+          //           borderRadius: BorderRadius.circular(10),
+          //         ),
+          //         child: const Icon(
+          //           Icons.delete_outline_rounded,
+          //           color: kAccent,
+          //           size: 20,
+          //         ),
+          //       ),
+          //       const SizedBox(width: 12),
+          //       Expanded(
+          //         child: Column(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           children: const [
+          //             Text(
+          //               'Delete Account',
+          //               style: TextStyle(
+          //                 fontSize: 13,
+          //                 fontWeight: FontWeight.w600,
+          //                 color: kAccent,
+          //               ),
+          //             ),
+          //             Text(
+          //               'This action cannot be undone',
+          //               style: TextStyle(fontSize: 11, color: kAccent),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //       Icon(Icons.chevron_right_rounded, color: kAccent, size: 20),
+          //     ],
+          //   ),
+          // ),
           const SizedBox(height: 40),
         ],
       ),

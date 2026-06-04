@@ -19,6 +19,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 int _lastRestartMs = 0;
@@ -26,7 +27,7 @@ int _lastRestartMs = 0;
 Future<void> _init() async {
   final binding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: binding);
-  FlutterNativeSplash.remove(); // ← must be called before runApp or app stays frozen
+  FlutterNativeSplash.remove();
 
   await Future.delayed(Duration(milliseconds: 500));
   await loadPrefsBeforeRunApp();

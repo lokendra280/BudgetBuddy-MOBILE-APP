@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/button.dart';
 import 'package:budgetBuddy/common/common_svg_widget.dart';
@@ -137,10 +139,7 @@ class _S extends State<AddExpenseScreen> {
                         color: AppColors.primaryColor,
                       ),
                     )
-                  : const Icon(
-                      Icons.document_scanner_outlined,
-                      color: AppColors.primaryColor,
-                    ),
+                  : const Icon(Icons.mic, color: AppColors.primaryColor),
               tooltip: 'Scan bill',
               onPressed: () {
                 NavigationService.push(target: VoiceExpenseScreen());
@@ -323,22 +322,23 @@ class _S extends State<AddExpenseScreen> {
             ),
           ),
           SizedBox(height: 20),
-          PrimaryButton(
-            onPressed: () {
-              NavigationService.push(target: SmsImportScreen());
-            },
-            title: "Import from SMS",
-            radius: 8,
-            height: 50,
-            textSize: 18,
-            color: AppColors.darkGrey,
-            icon: CommonSvgWidget(
-              svgName: Assets.sms,
-              height: 20,
-              width: 20,
-              color: AppColors.primaryColor,
+          if (!Platform.isIOS)
+            PrimaryButton(
+              onPressed: () {
+                NavigationService.push(target: SmsImportScreen());
+              },
+              title: "Import from SMS",
+              radius: 8,
+              height: 50,
+              textSize: 18,
+              color: AppColors.darkGrey,
+              icon: CommonSvgWidget(
+                svgName: Assets.sms,
+                height: 20,
+                width: 20,
+                color: AppColors.primaryColor,
+              ),
             ),
-          ),
         ],
       ),
       floatingActionButton: isKeyboardOpen

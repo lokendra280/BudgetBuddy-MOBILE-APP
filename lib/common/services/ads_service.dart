@@ -90,29 +90,50 @@ class AdService {
       adUnitId: _AdIds.rewarded,
       request: const AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
-        onAdLoaded: (ad) => _rewarded = ad,
-        onAdFailedToLoad: (_) => _rewarded = null,
+        onAdLoaded: (ad) {
+          debugPrint('✅ REWARDED LOADED SUCCESS');
+          _rewarded = ad;
+        },
+        onAdFailedToLoad: (error) {
+          debugPrint('❌ REWARDED FAILED: ${error.code} - ${error.message}');
+          _rewarded = null;
+        },
       ),
     );
   }
 
   void showRewarded({required VoidCallback onRewarded}) {
+    debugPrint('Rewarded enabled: $_rewardedEnabled');
+    debugPrint('Rewarded loaded: ${_rewarded != null}');
+
     if (!_rewardedEnabled || _rewarded == null) {
-      onRewarded(); // graceful fallback
+      debugPrint('Using fallback (no ad ready)');
+      onRewarded();
       return;
     }
-    _rewarded!.fullScreenContentCallback = FullScreenContentCallback(
+
+    final ad = _rewarded!;
+    _rewarded = null; // IMPORTANT: clear reference
+
+    ad.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: (ad) {
+        debugPrint('Reward closed');
         ad.dispose();
-        _rewarded = null;
         preloadRewarded();
       },
-      onAdFailedToShowFullScreenContent: (ad, _) {
+      onAdFailedToShowFullScreenContent: (ad, error) {
+        debugPrint('Show failed: $error');
         ad.dispose();
-        _rewarded = null;
+        preloadRewarded();
       },
     );
-    _rewarded!.show(onUserEarnedReward: (_, __) => onRewarded());
+
+    ad.show(
+      onUserEarnedReward: (ad, reward) {
+        debugPrint('Reward earned: ${reward.amount}');
+        onRewarded();
+      },
+    );
   }
 
   void dispose() {

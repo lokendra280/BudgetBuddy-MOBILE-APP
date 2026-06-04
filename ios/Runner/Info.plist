@@ -24,6 +24,33 @@
 		<string>$(FLUTTER_BUILD_NAME)</string>
 		<key>CFBundleSignature</key>
 		<string>????</string>
+		<!-- Add inside the root <dict> of ios/Runner/Info.plist -->
+
+<!-- Microphone — required by speech_to_text package -->
+<key>NSMicrophoneUsageDescription</key>
+<string>HamroBudget uses the microphone to let you add expenses by speaking. Your voice is processed on-device and never stored.</string>
+<!-- Camera — if you scan receipts -->
+<key>NSCameraUsageDescription</key>
+<string>HamroBudget uses the camera to scan receipts and automatically extract expense details.</string>
+
+<!-- Photo Library -->
+<key>NSPhotoLibraryUsageDescription</key>
+<string>HamroBudget accesses your photo library to attach receipt images to expenses.</string>
+
+<!-- Face ID -->
+<key>NSFaceIDUsageDescription</key>
+<string>HamroBudget uses Face ID to securely unlock the app and protect your financial data.</string>
+
+<!-- Contacts — if you split bills -->
+<key>NSContactsUsageDescription</key>
+<string>HamroBudget accesses contacts to help you split expenses with friends and family.</string>
+
+<!-- Notifications -->
+<key>NSUserNotificationsUsageDescription</key>
+<string>HamroBudget sends reminders for bill due dates and budget alerts.</string>
+<!-- Speech Recognition — required by speech_to_text package -->
+<key>NSSpeechRecognitionUsageDescription</key>
+<string>HamroBudget uses speech recognition to convert your voice into expense entries, making it faster to log transactions.</string>
 		<key>CFBundleVersion</key>
 		<string>$(FLUTTER_BUILD_NUMBER)</string>
 		<key>LSRequiresIPhoneOS</key>
