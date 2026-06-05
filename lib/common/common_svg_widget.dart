@@ -1,10 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class CommonSvgWidget extends StatelessWidget {
   final String svgName;
-  final double height;
-  final double width;
+  final double? height;
+  final double? width;
   final Color? color;
   const CommonSvgWidget({
     super.key,
@@ -16,12 +18,14 @@ class CommonSvgWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isIOS = Platform.isIOS;
+
     return Container(
-      padding: const EdgeInsets.all(1),
+      padding: EdgeInsets.all(isIOS ? 2 : 1),
       child: SvgPicture.asset(
         svgName,
-        height: height,
-        width: width,
+        height: height ?? (isIOS ? 22 : 20),
+        width: width ?? (isIOS ? 22 : 20),
         colorFilter: color != null
             ? ColorFilter.mode(color!, BlendMode.srcIn)
             : null,

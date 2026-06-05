@@ -35,7 +35,7 @@ class HeaderWidget extends ConsumerWidget {
     final initials = ref.watch(userInitialsProvider);
     final isLogged = ref.watch(isLoggedInProvider);
     final budgPct = ref.watch(budgetUsedPctProvider);
-
+    final name = ref.watch(userNameProvider);
     return SliverToBoxAdapter(
       child: Container(
         decoration: BoxDecoration(
@@ -88,7 +88,7 @@ class HeaderWidget extends ConsumerWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        AppLocalizations.of(context)!.appName,
+                        isLogged ? ' $name' : 'BudgetBuddy',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,

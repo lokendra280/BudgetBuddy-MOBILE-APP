@@ -172,7 +172,7 @@ class CategoryService {
       name: 'Salary',
       emoji: Assets.salary,
       color: '#10B981',
-      isIncome: true,
+      isIncome: false,
     ),
     AppCategory(
       id: 'frl',

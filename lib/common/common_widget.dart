@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:budgetBuddy/common/localization/category_localization.dart';
@@ -5,16 +7,19 @@ import 'package:budgetBuddy/common/services/ads_service.dart';
 import 'package:budgetBuddy/features/expense/models/expense.dart';
 import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
 import 'package:budgetBuddy/l10n/app_localizations.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 // ── AppCard ───────────────────────────────────────────────────────────────────
+
 class AppCard extends StatelessWidget {
   final Widget child;
   final EdgeInsets? padding;
   final VoidCallback? onTap;
   final Color? color;
+
   const AppCard({
     super.key,
     required this.child,
@@ -25,16 +30,33 @@ class AppCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = context.c;
+    final isIOS = Platform.isIOS;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: padding ?? const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: color ?? c.card,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: c.border),
-          boxShadow: context.isDark
+          color:
+              color ??
+              (isIOS
+                  ? CupertinoColors.secondarySystemGroupedBackground
+                        .resolveFrom(context)
+                  : context.c.card),
+
+          borderRadius: BorderRadius.circular(isIOS ? 20 : 16),
+
+          border: isIOS ? null : Border.all(color: context.c.border),
+
+          boxShadow: isIOS
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 20,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : context.isDark
               ? null
               : [
                   BoxShadow(
@@ -138,12 +160,14 @@ class SectionLabel extends StatelessWidget {
 }
 
 // ── AppButton ─────────────────────────────────────────────────────────────────
+
 class AppButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
   final Color? color;
   final IconData? icon;
   final bool loading;
+
   const AppButton({
     super.key,
     required this.label,
@@ -154,44 +178,73 @@ class AppButton extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-    width: double.infinity,
-    height: 50,
-    child: ElevatedButton(
-      onPressed: loading ? null : onTap,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color ?? AppColors.primaryColor,
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
-        elevation: 0,
+  Widget build(BuildContext context) {
+    return Platform.isIOS
+        ? _buildCupertinoButton(context)
+        : _buildMaterialButton(context);
+  }
+
+  Widget _buildMaterialButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton(
+        onPressed: loading ? null : onTap,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color ?? AppColors.primaryColor,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(13),
+          ),
+        ),
+        child: _buildContent(),
       ),
-      child: loading
-          ? const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 2,
-              ),
-            )
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (icon != null) ...[
-                  Icon(icon, size: 16),
-                  const SizedBox(width: 8),
-                ],
-                Text(
-                  label,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-    ),
-  );
+    );
+  }
+
+  Widget _buildCupertinoButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: CupertinoButton(
+        padding: EdgeInsets.zero,
+        onPressed: loading ? null : onTap,
+        child: Container(
+          height: 50,
+          decoration: BoxDecoration(
+            color: color ?? AppColors.primaryColor,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Center(child: _buildContent()),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    if (loading) {
+      return const CupertinoActivityIndicator(color: Colors.white);
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (icon != null) ...[
+          Icon(icon, size: 18, color: Colors.white),
+          const SizedBox(width: 8),
+        ],
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w600, // Cupertino-like
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 // ── InputField ────────────────────────────────────────────────────────────────

@@ -69,6 +69,7 @@ class _DashboardWidgetState extends State<DashboardWidget>
   late PageController _pageController;
   int _selectedIndex = 0;
   bool _hideBottomNav = false;
+  bool _scrollHide = false;
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);

@@ -1,22 +1,16 @@
 import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/common/common_svg_widget.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
+import 'package:budgetBuddy/common/widgets/empty_widget.dart';
 import 'package:budgetBuddy/features/bill_reminder/models/bill_reminder.dart';
 import 'package:budgetBuddy/features/bill_reminder/providers/bill_reminder_provider.dart';
+import 'package:budgetBuddy/features/bill_reminder/ui/widgets/add_biill_sheet.dart';
+import 'package:budgetBuddy/features/bill_reminder/ui/widgets/bill_strip_alert.dart';
+import 'package:budgetBuddy/features/bill_reminder/ui/widgets/bill_title.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// BILL REMINDER SCREEN — paginated list with due-soon alerts
-//
-// WHERE TO SHOW IN APP:
-//   1. Home screen drawer → "Bills & Reminders" menu item
-//   2. Home screen → floating "Bills due soon" alert strip above FAB
-//   3. App Drawer badge showing count of due-soon bills
-//   4. Notifications → tapping opens this screen directly
-// ─────────────────────────────────────────────────────────────────────────────
 class BillReminderScreen extends ConsumerWidget {
   const BillReminderScreen({super.key});
 
@@ -65,21 +59,30 @@ class BillReminderScreen extends ConsumerWidget {
               children: [
                 // ── Overdue alert strip ─────────────────────────────────────────
                 if (overdue.isNotEmpty)
-                  _AlertStrip(
-                    emoji: '🚨',
-                    color: kAccent,
-                    message:
-                        '${overdue.length} bill${overdue.length == 1 ? '' : 's'} overdue — pay now!',
+                  BillAlertStrip(
+                    overdue: overdue,
+                    dueSoon: dueSoon,
+                    fmt: fmt,
+                    onTap: () {},
                   ),
 
                 // ── Due soon strip ──────────────────────────────────────────────
                 if (dueSoon.isNotEmpty && overdue.isEmpty)
-                  _AlertStrip(
-                    emoji: '⏰',
-                    color: kAmber,
-                    message:
-                        '${dueSoon.length} bill${dueSoon.length == 1 ? '' : 's'} due within ${dueSoon.first.remindDaysBefore} days',
+                  BillAlertStrip(
+                    overdue: [],
+                    dueSoon: dueSoon,
+                    fmt: fmt,
+                    onTap: () {},
                   ),
+
+                // ── Due soon strip ──────────────────────────────────────────────
+                // if (dueSoon.isNotEmpty && overdue.isEmpty)
+                //   BillAlertStrip(
+                //     overdue: [],
+                //     dueSoon: dueSoon,
+                //     fmt: (double p1) {},
+                //     onTap: () {},
+                //   ),
 
                 // ── Monthly commitment summary ───────────────────────────────────
                 Padding(
@@ -139,7 +142,7 @@ class BillReminderScreen extends ConsumerWidget {
                 // ── Paginated bill list ─────────────────────────────────────────
                 Expanded(
                   child: state.all.isEmpty
-                      ? _EmptyState(
+                      ? EmptyState(
                           onAdd: () => _showAddSheet(context, ref, sym),
                         )
                       : ListView.separated(
@@ -147,7 +150,7 @@ class BillReminderScreen extends ConsumerWidget {
                           itemCount: state.paged.length,
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 8),
-                          itemBuilder: (_, i) => _BillTile(
+                          itemBuilder: (_, i) => BillTile(
                             bill: state.paged[i],
                             fmt: fmt,
                             onEdit: () => _showAddSheet(
@@ -197,10 +200,7 @@ class BillReminderScreen extends ConsumerWidget {
           'Delete bill?',
           style: TextStyle(fontWeight: FontWeight.w700),
         ),
-        content: Text(
-          '${bill.emoji} ${bill.title} will be removed.',
-          style: TextStyle(color: context.c.textMuted),
-        ),
+        content: Text('${bill.title} will be removed.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -229,578 +229,9 @@ class BillReminderScreen extends ConsumerWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (_) => _AddBillSheet(existing: existing, sym: sym),
+      builder: (_) => AddBillSheet(existing: existing, sym: sym),
     );
   }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// ADD / EDIT BILL BOTTOM SHEET
-// ─────────────────────────────────────────────────────────────────────────────
-class _AddBillSheet extends ConsumerStatefulWidget {
-  final BillReminder? existing;
-  final String sym;
-  const _AddBillSheet({this.existing, required this.sym});
-  @override
-  ConsumerState<_AddBillSheet> createState() => _AddState();
-}
-
-class _AddState extends ConsumerState<_AddBillSheet> {
-  final _titleCtrl = TextEditingController();
-  final _amountCtrl = TextEditingController();
-  String _category = kBillCategories[0];
-  int _dayOfMonth = 1;
-  int _remindDays = 3;
-  bool _isRecurring = true;
-  bool _saving = false;
-  DateTime? _oneTimeDate;
-
-  @override
-  void initState() {
-    super.initState();
-    final e = widget.existing;
-    if (e != null) {
-      _titleCtrl.text = e.title;
-      _amountCtrl.text = e.amount.toStringAsFixed(0);
-      _category = e.category;
-      _dayOfMonth = e.dayOfMonth;
-      _remindDays = e.remindDaysBefore;
-      _isRecurring = e.isRecurring;
-      _oneTimeDate = e.nextDueDate;
-    }
-  }
-
-  @override
-  void dispose() {
-    _titleCtrl.dispose();
-    _amountCtrl.dispose();
-    super.dispose();
-  }
-
-  Future<void> _save() async {
-    final title = _titleCtrl.text.trim();
-    final amount = double.tryParse(_amountCtrl.text.replaceAll(',', ''));
-    if (title.isEmpty || amount == null || amount <= 0) return;
-
-    setState(() => _saving = true);
-    final notifier = ref.read(billReminderProvider.notifier);
-    final sym = ref.read(currencyProvider);
-
-    final bill = BillReminder(
-      id: widget.existing?.id ?? const Uuid().v4(),
-      title: title,
-      amount: amount,
-      category: _category,
-      dayOfMonth: _dayOfMonth,
-      currency: sym,
-      remindDaysBefore: _remindDays,
-      isRecurring: _isRecurring,
-      nextDueDate: _oneTimeDate,
-      emoji: kBillEmojis[_category] ?? '📋',
-    );
-
-    widget.existing != null
-        ? await notifier.update(bill)
-        : await notifier.add(bill);
-    if (mounted) Navigator.pop(context);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.c;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        20,
-        20,
-        20,
-        MediaQuery.of(context).viewInsets.bottom + 24,
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Handle
-            Center(
-              child: Container(
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: c.border,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            const SizedBox(height: 18),
-
-            Text(
-              widget.existing != null ? 'Edit Bill' : 'Add Bill / EMI',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(height: 18),
-
-            // Title
-            InputField(
-              hint: 'Bill name (e.g. Netflix, Home EMI)',
-              controller: _titleCtrl,
-              prefix: Text(
-                kBillEmojis[_category] ?? '📋',
-                style: const TextStyle(fontSize: 18),
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Amount
-            InputField(
-              hint: 'Amount',
-              controller: _amountCtrl,
-              keyboard: const TextInputType.numberWithOptions(decimal: true),
-              prefix: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text(
-                  widget.sym,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primaryColor,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Category picker
-            Text(
-              'Category',
-              style: TextStyle(
-                fontSize: 12,
-                color: c.textMuted,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 6),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: kBillCategories
-                    .map(
-                      (cat) => GestureDetector(
-                        onTap: () => setState(() => _category = cat),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 160),
-                          margin: const EdgeInsets.only(right: 8),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 7,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _category == cat
-                                ? AppColors.primaryColor
-                                : c.card,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: _category == cat
-                                  ? AppColors.primaryColor
-                                  : c.border,
-                            ),
-                          ),
-                          child: Text(
-                            '${kBillEmojis[cat]} $cat',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: _category == cat
-                                  ? Colors.white
-                                  : c.textMuted,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Recurring toggle
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Recurring monthly',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text(
-                        _isRecurring
-                            ? 'Repeats every month'
-                            : 'One-time payment',
-                        style: TextStyle(fontSize: 11, color: c.textMuted),
-                      ),
-                    ],
-                  ),
-                ),
-                Switch(
-                  value: _isRecurring,
-                  onChanged: (v) => setState(() => _isRecurring = v),
-                  activeColor: AppColors.primaryColor,
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            // Due day (recurring) or date picker (one-time)
-            if (_isRecurring) ...[
-              Text(
-                'Due on day of month',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: c.textMuted,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [1, 5, 7, 10, 15, 20, 25, 28]
-                      .map(
-                        (d) => GestureDetector(
-                          onTap: () => setState(() => _dayOfMonth = d),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 160),
-                            margin: const EdgeInsets.only(right: 8),
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: _dayOfMonth == d
-                                  ? AppColors.primaryColor
-                                  : c.card,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: _dayOfMonth == d
-                                    ? AppColors.primaryColor
-                                    : c.border,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                '$d',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: _dayOfMonth == d
-                                      ? Colors.white
-                                      : c.textMuted,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
-            ] else ...[
-              GestureDetector(
-                onTap: () async {
-                  final d = await showDatePicker(
-                    context: context,
-                    initialDate:
-                        _oneTimeDate ??
-                        DateTime.now().add(const Duration(days: 7)),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(const Duration(days: 365)),
-                  );
-                  if (d != null) setState(() => _oneTimeDate = d);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 13,
-                  ),
-                  decoration: BoxDecoration(
-                    color: c.card,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: c.border),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.calendar_today_rounded,
-                        size: 18,
-                        color: AppColors.primaryColor,
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        _oneTimeDate != null
-                            ? DateFormat('MMM d, yyyy').format(_oneTimeDate!)
-                            : 'Select due date',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: _oneTimeDate != null ? null : c.textMuted,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-            const SizedBox(height: 16),
-
-            // Remind days before
-            Text(
-              'Remind me before',
-              style: TextStyle(
-                fontSize: 12,
-                color: c.textMuted,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [1, 2, 3, 5, 7]
-                  .map(
-                    (d) => GestureDetector(
-                      onTap: () => setState(() => _remindDays = d),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 160),
-                        margin: const EdgeInsets.only(right: 8),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 7,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _remindDays == d ? kGreen : c.card,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: _remindDays == d ? kGreen : c.border,
-                          ),
-                        ),
-                        child: Text(
-                          '$d day${d == 1 ? '' : 's'}',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: _remindDays == d
-                                ? Colors.white
-                                : c.textMuted,
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
-            const SizedBox(height: 24),
-
-            // Save button
-            AppButton(
-              label: _saving
-                  ? 'Saving…'
-                  : (widget.existing != null
-                        ? 'Update Bill'
-                        : 'Add & Schedule Reminder'),
-              onTap: _saving ? () {} : _save,
-              icon: Icons.notifications_active_rounded,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// BILL TILE
-// ─────────────────────────────────────────────────────────────────────────────
-class _BillTile extends StatelessWidget {
-  final BillReminder bill;
-  final String Function(double) fmt;
-  final VoidCallback onEdit, onDelete, onToggle;
-  const _BillTile({
-    required this.bill,
-    required this.fmt,
-    required this.onEdit,
-    required this.onDelete,
-    required this.onToggle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.c;
-    final days = bill.daysUntilDue;
-    final overdue = bill.isOverdue;
-    final dueSoon = bill.isDueSoon;
-    final col = overdue
-        ? kAccent
-        : dueSoon
-        ? kAmber
-        : AppColors.primaryColor;
-
-    return AppCard(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      child: Row(
-        children: [
-          // Emoji icon
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: col.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Center(
-              child: Text(bill.emoji, style: const TextStyle(fontSize: 22)),
-            ),
-          ),
-          const SizedBox(width: 12),
-
-          // Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  bill.title,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Row(
-                  children: [
-                    _Tag(bill.category, c.textMuted, c.border),
-                    const SizedBox(width: 6),
-                    _Tag(
-                      bill.isRecurring ? 'Monthly' : 'One-time',
-                      AppColors.primaryColor,
-                      AppColors.primaryColor.withOpacity(0.2),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                // Due date pill
-                _DuePill(
-                  days: days,
-                  overdue: overdue,
-                  dueDate: bill.computedDueDate,
-                  col: col,
-                ),
-              ],
-            ),
-          ),
-
-          // Amount + controls
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                fmt(bill.amount),
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: bill.isActive ? col : c.textMuted,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Toggle active
-                  GestureDetector(
-                    onTap: onToggle,
-                    child: Icon(
-                      bill.isActive
-                          ? Icons.notifications_active_rounded
-                          : Icons.notifications_off_outlined,
-                      size: 18,
-                      color: bill.isActive ? kGreen : c.textMuted,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: onEdit,
-                    child: Icon(
-                      Icons.edit_outlined,
-                      size: 18,
-                      color: c.textMuted,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: onDelete,
-                    child: const Icon(
-                      Icons.delete_outline_rounded,
-                      size: 18,
-                      color: kAccent,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Tag extends StatelessWidget {
-  final String text;
-  final Color text2, bg;
-  const _Tag(this.text, this.text2, this.bg);
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-    decoration: BoxDecoration(
-      color: bg.withOpacity(0.15),
-      borderRadius: BorderRadius.circular(5),
-    ),
-    child: Text(
-      text,
-      style: TextStyle(fontSize: 9, color: text2, fontWeight: FontWeight.w600),
-    ),
-  );
-}
-
-class _DuePill extends StatelessWidget {
-  final int days;
-  final bool overdue;
-  final DateTime dueDate;
-  final Color col;
-  const _DuePill({
-    required this.days,
-    required this.overdue,
-    required this.dueDate,
-    required this.col,
-  });
-  @override
-  Widget build(BuildContext context) => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Icon(Icons.calendar_today_rounded, size: 10, color: col),
-      const SizedBox(width: 4),
-      Text(
-        overdue
-            ? 'Overdue!'
-            : days == 0
-            ? 'Due today!'
-            : days == 1
-            ? 'Due tomorrow'
-            : 'Due in $days days · ${DateFormat('MMM d').format(dueDate)}',
-        style: TextStyle(fontSize: 10, color: col, fontWeight: FontWeight.w600),
-      ),
-    ],
-  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -898,73 +329,34 @@ class _PageBtn extends StatelessWidget {
 }
 
 // Alert strip
-class _AlertStrip extends StatelessWidget {
-  final String emoji, message;
-  final Color color;
-  const _AlertStrip({
-    required this.emoji,
-    required this.message,
-    required this.color,
-  });
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-    color: color.withOpacity(0.08),
-    child: Row(
-      children: [
-        Text(emoji, style: const TextStyle(fontSize: 16)),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Text(
-            message,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: color,
-            ),
-          ),
-        ),
-        Icon(Icons.chevron_right_rounded, size: 18, color: color),
-      ],
-    ),
-  );
-}
-
-// Empty state
-class _EmptyState extends StatelessWidget {
-  final VoidCallback onAdd;
-  const _EmptyState({required this.onAdd});
-  @override
-  Widget build(BuildContext context) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text('📋', style: TextStyle(fontSize: 52)),
-          const SizedBox(height: 16),
-          const Text(
-            'No bills added yet',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Add bills, EMIs and subscriptions to\nget reminded before they\'re due.',
-            style: TextStyle(
-              fontSize: 13,
-              color: context.c.textMuted,
-              height: 1.5,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-          AppButton(
-            label: 'Add First Bill',
-            onTap: onAdd,
-            icon: Icons.add_rounded,
-          ),
-        ],
-      ),
-    ),
-  );
-}
+// class _AlertStrip extends StatelessWidget {
+//   final String emoji, message;
+//   final Color color;
+//   const _AlertStrip({
+//     required this.emoji,
+//     required this.message,
+//     required this.color,
+//   });
+//   @override
+//   Widget build(BuildContext context) => Container(
+//     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+//     color: color.withOpacity(0.08),
+//     child: Row(
+//       children: [
+//         Text(emoji, style: const TextStyle(fontSize: 16)),
+//         const SizedBox(width: 10),
+//         Expanded(
+//           child: Text(
+//             message,
+//             style: TextStyle(
+//               fontSize: 12,
+//               fontWeight: FontWeight.w600,
+//               color: color,
+//             ),
+//           ),
+//         ),
+//         Icon(Icons.chevron_right_rounded, size: 18, color: color),
+//       ],
+//     ),
+//   );
+// }

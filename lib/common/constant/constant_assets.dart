@@ -21,7 +21,7 @@ class Assets {
 
   static const String insights = "$_basePathSvg/insights$_svg";
   static const String profile_circle = "$_basePathSvg/profile-circle$_svg";
-  static const String notification = "$_basePathSvg/notification-bell$_svg";
+  static const String notification = "$_basePathSvg/notification$_svg";
 
   static const String strike = "$_basePathSvg/strike$_svg";
   //// Statement
@@ -39,6 +39,13 @@ class Assets {
   static const String saving = "$_basePathSvg/saving$_svg";
   static const String trophy = "$_basePathSvg/trophy$_svg";
   static const String sms = "$_basePathSvg/sms$_svg";
+  static const String insurance = "$_basePathSvg/insurance$_svg";
+  static const String subscription = "$_basePathSvg/paywall$_svg";
+  static const String rent = "$_basePathSvg/rent$_svg";
+  static const String loan = "$_basePathSvg/bill$_svg";
+  static const String delete = "$_basePathSvg/delete$_svg";
+  static const String edit = "$_basePathSvg/edit$_svg";
+  static const String clock = "$_basePathSvg/clock$_svg";
 
   /// Png Images
   static const String food = "$_basePath/food$_png";

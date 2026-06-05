@@ -7,6 +7,9 @@ import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:budgetBuddy/common/services/ads_service.dart';
 import 'package:budgetBuddy/common/services/notification_service.dart';
 import 'package:budgetBuddy/common/widgets/shimmer_widget.dart';
+import 'package:budgetBuddy/features/bill_reminder/providers/bill_reminder_provider.dart';
+import 'package:budgetBuddy/features/bill_reminder/ui/pages/bill_reminder_screen.dart';
+import 'package:budgetBuddy/features/bill_reminder/ui/widgets/bill_strip_alert.dart';
 import 'package:budgetBuddy/features/expense/models/expense.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetBuddy/features/expense/services/category_services.dart';
@@ -73,6 +76,9 @@ class _H extends ConsumerState<HomeScreen> {
     final syncStatus = ref.watch(syncProvider);
     final fmt = ref.watch(fmtProvider);
     final isLoggedIn = ref.watch(isLoggedInProvider);
+    final overdueBills = ref.watch(overdueBillsProvider);
+    final dueSoonBills = ref.watch(dueSoonBillsProvider);
+    final hasBillAlert = overdueBills.isNotEmpty || dueSoonBills.isNotEmpty;
 
     // ── Loading shimmer ───────────────────────────────────────────────────
     if (_isLoading) {
@@ -304,6 +310,14 @@ class _H extends ConsumerState<HomeScreen> {
               ],
             ),
           ),
+          if (hasBillAlert)
+            BillAlertStrip(
+              overdue: overdueBills,
+              dueSoon: dueSoonBills,
+              fmt: fmt,
+              onTap: () => _push(const BillReminderScreen()),
+            ),
+          SizedBox(height: 10),
           // const BannerAdWidget(), // uncomment when ads are ready
         ],
       ),

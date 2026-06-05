@@ -244,10 +244,7 @@ class _S extends State<AddExpenseScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        EmojiImage(
-                          value: cat.emoji,
-                          size: 20,
-                        ), // Text(cat.emoji, style: const TextStyle(fontSize: 22)),
+                        EmojiImage(value: cat.emoji, size: 20),
                         const SizedBox(height: 4),
                         Text(
                           cat.name,
