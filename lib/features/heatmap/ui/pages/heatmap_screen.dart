@@ -1,5 +1,6 @@
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
+import 'package:budgetBuddy/common/widgets/custom_appbar.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetBuddy/features/heatmap/providers/heatmap_provider.dart';
 import 'package:flutter/material.dart';
@@ -30,17 +31,10 @@ class HeatmapScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         backgroundColor: c.surface,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Spending Heatmap',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-        ),
-        centerTitle: true,
+
+        title: 'Spending Heatmap',
       ),
       body: ListView(
         padding: const EdgeInsets.all(18),

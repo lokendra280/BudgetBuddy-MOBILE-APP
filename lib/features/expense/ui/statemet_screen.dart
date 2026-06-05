@@ -3,6 +3,7 @@ import 'package:budgetBuddy/common/common_svg_widget.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
 import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:budgetBuddy/common/localization/category_localization.dart';
+import 'package:budgetBuddy/common/widgets/custom_appbar.dart';
 import 'package:budgetBuddy/common/widgets/scaffold_widget.dart';
 import 'package:budgetBuddy/common/widgets/shimmer_widget.dart';
 import 'package:budgetBuddy/features/expense/models/expense.dart';
@@ -159,68 +160,40 @@ class _State extends ConsumerState<StatementsScreen> {
 
     final usedCats = period.map((e) => e.category).toSet().toList();
 
-    return PlatformScaffold(
+    return Scaffold(
       backgroundColor: context.c.bg,
-      title: AppLocalizations.of(context)!.statements,
 
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: IconButton(
-            icon: _exporting
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.primaryColor,
+      appBar: CustomAppBar(
+        appElevation: 0,
+        backgroundColor: context.c.surface,
+
+        title: AppLocalizations.of(context)!.statements,
+
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton(
+              icon: _exporting
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.primaryColor,
+                      ),
+                    )
+                  : CommonSvgWidget(
+                      svgName: Assets.pdf,
+                      color: kAccent,
+                      height: 30,
+                      width: 30,
                     ),
-                  )
-                : CommonSvgWidget(
-                    svgName: Assets.pdf,
-                    color: kAccent,
-                    height: 30,
-                    width: 30,
-                  ),
-            tooltip: 'Export as PDF',
-            onPressed: _exporting ? null : () => _export(period),
+              tooltip: 'Export as PDF',
+              onPressed: _exporting ? null : () => _export(period),
+            ),
           ),
-        ),
-      ],
-
-      // appBar: AppBar(
-      //   backgroundColor: context.c.surface,
-
-      //   title: Text(
-      //     AppLocalizations.of(context)!.statements,
-      //     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-      //   ),
-      //   centerTitle: true,
-      //   actions: [
-      //     Padding(
-      //       padding: const EdgeInsets.only(right: 8),
-      //       child: IconButton(
-      //         icon: _exporting
-      //             ? const SizedBox(
-      //                 width: 18,
-      //                 height: 18,
-      //                 child: CircularProgressIndicator(
-      //                   strokeWidth: 2,
-      //                   color: AppColors.primaryColor,
-      //                 ),
-      //               )
-      //             : CommonSvgWidget(
-      //                 svgName: Assets.pdf,
-      //                 color: kAccent,
-      //                 height: 30,
-      //                 width: 30,
-      //               ),
-      //         tooltip: 'Export as PDF',
-      //         onPressed: _exporting ? null : () => _export(period),
-      //       ),
-      //     ),
-      //   ],
-      // ),
+        ],
+      ),
       body: _isLoading
           ? const StatementsShimmer()
           : ListView(

@@ -1,3 +1,4 @@
+import 'package:budgetBuddy/common/widgets/custom_appbar.dart';
 import 'package:budgetBuddy/features/ai_screen/pages/widget/budget_tab.dart';
 import 'package:budgetBuddy/features/ai_screen/pages/widget/coach_tab.dart';
 import 'package:budgetBuddy/features/ai_screen/pages/widget/goal_tab.dart';
@@ -31,20 +32,10 @@ class _State extends ConsumerState<AiScreen>
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.c.bg,
-    appBar: AppBar(
+    appBar: CustomAppBar(
       backgroundColor: context.c.surface,
+      title: AppLocalizations.of(context)!.aiInsight,
 
-      title: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(width: 8),
-          Text(
-            AppLocalizations.of(context)!.aiInsight,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-          ),
-        ],
-      ),
-      centerTitle: true,
       bottom: TabBar(
         controller: _tabs,
         isScrollable: true,

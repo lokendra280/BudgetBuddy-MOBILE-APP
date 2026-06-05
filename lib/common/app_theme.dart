@@ -68,6 +68,7 @@ class AppColors {
   static const Color white = Color(0xFFFFFFFF);
   static const secondaryColor = Color(0xFF38BDF8);
   static const yellow = Color(0xFFF59E0B);
+  static const Color lightGray = Color(0xFFF2f2F2);
 }
 
 extension AppColorsX on BuildContext {

@@ -1,3 +1,4 @@
+import 'package:budgetBuddy/common/widgets/custom_appbar.dart';
 import 'package:budgetBuddy/features/auth/providers/auth_provider.dart';
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/common_svg_widget.dart';
@@ -64,14 +65,11 @@ class _SS extends ConsumerState<SocialScreen>
     final c = context.c;
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         backgroundColor: c.surface,
 
-        title: Text(
-          AppLocalizations.of(context)!.community,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-        ),
-        centerTitle: true,
+        title: AppLocalizations.of(context)!.community,
+
         actions: [
           IconButton(
             icon: CommonSvgWidget(
