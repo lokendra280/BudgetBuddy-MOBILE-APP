@@ -3,6 +3,7 @@ import 'package:budgetBuddy/common/common_widget.dart';
 import 'package:budgetBuddy/common/language_screen.dart';
 import 'package:budgetBuddy/common/services/notification_service.dart';
 import 'package:budgetBuddy/common/theme_provider.dart';
+import 'package:budgetBuddy/features/auth/providers/auth_provider.dart';
 import 'package:budgetBuddy/features/auth/services/biometric_service.dart';
 import 'package:budgetBuddy/features/auth/services/user_profile_service.dart';
 import 'package:budgetBuddy/features/expense/models/expense.dart';
@@ -537,48 +538,80 @@ class _State extends ConsumerState<SettingsScreen> {
             ),
           ),
 
-          // const SizedBox(height: 20),
-          // AppCard(
-          //   color: kAccent.withOpacity(0.07),
-          //   child: Row(
-          //     children: [
-          //       Container(
-          //         width: 36,
-          //         height: 36,
-          //         decoration: BoxDecoration(
-          //           color: kAccent.withOpacity(0.20),
-          //           borderRadius: BorderRadius.circular(10),
-          //         ),
-          //         child: const Icon(
-          //           Icons.delete_outline_rounded,
-          //           color: kAccent,
-          //           size: 20,
-          //         ),
-          //       ),
-          //       const SizedBox(width: 12),
-          //       Expanded(
-          //         child: Column(
-          //           crossAxisAlignment: CrossAxisAlignment.start,
-          //           children: const [
-          //             Text(
-          //               'Delete Account',
-          //               style: TextStyle(
-          //                 fontSize: 13,
-          //                 fontWeight: FontWeight.w600,
-          //                 color: kAccent,
-          //               ),
-          //             ),
-          //             Text(
-          //               'This action cannot be undone',
-          //               style: TextStyle(fontSize: 11, color: kAccent),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //       Icon(Icons.chevron_right_rounded, color: kAccent, size: 20),
-          //     ],
-          //   ),
-          // ),
+          const SizedBox(height: 20),
+          InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text('Delete Account'),
+                  content: const Text(
+                    'Are you sure? This action cannot be undone.',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Cancel'),
+                    ),
+                    FilledButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Delete'),
+                    ),
+                  ],
+                ),
+              );
+
+              if (confirm == true) {
+                await ref.read(authProvider.notifier).deleteAccount();
+              }
+            },
+            child: AppCard(
+              color: kAccent.withOpacity(0.07),
+              child: Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: kAccent.withOpacity(0.20),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.delete_outline_rounded,
+                      color: kAccent,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text(
+                          'Delete Account',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: kAccent,
+                          ),
+                        ),
+                        Text(
+                          'To Delete Your Account Permanently',
+                          style: TextStyle(fontSize: 11, color: kAccent),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    color: kAccent,
+                    size: 20,
+                  ),
+                ],
+              ),
+            ),
+          ),
           const SizedBox(height: 40),
         ],
       ),

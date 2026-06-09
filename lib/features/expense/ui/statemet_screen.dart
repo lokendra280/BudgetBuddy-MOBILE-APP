@@ -166,7 +166,7 @@ class _State extends ConsumerState<StatementsScreen> {
       appBar: CustomAppBar(
         appElevation: 0,
         backgroundColor: context.c.surface,
-
+        showBackButton: false,
         title: AppLocalizations.of(context)!.statements,
 
         actions: [

@@ -33,6 +33,57 @@ class _State extends ConsumerState<AiScreen>
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.c.bg,
     appBar: CustomAppBar(
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.lightGray,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF6366F1).withOpacity(0.25),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.message_rounded, size: 22),
+                ),
+              ),
+
+              Positioned(
+                top: -2,
+                right: -2,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Text(
+                    'Ask AI',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 8,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+      showBackButton: false,
       backgroundColor: context.c.surface,
       title: AppLocalizations.of(context)!.aiInsight,
 

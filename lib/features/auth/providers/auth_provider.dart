@@ -124,6 +124,23 @@ class AuthNotifier extends Notifier<AuthState> {
     }
   }
 
+  Future<String?> deleteAccount() async {
+    try {
+      final user = _sb.auth.currentUser;
+
+      if (user == null) {
+        return 'User not found';
+      }
+
+      // Delete user data from your tables first
+      await _sb.from('profiles').delete().eq('id', user.id);
+
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
   Future<AuthResponse?> signInWithGoogle() async {
     try {
       debugPrint('🔵 Google Sign-In: starting authenticate()');

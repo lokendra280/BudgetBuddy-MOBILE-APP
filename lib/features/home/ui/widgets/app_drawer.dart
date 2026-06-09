@@ -8,6 +8,7 @@ import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetBuddy/features/forecast/ui/forecast_screen.dart';
 import 'package:budgetBuddy/features/heatmap/ui/pages/heatmap_screen.dart';
 import 'package:budgetBuddy/features/home/ui/inslight_screen.dart';
+import 'package:budgetBuddy/features/insights/ui/insight_feed_screen.dart';
 import 'package:budgetBuddy/features/profile/ui/about_page.dart';
 import 'package:budgetBuddy/features/profile/ui/profile_screen.dart';
 import 'package:budgetBuddy/features/profile/ui/setting_screen.dart';
@@ -115,16 +116,16 @@ class AppDrawer extends ConsumerWidget {
                 children: [
                   _DrawerItem(Assets.insights, 'Insights', null, () {
                     Navigator.pop(context);
-                    onPush(const InsightsScreen());
+                    onPush(const InsightsFeedScreen());
                   }),
-                  _DrawerItem(Assets.insights, 'HeatMap', null, () {
+                  _DrawerItem(Assets.heatmap, 'HeatMap', null, () {
                     Navigator.pop(context);
                     onPush(const HeatmapScreen());
                   }),
-                  _DrawerItem(Assets.insights, 'Forecast', null, () {
-                    Navigator.pop(context);
-                    onPush(const ForecastScreen());
-                  }),
+                  // _DrawerItem(Assets.insights, 'Forecast', null, () {
+                  //   Navigator.pop(context);
+                  //   onPush(const ForecastScreen());
+                  // }),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     child: Divider(),
