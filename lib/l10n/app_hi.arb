@@ -150,6 +150,29 @@
   "insight": "अंतर्दृष्टि",
   "shareReport": "रिपोर्ट साझा करें",
   "settings": "सेटिंग्स",
-  "about": "के बारे में"
+  "about": "के बारे में",  
+  "importSms": "SMS से आयात करें",
+  "AiSpending": "AI खर्च विश्लेषण",
+  "subscriptions": "सदस्यता और आवर्ती भुगतान",
+  "SavingGoals": "बचत लक्ष्य",
+  "billReminder": "बिल और रिमाइंडर",
+  "monthlyCommitments": "मासिक प्रतिबद्धताएँ",
+  "bill": "बिल",
+  "active": "सक्रिय",
+  "noBillsAdded": "अभी तक कोई बिल नहीं जोड़ा गया",
+  "addBills": "बिल, EMI और सदस्यता जोड़ें ताकि समय पर रिमाइंडर मिल सके",
+  "addFirstBill": "पहला बिल जोड़ें",
+  "addBill": "बिल जोड़ें",
+  "emi": "EMI",
+  "addBillEmi": "बिल / EMI जोड़ें",
+  "amount": "राशि",
+  "example": "बिल का नाम (जैसे Netflix, होम EMI)",
+  "Category": "श्रेणी",
+  "recurringMonthly": "हर महीने दोहराया जाएगा",
+  "repeatsEveryMonth": "हर महीने दोहराता है",
+  "dueOnDayOfMonth": "महीने के किस दिन देय है",
+  "remindMeBefore": "पहले रिमाइंड करें",
+  "addSchedule": "रिमाइंडर जोड़ें और शेड्यूल करें"
+
 
 }

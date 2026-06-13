@@ -291,7 +291,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addEntry => 'Add Entry';
 
   @override
-  String get category => 'CATEGORY';
+  String get category => 'Category';
 
   @override
   String get row => 'Row';
@@ -354,7 +354,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wellAnalysisPatternOnce => 'We Will analyses pattern once you have more data';
 
   @override
-  String get subscriptions => 'subscriptions & Recurring';
+  String get subscriptions => 'Subscriptions & Recurring';
 
   @override
   String get thisMonth => 'This Month';
@@ -442,4 +442,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get about => 'About';
+
+  @override
+  String get importSms => 'Import From SMS';
+
+  @override
+  String get aiSpending => 'AI Spending Insights';
+
+  @override
+  String get savingGoals => 'Saving Goals';
+
+  @override
+  String get billReminder => 'Bill & Reminder';
+
+  @override
+  String get monthlyCommitments => 'Monthly Commitments';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get noBillsAdded => 'No bills added yet';
+
+  @override
+  String get addBills => 'Add bills, EMIs and subscriptions to get reminded before they\'re due';
+
+  @override
+  String get addFirstBill => 'Add First Bill';
+
+  @override
+  String get addBill => 'Add Bill';
+
+  @override
+  String get emi => 'EMI';
+
+  @override
+  String get addBillEmi => 'Add Bill / EMI';
+
+  @override
+  String get amount => 'Amount';
+
+  @override
+  String get example => 'Bill name (e.g. Netflix, Home EMI)';
+
+  @override
+  String get recurringMonthly => 'Recurring monthly';
+
+  @override
+  String get repeatsEveryMonth => 'Repeats every month';
+
+  @override
+  String get dueOnDayOfMonth => 'Due on day of month';
+
+  @override
+  String get remindMeBefore => 'Remind me before';
+
+  @override
+  String get addSchedule => 'Add & Schedule Reminder';
 }

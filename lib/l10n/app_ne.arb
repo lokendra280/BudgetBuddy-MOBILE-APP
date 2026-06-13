@@ -151,8 +151,27 @@
   "insight": "अन्तर्दृष्टि",
   "shareReport": "रिपोर्ट साझा गर्नुहोस्",
   "settings": "सेटिङ्स",
-  "about": "बारेमा"
-
-
-
+  "about": "बारेमा",
+  "importSms": "SMS बाट आयात गर्नुहोस्",
+  "aiSpending": "AI खर्च विश्लेषण",
+  "subscriptions": "सदस्यता र आवर्ती भुक्तानी",
+  "savingGoals": "बचत लक्ष्य",
+  "billReminder": "बिल र रिमाइन्डर",
+  "monthlyCommitments": "मासिक प्रतिबद्धताहरू",
+  "bill": "बिल",
+  "active": "सक्रिय",
+  "noBillsAdded": "अहिलेसम्म कुनै बिल थपिएको छैन",
+  "addBills": "समयमै रिमाइन्डर पाउन बिल, EMI र सदस्यता थप्नुहोस्",
+  "addFirstBill": "पहिलो बिल थप्नुहोस्",
+  "addBill": "बिल थप्नुहोस्",
+  "emi": "EMI",
+  "addBillEmi": "बिल / EMI थप्नुहोस्",
+  "amount": "रकम",
+  "example": "बिलको नाम (जस्तै Netflix, घर EMI)",
+  "category": "श्रेणी",
+  "recurringMonthly": "हरेक महिना दोहोरिन्छ",
+  "repeatsEveryMonth": "हरेक महिना दोहोरिन्छ",
+  "dueOnDayOfMonth": "महिनाको कुन दिन तिर्ने",
+  "remindMeBefore": "पहिले रिमाइन्ड गर्नुहोस्",
+  "addSchedule": "रिमाइन्डर थप्नुहोस् र तालिका बनाउनुहोस्"
 }

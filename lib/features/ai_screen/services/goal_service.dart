@@ -1,5 +1,7 @@
 import 'package:budgetBuddy/common/hive_storages/hive_storage.dart';
+import 'package:budgetBuddy/common/services/notification_service.dart';
 import 'package:budgetBuddy/features/ai_screen/models/goals_model.dart';
+import 'package:budgetBuddy/features/ai_screen/models/goals_transaction.dart';
 import 'package:budgetBuddy/features/ai_screen/services/ai_services.dart';
 import 'package:budgetBuddy/features/home/services/sync_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +11,7 @@ class SavingsGoal {
   final String id, name, emoji;
   final double target, saved, dailySuggestion;
   final int daysLeft;
+  final List<GoalTransaction> transactions;
 
   const SavingsGoal({
     required this.id,
@@ -18,6 +21,7 @@ class SavingsGoal {
     required this.saved,
     required this.dailySuggestion,
     required this.daysLeft,
+    required this.transactions,
   });
 
   double get progress => target > 0 ? (saved / target).clamp(0.0, 1.0) : 0;
@@ -36,6 +40,7 @@ SavingsGoal _toGoal(GoalEntry g) {
     saved: g.saved,
     daysLeft: g.daysLeft,
     dailySuggestion: available,
+    transactions: g.transactions,
   );
 }
 
@@ -63,7 +68,16 @@ class GoalsNotifier extends Notifier<List<SavingsGoal>> {
 
   Future<void> addAmount(String id, double amount) async {
     await HiveStorage.addToGoal(id, amount);
+
     state = _read();
+
+    final goal = state.firstWhere((g) => g.id == id);
+
+    if (goal.progress >= 1.0) {
+      await NotificationService.showGoalCompletedNotification(
+        goalName: goal.name,
+      );
+    }
   }
 
   Future<void> delete(String id) async {

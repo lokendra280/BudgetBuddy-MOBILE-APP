@@ -3,6 +3,7 @@ import 'package:budgetBuddy/common/common_svg_widget.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
 import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:budgetBuddy/common/localization/category_localization.dart';
+import 'package:budgetBuddy/common/navigation_service.dart';
 import 'package:budgetBuddy/common/widgets/custom_appbar.dart';
 import 'package:budgetBuddy/common/widgets/scaffold_widget.dart';
 import 'package:budgetBuddy/common/widgets/shimmer_widget.dart';
@@ -13,6 +14,7 @@ import 'package:budgetBuddy/features/expense/ui/widgets/button.dart';
 import 'package:budgetBuddy/features/expense/ui/widgets/date_range.dart';
 import 'package:budgetBuddy/features/expense/ui/widgets/fi_chip.dart';
 import 'package:budgetBuddy/features/expense/ui/widgets/transcation_widget.dart';
+import 'package:budgetBuddy/features/heatmap/ui/pages/heatmap_screen.dart';
 import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -294,7 +296,18 @@ class _State extends ConsumerState<StatementsScreen> {
 
                 // ── Pie chart ─────────────────────────────────────────────────
                 if (cats.isNotEmpty) ...[
-                  SectionLabel(AppLocalizations.of(context)!.byCategory),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SectionLabel(AppLocalizations.of(context)!.byCategory),
+                      GestureDetector(
+                        onTap: () {
+                          NavigationService.push(target: HeatmapScreen());
+                        },
+                        child: SectionLabel('HeatMap'),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 10),
                   AppCard(
                     child: Row(

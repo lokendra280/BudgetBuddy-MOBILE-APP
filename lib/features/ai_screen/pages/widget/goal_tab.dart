@@ -1,9 +1,9 @@
 import 'package:budgetBuddy/common/button.dart';
 import 'package:budgetBuddy/common/common_svg_widget.dart';
 import 'package:budgetBuddy/common/constant/constant_assets.dart';
+import 'package:budgetBuddy/common/navigation_service.dart';
+import 'package:budgetBuddy/features/ai_screen/pages/goal_transaction.dart';
 import 'package:budgetBuddy/features/ai_screen/pages/widget/shared_wdiget.dart';
-import 'package:budgetBuddy/features/ai_screen/providers/ai_providers.dart';
-import 'package:budgetBuddy/features/ai_screen/services/ai_services.dart';
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
 import 'package:budgetBuddy/features/ai_screen/services/goal_service.dart';
@@ -123,47 +123,53 @@ class _GoalsState extends ConsumerState<GoalsTab> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: context.c.card,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
-      builder: (_) => Padding(
-        padding: EdgeInsets.fromLTRB(
-          20,
-          20,
-          20,
-          MediaQuery.of(context).viewInsets.bottom + 20,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Add to "${g.name}"',
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+      builder: (ctx) => AnimatedPadding(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Add to "${g.name}"',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                _Field(
+                  ctrl,
+                  context,
+                  'Amount saved',
+                  prefix: sym,
+                  type: const TextInputType.numberWithOptions(decimal: true),
+                  autofocus: true,
+                ),
+                const SizedBox(height: 14),
+                AppButton(
+                  label: 'Save',
+                  icon: Icons.check_rounded,
+                  onTap: () async {
+                    final amt = double.tryParse(ctrl.text) ?? 0;
+                    if (amt <= 0) return;
+                    await ref
+                        .read(goalsNotifierProvider.notifier)
+                        .addAmount(g.id, amt);
+                    if (mounted) Navigator.pop(context);
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: 14),
-            _Field(
-              ctrl,
-              context,
-              'Amount saved',
-              prefix: sym,
-              type: const TextInputType.numberWithOptions(decimal: true),
-              autofocus: true,
-            ),
-            const SizedBox(height: 14),
-            AppButton(
-              label: 'Save',
-              icon: Icons.check_rounded,
-              onTap: () async {
-                final amt = double.tryParse(ctrl.text) ?? 0;
-                if (amt <= 0) return;
-                await ref
-                    .read(goalsNotifierProvider.notifier)
-                    .addAmount(g.id, amt);
-                if (mounted) Navigator.pop(context);
-              },
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -248,6 +254,11 @@ class _GoalsState extends ConsumerState<GoalsTab> {
             (g) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: AppCard(
+                onTap: () {
+                  NavigationService.push(
+                    target: GoalTransactionPage(transactions: g.transactions),
+                  );
+                },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

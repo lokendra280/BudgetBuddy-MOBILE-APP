@@ -407,12 +407,13 @@ class _OtpBox extends StatelessWidget {
         focusNode: focusNode,
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
+
         maxLength: 1,
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         style: TextStyle(
           fontSize: size * 0.45, // ← scales with box size
           fontWeight: FontWeight.w800,
-          color: c.surface, // ← explicit text color
+          color: AppColors.primaryColor, // ← explicit text color
           height: 1,
         ),
         onChanged: onChanged,

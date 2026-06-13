@@ -1,5 +1,6 @@
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
+import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -15,13 +16,13 @@ class EmptyState extends StatelessWidget {
         children: [
           const Text('📋', style: TextStyle(fontSize: 52)),
           const SizedBox(height: 16),
-          const Text(
-            'No bills added yet',
+          Text(
+            AppLocalizations.of(context)!.noBillsAdded,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
           Text(
-            'Add bills, EMIs and subscriptions to\nget reminded before they\'re due.',
+            AppLocalizations.of(context)!.addBills,
             style: TextStyle(
               fontSize: 13,
               color: context.c.textMuted,
@@ -31,7 +32,7 @@ class EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           AppButton(
-            label: 'Add First Bill',
+            label: AppLocalizations.of(context)!.addFirstBill,
             onTap: onAdd,
             icon: Icons.add_rounded,
           ),

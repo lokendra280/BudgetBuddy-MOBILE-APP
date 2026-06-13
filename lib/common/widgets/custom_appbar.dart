@@ -53,8 +53,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
-        statusBarColor: Theme.of(context).colorScheme.secondary,
-        // statusBarColor: Theme.of(context).primaryColor,
+        // statusBarColor: Theme.of(context).colorScheme.secondary,
+        statusBarColor: Theme.of(context).primaryColor,
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
       ),
@@ -95,7 +95,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                           ? Icons.arrow_back
                                           : Icons.arrow_back_ios_new_rounded,
                                       iconColor: AppColors.darkGrey,
-                                      // backgroundColor: CustomTheme.black,
                                       hasBorderOutline: false,
                                       onPressed:
                                           onBackPressed ??

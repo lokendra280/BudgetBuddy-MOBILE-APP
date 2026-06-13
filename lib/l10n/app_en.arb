@@ -151,12 +151,29 @@
   "insight": "Insights",
   "shareReport": "Share Report",
   "settings": "Settings",
-  "about": "About"
-
-  "ImportSms": "Import From SMS",
-  "AiSpending": "AI Spending Insights",
-  "subscriptions": "subscriptions & Recurring",
-  "SavingGoals" :"Saving Goals",
-
+  "about": "About",
+  
+  "importSms": "Import From SMS",
+  "aiSpending": "AI Spending Insights",
+  "subscriptions": "Subscriptions & Recurring",
+  "savingGoals": "Saving Goals",
+  "billReminder": "Bill & Reminder",
+  "monthlyCommitments": "Monthly Commitments",
+  "bill": "Bill",
+  "active": "Active",
+  "noBillsAdded": "No bills added yet",
+  "addBills": "Add bills, EMIs and subscriptions to get reminded before they're due",
+  "addFirstBill": "Add First Bill",
+  "addBill": "Add Bill",
+  "emi": "EMI",
+  "addBillEmi": "Add Bill / EMI",
+  "amount": "Amount",
+  "example": "Bill name (e.g. Netflix, Home EMI)",
+  "category": "Category",
+  "recurringMonthly": "Recurring monthly",
+  "repeatsEveryMonth": "Repeats every month",
+  "dueOnDayOfMonth": "Due on day of month",
+  "remindMeBefore": "Remind me before",
+  "addSchedule": "Add & Schedule Reminder"
 
 }

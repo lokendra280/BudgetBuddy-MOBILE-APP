@@ -354,7 +354,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get wellAnalysisPatternOnce => 'We Will analyses pattern once you have more data';
 
   @override
-  String get subscriptions => 'सदस्यता र आवर्ती खर्च';
+  String get subscriptions => 'सदस्यता र आवर्ती भुक्तानी';
 
   @override
   String get thisMonth => 'यस महिना';
@@ -442,4 +442,61 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get about => 'बारेमा';
+
+  @override
+  String get importSms => 'SMS बाट आयात गर्नुहोस्';
+
+  @override
+  String get aiSpending => 'AI खर्च विश्लेषण';
+
+  @override
+  String get savingGoals => 'बचत लक्ष्य';
+
+  @override
+  String get billReminder => 'बिल र रिमाइन्डर';
+
+  @override
+  String get monthlyCommitments => 'मासिक प्रतिबद्धताहरू';
+
+  @override
+  String get active => 'सक्रिय';
+
+  @override
+  String get noBillsAdded => 'अहिलेसम्म कुनै बिल थपिएको छैन';
+
+  @override
+  String get addBills => 'समयमै रिमाइन्डर पाउन बिल, EMI र सदस्यता थप्नुहोस्';
+
+  @override
+  String get addFirstBill => 'पहिलो बिल थप्नुहोस्';
+
+  @override
+  String get addBill => 'बिल थप्नुहोस्';
+
+  @override
+  String get emi => 'EMI';
+
+  @override
+  String get addBillEmi => 'बिल / EMI थप्नुहोस्';
+
+  @override
+  String get amount => 'रकम';
+
+  @override
+  String get example => 'बिलको नाम (जस्तै Netflix, घर EMI)';
+
+  @override
+  String get recurringMonthly => 'हरेक महिना दोहोरिन्छ';
+
+  @override
+  String get repeatsEveryMonth => 'हरेक महिना दोहोरिन्छ';
+
+  @override
+  String get dueOnDayOfMonth => 'महिनाको कुन दिन तिर्ने';
+
+  @override
+  String get remindMeBefore => 'पहिले रिमाइन्ड गर्नुहोस्';
+
+  @override
+  String get addSchedule => 'रिमाइन्डर थप्नुहोस् र तालिका बनाउनुहोस्';
 }

@@ -1,3 +1,4 @@
+import 'package:budgetBuddy/common/widgets/app_tabbar.dart';
 import 'package:budgetBuddy/common/widgets/custom_appbar.dart';
 import 'package:budgetBuddy/features/auth/providers/auth_provider.dart';
 import 'package:budgetBuddy/common/app_theme.dart';
@@ -82,20 +83,17 @@ class _SS extends ConsumerState<SocialScreen>
             onPressed: () => ShareService.shareReport(context),
           ),
         ],
-        bottom: TabBar(
-          controller: _tabs,
-          labelColor: AppColors.primaryColor,
-          unselectedLabelColor: c.textMuted,
-          indicatorColor: AppColors.primaryColor,
-          labelStyle: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
+
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(62),
+          child: AppTabBar(
+            controller: _tabs,
+            tabs: [
+              AppLocalizations.of(context)!.leaderboard,
+              AppLocalizations.of(context)!.challenges,
+              AppLocalizations.of(context)!.invite,
+            ],
           ),
-          tabs: [
-            Tab(text: AppLocalizations.of(context)!.leaderboard),
-            Tab(text: AppLocalizations.of(context)!.challenges),
-            Tab(text: AppLocalizations.of(context)!.invite),
-          ],
         ),
       ),
       body: TabBarView(

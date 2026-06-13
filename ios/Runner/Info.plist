@@ -32,7 +32,8 @@
 <!-- Camera — if you scan receipts -->
 <key>NSCameraUsageDescription</key>
 <string>HamroBudget uses the camera to scan receipts and automatically extract expense details.</string>
-
+<key>NSUserNotificationsUsageDescription</key>
+<string>BudgetBuddy sends bill reminders, EMI reminders, subscription alerts, and budget notifications.</string>
 <!-- Photo Library -->
 <key>NSPhotoLibraryUsageDescription</key>
 <string>HamroBudget accesses your photo library to attach receipt images to expenses.</string>

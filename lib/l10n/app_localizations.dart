@@ -664,7 +664,7 @@ abstract class AppLocalizations {
   /// No description provided for @category.
   ///
   /// In en, this message translates to:
-  /// **'CATEGORY'**
+  /// **'Category'**
   String get category;
 
   /// No description provided for @row.
@@ -790,7 +790,7 @@ abstract class AppLocalizations {
   /// No description provided for @subscriptions.
   ///
   /// In en, this message translates to:
-  /// **'subscriptions & Recurring'**
+  /// **'Subscriptions & Recurring'**
   String get subscriptions;
 
   /// No description provided for @thisMonth.
@@ -966,6 +966,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'About'**
   String get about;
+
+  /// No description provided for @importSms.
+  ///
+  /// In en, this message translates to:
+  /// **'Import From SMS'**
+  String get importSms;
+
+  /// No description provided for @aiSpending.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Spending Insights'**
+  String get aiSpending;
+
+  /// No description provided for @savingGoals.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving Goals'**
+  String get savingGoals;
+
+  /// No description provided for @billReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill & Reminder'**
+  String get billReminder;
+
+  /// No description provided for @monthlyCommitments.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Commitments'**
+  String get monthlyCommitments;
+
+  /// No description provided for @active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get active;
+
+  /// No description provided for @noBillsAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'No bills added yet'**
+  String get noBillsAdded;
+
+  /// No description provided for @addBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Add bills, EMIs and subscriptions to get reminded before they\'re due'**
+  String get addBills;
+
+  /// No description provided for @addFirstBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Add First Bill'**
+  String get addFirstBill;
+
+  /// No description provided for @addBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Bill'**
+  String get addBill;
+
+  /// No description provided for @emi.
+  ///
+  /// In en, this message translates to:
+  /// **'EMI'**
+  String get emi;
+
+  /// No description provided for @addBillEmi.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Bill / EMI'**
+  String get addBillEmi;
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amount;
+
+  /// No description provided for @example.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill name (e.g. Netflix, Home EMI)'**
+  String get example;
+
+  /// No description provided for @recurringMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring monthly'**
+  String get recurringMonthly;
+
+  /// No description provided for @repeatsEveryMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeats every month'**
+  String get repeatsEveryMonth;
+
+  /// No description provided for @dueOnDayOfMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Due on day of month'**
+  String get dueOnDayOfMonth;
+
+  /// No description provided for @remindMeBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me before'**
+  String get remindMeBefore;
+
+  /// No description provided for @addSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Add & Schedule Reminder'**
+  String get addSchedule;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

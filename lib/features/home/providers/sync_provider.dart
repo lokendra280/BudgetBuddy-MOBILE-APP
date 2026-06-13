@@ -1,3 +1,4 @@
+import 'package:budgetBuddy/features/ai_screen/services/goal_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:budgetBuddy/features/ai_screen/providers/goals_provider.dart';
 import 'package:budgetBuddy/features/auth/providers/auth_provider.dart';

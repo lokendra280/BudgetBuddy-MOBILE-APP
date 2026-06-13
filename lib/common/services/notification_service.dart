@@ -73,14 +73,12 @@ class NotificationService {
             requestSoundPermission: false,
           ),
         ),
-        // ── POINT 4: Notification tap handler ─────────────────────────────
-        // Called when user taps a notification while app is in foreground OR
-        // when app is launched from background via notification tap.
+
         onDidReceiveNotificationResponse: _onNotifTap,
         // Called when app is completely terminated and started via notification
         onDidReceiveBackgroundNotificationResponse: _onBgNotifTap,
       );
-
+      await requestPermission();
       // ── Also handle app launched from terminated state via notification ───
       final launchDetails = await _plugin.getNotificationAppLaunchDetails();
       if (launchDetails?.didNotificationLaunchApp == true) {
@@ -90,6 +88,20 @@ class NotificationService {
     } catch (e) {
       debugPrint('[NotificationService] init error: $e');
     }
+  }
+
+  static Future<void> requestPermission() async {
+    await _plugin
+        .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin
+        >()
+        ?.requestPermissions(alert: true, badge: true, sound: true);
+
+    await _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
+        ?.requestNotificationsPermission();
   }
 
   // ── Tap routing ───────────────────────────────────────────────────────────
@@ -105,16 +117,14 @@ class NotificationService {
 
   static void _routeByPayload(String? payload) {
     if (payload == null) return;
+
     final nav = navigatorKey?.currentState;
-    if (nav == null) {
-      // App not ready yet — store and handle after navigation is ready
-      debugPrint('[NotificationService] Nav not ready, payload: $payload');
-      return;
-    }
+    if (nav == null) return;
+
     if (payload.startsWith('screen:bills')) {
-      // POINT 4: Tapping a bill reminder notification navigates to BillReminderScreen
-      // Import added dynamically to avoid circular imports
       nav.pushNamed('/bills');
+    } else if (payload.startsWith('screen:goals')) {
+      nav.pushNamed('/goals');
     } else if (payload.startsWith('screen:home')) {
       nav.pushNamedAndRemoveUntil('/home', (_) => false);
     }
@@ -138,11 +148,45 @@ class NotificationService {
     }
   }
 
+  // ── Goal Achievement Notification ─────────────────────
+  static Future<void> showGoalCompletedNotification({
+    required String goalName,
+  }) async {
+    try {
+      await _plugin.show(
+        id: goalName.hashCode,
+        title: '🎉 Goal Achieved!',
+        body:
+            'Congratulations! You have reached your "$goalName" savings goal.',
+        notificationDetails: NotificationDetails(
+          android: AndroidNotificationDetails(
+            'goal_achievements',
+            'Goal Achievements',
+            channelDescription:
+                'Notifications when savings goals are completed',
+            importance: Importance.high,
+            priority: Priority.high,
+            icon: '@mipmap/launcher_icon',
+            color: Color(0xFF10B981),
+          ),
+          iOS: DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          ),
+        ),
+        payload: 'screen:goals',
+      );
+    } catch (e) {
+      debugPrint(
+        '[NotificationService] goal completion notification error: $e',
+      );
+    }
+  }
+
   static NotificationDetails get billNotifDetails => _billNotifDetails;
   static String get billPayload => 'screen:bills';
 
-  /// over expenses
-  ///
   // ── Show immediate (for testing) ──────────────────────
   static Future<void> showNow({
     String title = 'BudgetBuddy',

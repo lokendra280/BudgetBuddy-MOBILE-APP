@@ -186,5 +186,4 @@ const kBillEmojis = {
   'Subscription': Assets.subscription,
   'Rent': Assets.rent,
   'Insurance': Assets.insurance,
-  'Other': Assets.other,
 };

@@ -1,4 +1,5 @@
 import 'package:budgetBuddy/common/hive_storages/hive_storage.dart';
+import 'package:budgetBuddy/features/ai_screen/models/goals_transaction.dart';
 import 'package:budgetBuddy/features/ai_screen/models/goals_model.dart';
 import 'package:budgetBuddy/features/ai_screen/services/ai_services.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -49,6 +50,15 @@ class SyncService {
     'target': g.target,
     'saved': g.saved,
     'days_left': g.daysLeft,
+    'transactions': g.transactions
+        .map(
+          (t) => {
+            'id': t.id,
+            'amount': t.amount,
+            'date': t.date.toIso8601String(),
+          },
+        )
+        .toList(),
     'updated_at': DateTime.now().toIso8601String(),
   };
 
@@ -212,6 +222,9 @@ class SyncService {
             target: (r['target'] as num?)?.toDouble() ?? 0,
             saved: (r['saved'] as num?)?.toDouble() ?? 0,
             daysLeft: r['days_left'] as int? ?? 30,
+            transactions: [
+              GoalTransaction(id: id, amount: 0, date: DateTime.now()),
+            ],
           ),
         );
       }

@@ -1,3 +1,4 @@
+import 'package:budgetBuddy/common/widgets/app_tabbar.dart';
 import 'package:budgetBuddy/common/widgets/custom_appbar.dart';
 import 'package:budgetBuddy/features/ai_screen/pages/widget/budget_tab.dart';
 import 'package:budgetBuddy/features/ai_screen/pages/widget/coach_tab.dart';
@@ -31,7 +32,6 @@ class _State extends ConsumerState<AiScreen>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: context.c.bg,
     appBar: CustomAppBar(
       actions: [
         Padding(
@@ -87,22 +87,18 @@ class _State extends ConsumerState<AiScreen>
       backgroundColor: context.c.surface,
       title: AppLocalizations.of(context)!.aiInsight,
 
-      bottom: TabBar(
-        controller: _tabs,
-        isScrollable: true,
-        labelColor: AppColors.primaryColor,
-        unselectedLabelColor: context.c.textMuted,
-        indicatorColor: AppColors.primaryColor,
-        tabAlignment: TabAlignment.start,
-        labelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
-        unselectedLabelStyle: const TextStyle(fontSize: 11),
-        tabs: [
-          Tab(text: AppLocalizations.of(context)!.overView),
-          Tab(text: AppLocalizations.of(context)!.budget),
-          Tab(text: AppLocalizations.of(context)!.predict),
-          Tab(text: AppLocalizations.of(context)!.goals),
-          Tab(text: AppLocalizations.of(context)!.coach),
-        ],
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(62),
+        child: AppTabBar(
+          controller: _tabs,
+          tabs: [
+            AppLocalizations.of(context)!.overView,
+            AppLocalizations.of(context)!.budget,
+            AppLocalizations.of(context)!.predict,
+            AppLocalizations.of(context)!.goals,
+            AppLocalizations.of(context)!.coach,
+          ],
+        ),
       ),
     ),
     // const constructors → Flutter caches tabs not in view

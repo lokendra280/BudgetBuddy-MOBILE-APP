@@ -118,10 +118,7 @@ class AppDrawer extends ConsumerWidget {
                     Navigator.pop(context);
                     onPush(const InsightsFeedScreen());
                   }),
-                  _DrawerItem(Assets.heatmap, 'HeatMap', null, () {
-                    Navigator.pop(context);
-                    onPush(const HeatmapScreen());
-                  }),
+
                   // _DrawerItem(Assets.insights, 'Forecast', null, () {
                   //   Navigator.pop(context);
                   //   onPush(const ForecastScreen());

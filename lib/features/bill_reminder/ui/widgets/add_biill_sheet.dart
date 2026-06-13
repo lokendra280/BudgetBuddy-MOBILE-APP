@@ -4,6 +4,7 @@ import 'package:budgetBuddy/common/common_widget.dart';
 import 'package:budgetBuddy/features/bill_reminder/models/bill_reminder.dart';
 import 'package:budgetBuddy/features/bill_reminder/providers/bill_reminder_provider.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -107,14 +108,16 @@ class _AddState extends ConsumerState<AddBillSheet> {
             const SizedBox(height: 18),
 
             Text(
-              widget.existing != null ? 'Edit Bill' : 'Add Bill / EMI',
+              widget.existing != null
+                  ? 'Edit Bill'
+                  : AppLocalizations.of(context)!.addBillEmi,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 18),
 
             // Title
             InputField(
-              hint: 'Bill name (e.g. Netflix, Home EMI)',
+              hint: AppLocalizations.of(context)!.example,
               controller: _titleCtrl,
               prefix: CommonSvgWidget(
                 svgName: kBillEmojis[_category] ?? '📋',
@@ -125,7 +128,7 @@ class _AddState extends ConsumerState<AddBillSheet> {
 
             // Amount
             InputField(
-              hint: 'Amount',
+              hint: AppLocalizations.of(context)!.amount,
               controller: _amountCtrl,
               keyboard: const TextInputType.numberWithOptions(decimal: true),
               prefix: Padding(
@@ -144,7 +147,7 @@ class _AddState extends ConsumerState<AddBillSheet> {
 
             // Category picker
             Text(
-              'Category',
+              AppLocalizations.of(context)!.category,
               style: TextStyle(
                 fontSize: 12,
                 color: c.textMuted,
@@ -177,12 +180,22 @@ class _AddState extends ConsumerState<AddBillSheet> {
                                   : c.border,
                             ),
                           ),
-                          child: CommonSvgWidget(
-                            svgName: kBillEmojis[cat] ?? '📋',
-                            height: 30,
-                            width: 30,
-                            color: _category == cat ? Colors.white : null,
-                          ),
+                          child:
+                              (kBillEmojis[cat] != null &&
+                                  kBillEmojis[cat]!.isNotEmpty)
+                              ? CommonSvgWidget(
+                                  svgName: kBillEmojis[cat]!,
+                                  height: 30,
+                                  width: 30,
+                                  color: _category == cat ? Colors.white : null,
+                                )
+                              : Icon(
+                                  Icons.category,
+                                  size: 30,
+                                  color: _category == cat
+                                      ? Colors.white
+                                      : Colors.grey,
+                                ),
                         ),
                       ),
                     )
@@ -198,8 +211,8 @@ class _AddState extends ConsumerState<AddBillSheet> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Recurring monthly',
+                      Text(
+                        AppLocalizations.of(context)!.recurringMonthly,
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -207,7 +220,7 @@ class _AddState extends ConsumerState<AddBillSheet> {
                       ),
                       Text(
                         _isRecurring
-                            ? 'Repeats every month'
+                            ? AppLocalizations.of(context)!.repeatsEveryMonth
                             : 'One-time payment',
                         style: TextStyle(fontSize: 11, color: c.textMuted),
                       ),
@@ -226,7 +239,7 @@ class _AddState extends ConsumerState<AddBillSheet> {
             // Due day (recurring) or date picker (one-time)
             if (_isRecurring) ...[
               Text(
-                'Due on day of month',
+                AppLocalizations.of(context)!.dueOnDayOfMonth,
                 style: TextStyle(
                   fontSize: 12,
                   color: c.textMuted,
@@ -324,7 +337,7 @@ class _AddState extends ConsumerState<AddBillSheet> {
 
             // Remind days before
             Text(
-              'Remind me before',
+              AppLocalizations.of(context)!.remindMeBefore,
               style: TextStyle(
                 fontSize: 12,
                 color: c.textMuted,
@@ -374,7 +387,7 @@ class _AddState extends ConsumerState<AddBillSheet> {
                   ? 'Saving…'
                   : (widget.existing != null
                         ? 'Update Bill'
-                        : 'Add & Schedule Reminder'),
+                        : AppLocalizations.of(context)!.addSchedule),
               onTap: _saving ? () {} : _save,
               icon: Icons.notifications_active_rounded,
             ),

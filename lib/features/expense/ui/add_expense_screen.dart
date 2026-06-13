@@ -179,7 +179,7 @@ class _S extends State<AddExpenseScreen> {
                     _reload();
                   }),
                 ),
-                _Tog('Emi', false, c.border, () {
+                _Tog(AppLocalizations.of(context)!.emi, false, c.border, () {
                   NavigationService.push(target: BillReminderScreen());
                 }),
               ],
@@ -324,7 +324,7 @@ class _S extends State<AddExpenseScreen> {
               onPressed: () {
                 NavigationService.push(target: SmsImportScreen());
               },
-              title: "Import from SMS",
+              title: AppLocalizations.of(context)!.importSms,
               radius: 8,
               height: 50,
               textSize: 18,

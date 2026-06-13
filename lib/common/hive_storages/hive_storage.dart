@@ -1,3 +1,4 @@
+import 'package:budgetBuddy/features/ai_screen/models/goals_transaction.dart';
 import 'package:budgetBuddy/features/ai_screen/models/goals_model.dart';
 import 'package:budgetBuddy/features/bill_reminder/models/bill_reminder.dart';
 import 'package:budgetBuddy/features/expense/models/expense.dart';
@@ -14,9 +15,11 @@ class HiveStorage {
   static Box<Expense> get expenses => Hive.box<Expense>('expenses');
   static Box<Budget> get budget => Hive.box<Budget>('budget');
   static Box<GoalEntry> get goals => Hive.box<GoalEntry>('goals');
+
   static Box<BillReminder> get billReminders =>
       Hive.box<BillReminder>('bill_reminders');
-
+  static Box<GoalTransaction> get goalsTransaction =>
+      Hive.box<GoalTransaction>('goals_transaction');
   // ── Init ──────────────────────────────────────────────────────
   static const int _schemaVersion = 5;
   static const String _versionKey = 'hive_schema_v';
@@ -45,6 +48,8 @@ class HiveStorage {
     if (!Hive.isAdapterRegistered(2)) Hive.registerAdapter(GoalEntryAdapter());
     if (!Hive.isAdapterRegistered(3))
       Hive.registerAdapter(BillReminderAdapter());
+    if (!Hive.isAdapterRegistered(4))
+      Hive.registerAdapter(GoalTransactionAdapter());
   }
 
   static Future<void> _openWithRecovery() async {
@@ -54,6 +59,7 @@ class HiveStorage {
         Hive.openBox<Budget>('budget'),
         Hive.openBox<GoalEntry>('goals'),
         Hive.openBox<BillReminder>('bill_reminders'),
+        Hive.openBox<GoalTransaction>('goals_transaction'),
       ]);
     } catch (e) {
       debugPrint('[HiveStorage] Open failed: $e — wiping');
@@ -62,7 +68,13 @@ class HiveStorage {
   }
 
   static Future<void> _wipeAndRebuild() async {
-    for (final name in ['expenses', 'budget', 'goals', 'bill_reminders']) {
+    for (final name in [
+      'expenses',
+      'budget',
+      'goals',
+      'bill_reminders',
+      'goals_transaction',
+    ]) {
       try {
         if (Hive.isBoxOpen(name)) await Hive.box(name).close();
       } catch (_) {}
@@ -73,6 +85,7 @@ class HiveStorage {
       Hive.openBox<Budget>('budget'),
       Hive.openBox<GoalEntry>('goals'),
       Hive.openBox<BillReminder>('bill_reminders'),
+      Hive.openBox<GoalTransaction>('goals_transaction'),
     ]);
   }
 
@@ -118,18 +131,29 @@ class HiveStorage {
       target: target,
       saved: 0,
       daysLeft: daysLeft,
+      transactions: [
+        GoalTransaction(id: const Uuid().v4(), amount: 0, date: DateTime.now()),
+      ],
     );
     await goals.add(entry);
-    SyncService.pushGoal(entry); // fire & forget
+    SyncService.pushGoal(entry);
     return entry;
   }
 
+  // add mount
   static Future<void> addToGoal(String id, double amount) async {
     try {
       final g = goals.values.firstWhere((g) => g.id == id);
+      g.transactions.add(
+        GoalTransaction(
+          id: const Uuid().v4(),
+          amount: amount,
+          date: DateTime.now(),
+        ),
+      );
       g.saved = (g.saved + amount).clamp(0, g.target);
       await g.save();
-      SyncService.pushGoal(g); // fire & forget
+      SyncService.pushGoal(g);
     } catch (e) {
       debugPrint('[HiveStorage] addToGoal: goal $id not found');
     }

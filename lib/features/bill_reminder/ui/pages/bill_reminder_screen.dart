@@ -1,5 +1,4 @@
 import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/common_svg_widget.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
 import 'package:budgetBuddy/common/widgets/empty_widget.dart';
 import 'package:budgetBuddy/features/bill_reminder/models/bill_reminder.dart';
@@ -8,6 +7,7 @@ import 'package:budgetBuddy/features/bill_reminder/ui/widgets/add_biill_sheet.da
 import 'package:budgetBuddy/features/bill_reminder/ui/widgets/bill_strip_alert.dart';
 import 'package:budgetBuddy/features/bill_reminder/ui/widgets/bill_title.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,8 +31,8 @@ class BillReminderScreen extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Bills & Reminders',
+        title: Text(
+          AppLocalizations.of(context)!.billReminder,
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
@@ -43,7 +43,7 @@ class BillReminderScreen extends ConsumerWidget {
               color: AppColors.primaryColor,
               size: 24,
             ),
-            tooltip: 'Add bill',
+            tooltip: AppLocalizations.of(context)!.addBill,
             onPressed: () => _showAddSheet(context, ref, sym),
           ),
         ],
@@ -95,7 +95,9 @@ class BillReminderScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Monthly Commitments',
+                                AppLocalizations.of(
+                                  context,
+                                )!.monthlyCommitments,
                                 style: TextStyle(
                                   fontSize: 11,
                                   color: c.textMuted,
@@ -117,14 +119,14 @@ class BillReminderScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              '${state.all.length} bills',
+                              '${state.all.length} ${AppLocalizations.of(context)!.bill}',
                               style: TextStyle(
                                 fontSize: 11,
                                 color: c.textMuted,
                               ),
                             ),
                             Text(
-                              '${state.all.where((b) => b.isActive).length} active',
+                              '${state.all.where((b) => b.isActive).length} ${AppLocalizations.of(context)!.active}',
                               style: const TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
@@ -179,8 +181,8 @@ class BillReminderScreen extends ConsumerWidget {
         onPressed: () => _showAddSheet(context, ref, sym),
         backgroundColor: AppColors.primaryColor,
         icon: const Icon(Icons.add_rounded, color: Colors.white),
-        label: const Text(
-          'Add Bill',
+        label: Text(
+          AppLocalizations.of(context)!.addBill,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
         ),
       ),

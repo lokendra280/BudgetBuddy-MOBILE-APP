@@ -24,417 +24,372 @@ class OverviewTab extends ConsumerWidget {
     final fmt = ref.watch(fmtProvider);
     final c = context.c;
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(18, 16, 18, 40),
-      children: [
-        // ── Financial Health Score ─────────────────────────────────────────────
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                score.color.withOpacity(0.2),
-                score.color.withOpacity(0.1),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    return Scaffold(
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(18, 16, 18, 40),
+        children: [
+          // ── Financial Health Score ─────────────────────────────────────────────
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  score.color.withOpacity(0.2),
+                  score.color.withOpacity(0.1),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
             ),
-            borderRadius: BorderRadius.circular(12),
+            child: Row(
+              children: [
+                // Score ring
+                AwesomeScoreWidget(score: score),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Financial Health',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF9090B0),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        score.headline,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          height: 1.3,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      ...score.factors.map(
+                        (f) => Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Row(
+                            children: [
+                              CommonSvgWidget(svgName: f.emoji),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          f.label,
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        Text(
+                                          '${f.score}',
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w700,
+                                            color: score.color,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 2),
+                                    ProgressBar(
+                                      f.score / 100,
+                                      score.color,
+                                      height: 4,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-          child: Row(
-            children: [
-              // Score ring
-              AwesomeScoreWidget(score: score),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+
+          const SizedBox(height: 14),
+
+          // ── Burn Rate ──────────────────────────────────────────────────────────
+          AppCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const IconLabel(Assets.strike, 'Burn Rate & Runway'),
+                const SizedBox(height: 14),
+                Row(
                   children: [
-                    const Text(
-                      'Financial Health',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF9090B0),
-                      ),
+                    StatCol('Daily Spend', fmt(burn.dailySpend), kAccent),
+                    StatCol(
+                      'Monthly Rate',
+                      fmt(burn.monthlySpend),
+                      AppColors.primaryColor,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      score.headline,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        height: 1.3,
-                      ),
+                    StatCol(
+                      'Runway',
+                      '${burn.runwayDays} days',
+                      burn.runwayDays < 30
+                          ? kAccent
+                          : burn.runwayDays < 90
+                          ? kAmber
+                          : kGreen,
                     ),
-                    const SizedBox(height: 12),
-                    ...score.factors.map(
-                      (f) => Padding(
-                        padding: const EdgeInsets.only(bottom: 6),
-                        child: Row(
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: (burn.runwayDays < 30 ? kAccent : kGreen)
+                        .withOpacity(0.07),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      CommonSvgWidget(
+                        svgName: burn.runwayDays < 30
+                            ? Assets.warning
+                            : burn.runwayDays < 90
+                            ? Assets.blub
+                            : Assets.correct,
+                        width: 18,
+                        height: 18,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          burn.runwayDays < 30
+                              ? 'Critical: runs out in ${burn.runwayDays} days at this rate'
+                              : burn.runwayDays < 90
+                              ? 'Moderate: ${burn.runwayDays} day runway. Build emergency fund.'
+                              : 'Healthy ${burn.runwayDays}-day runway 🎉',
+                          style: TextStyle(
+                            fontSize: 12,
+                            height: 1.4,
+                            fontWeight: FontWeight.w600,
+                            color: burn.runwayDays < 30
+                                ? kAccent
+                                : burn.runwayDays < 90
+                                ? kAmber
+                                : kGreen,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          // ── Smart Alerts ───────────────────────────────────────────────────────
+          if (alerts.isNotEmpty) ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const SectionLabel('Smart Alerts'),
+                Chip(
+                  label: Text(
+                    '${alerts.length}',
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: kAccent,
+                    ),
+                  ),
+                  backgroundColor: kAccent.withOpacity(0.1),
+                  side: BorderSide.none,
+                  padding: EdgeInsets.zero,
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            ...alerts.map(
+              (a) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Color(a.severityColor).withOpacity(0.07),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: Color(a.severityColor).withOpacity(0.25),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(a.emoji, style: const TextStyle(fontSize: 20)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CommonSvgWidget(svgName: f.emoji),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        f.label,
-                                        style: const TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      Text(
-                                        '${f.score}',
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w700,
-                                          color: score.color,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 2),
-                                  ProgressBar(
-                                    f.score / 100,
-                                    score.color,
-                                    height: 4,
-                                  ),
-                                ],
+                            Text(
+                              a.title,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: Color(a.severityColor),
+                              ),
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              a.body,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: c.textMuted,
+                                height: 1.4,
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 14),
-
-        // ── Burn Rate ──────────────────────────────────────────────────────────
-        AppCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const IconLabel(Assets.strike, 'Burn Rate & Runway'),
-              const SizedBox(height: 14),
-              Row(
-                children: [
-                  StatCol('Daily Spend', fmt(burn.dailySpend), kAccent),
-                  StatCol(
-                    'Monthly Rate',
-                    fmt(burn.monthlySpend),
-                    AppColors.primaryColor,
+                    ],
                   ),
-                  StatCol(
-                    'Runway',
-                    '${burn.runwayDays} days',
-                    burn.runwayDays < 30
-                        ? kAccent
-                        : burn.runwayDays < 90
-                        ? kAmber
-                        : kGreen,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 14),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: (burn.runwayDays < 30 ? kAccent : kGreen).withOpacity(
-                    0.07,
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  children: [
-                    CommonSvgWidget(
-                      svgName: burn.runwayDays < 30
-                          ? Assets.warning
-                          : burn.runwayDays < 90
-                          ? Assets.blub
-                          : Assets.correct,
-                      width: 18,
-                      height: 18,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        burn.runwayDays < 30
-                            ? 'Critical: runs out in ${burn.runwayDays} days at this rate'
-                            : burn.runwayDays < 90
-                            ? 'Moderate: ${burn.runwayDays} day runway. Build emergency fund.'
-                            : 'Healthy ${burn.runwayDays}-day runway 🎉',
-                        style: TextStyle(
-                          fontSize: 12,
-                          height: 1.4,
-                          fontWeight: FontWeight.w600,
-                          color: burn.runwayDays < 30
-                              ? kAccent
-                              : burn.runwayDays < 90
-                              ? kAmber
-                              : kGreen,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 14),
-
-        // ── Smart Alerts ───────────────────────────────────────────────────────
-        if (alerts.isNotEmpty) ...[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const SectionLabel('Smart Alerts'),
-              Chip(
-                label: Text(
-                  '${alerts.length}',
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: kAccent,
-                  ),
-                ),
-                backgroundColor: kAccent.withOpacity(0.1),
-                side: BorderSide.none,
-                padding: EdgeInsets.zero,
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          ...alerts.map(
-            (a) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: Color(a.severityColor).withOpacity(0.07),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: Color(a.severityColor).withOpacity(0.25),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Text(a.emoji, style: const TextStyle(fontSize: 20)),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            a.title,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: Color(a.severityColor),
-                            ),
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            a.body,
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: c.textMuted,
-                              height: 1.4,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: 6),
-        ],
+            const SizedBox(height: 6),
+          ],
 
-        // ── AI Spending Insights ───────────────────────────────────────────────
-        const SectionLabel('AI Spending Insights'),
-        const SizedBox(height: 10),
-        if (insights.isEmpty)
-          const EmptyCard(
-            Assets.star,
-            'Add more expenses',
-            'We\'ll analyse patterns once you have more data.',
-          )
-        else
-          ...insights.map(
-            (s) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
+          // ── AI Spending Insights ───────────────────────────────────────────────
+          const SectionLabel('AI Spending Insights'),
+          const SizedBox(height: 10),
+          if (insights.isEmpty)
+            const EmptyCard(
+              Assets.star,
+              'Add more expenses',
+              'We\'ll analyse patterns once you have more data.',
+            )
+          else
+            ...insights.map(
+              (s) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: AppCard(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      EmojiBox(s.emoji, Color(s.color)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              s.title,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              s.body,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: c.textMuted,
+                                height: 1.4,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+          // ── Subscriptions + Recurring ──────────────────────────────────────────
+          const SizedBox(height: 8),
+          const SectionLabel('Subscriptions & Recurring'),
+          const SizedBox(height: 10),
+
+          // combine subscriptions and recurring items, take up to 5 and render each as a card
+          ...[...subs, ...rec].take(5).map((i) {
+            late final String title;
+            late final String subtitle;
+            late final String emoji;
+            late final double amount;
+            late final Color color;
+
+            if (i is SubscriptionItem) {
+              title = i.name;
+              subtitle = i.frequency;
+              emoji = i.emoji;
+              amount = i.amount;
+            } else if (i is RecurringExpense) {
+              title = i.title;
+              subtitle = i.category;
+              emoji = i.emoji;
+              amount = i.avgAmount;
+            } else {
+              return const SizedBox();
+            }
+
+            color = AppColors.primaryColor.withOpacity(0.12);
+
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
               child: AppCard(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 11,
+                ),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    EmojiBox(s.emoji, Color(s.color)),
+                    EmojiBox(emoji, color),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            s.title,
+                            title,
                             style: const TextStyle(
                               fontSize: 13,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 3),
                           Text(
-                            s.body,
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: c.textMuted,
-                              height: 1.4,
-                            ),
+                            subtitle,
+                            style: TextStyle(fontSize: 10, color: c.textMuted),
                           ),
                         ],
+                      ),
+                    ),
+                    Text(
+                      fmt(amount),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryColor,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-          ),
-
-        // ── Subscriptions + Recurring ──────────────────────────────────────────
-        const SizedBox(height: 8),
-        const SectionLabel('Subscriptions & Recurring'),
-        const SizedBox(height: 10),
-        // combine subscriptions and recurring items, take up to 5 and render each as a card
-        // ...[...subs, ...rec].take(5).map((i) {
-        //   final dyn = i as dynamic;
-        //   final title = dyn.title ?? dyn.name ?? dyn.label ?? '';
-        //   final subtitle = dyn.schedule ?? dyn.period ?? dyn.recurring ?? '';
-        //   final emoji = (dyn.emoji ?? '💳') as String;
-        //   final color = (dyn.color is int)
-        //       ? Color(dyn.color)
-        //       : AppColors.primaryColor.withOpacity(0.12);
-        //   final amountVal = dyn.amount ?? dyn.price ?? dyn.cost ?? 0;
-        //   return Padding(
-        //     padding: const EdgeInsets.only(bottom: 8),
-        //     child: AppCard(
-        //       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-        //       child: Row(
-        //         children: [
-        //           EmojiBox(emoji, color),
-        //           const SizedBox(width: 12),
-        //           Expanded(
-        //             child: Column(
-        //               crossAxisAlignment: CrossAxisAlignment.start,
-        //               children: [
-        //                 Text(
-        //                   title,
-        //                   style: const TextStyle(
-        //                     fontSize: 13,
-        //                     fontWeight: FontWeight.w600,
-        //                   ),
-        //                   maxLines: 1,
-        //                   overflow: TextOverflow.ellipsis,
-        //                 ),
-        //                 Text(
-        //                   subtitle,
-        //                   style: TextStyle(fontSize: 10, color: c.textMuted),
-        //                 ),
-        //               ],
-        //             ),
-        //           ),
-        //           Text(
-        //             fmt(amountVal),
-        //             style: const TextStyle(
-        //               fontSize: 13,
-        //               fontWeight: FontWeight.w700,
-        //               color: AppColors.primaryColor,
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //   );
-        // }).toList(),
-        ...[...subs, ...rec].take(5).map((i) {
-          late final String title;
-          late final String subtitle;
-          late final String emoji;
-          late final double amount;
-          late final Color color;
-
-          if (i is SubscriptionItem) {
-            title = i.name;
-            subtitle = i.frequency;
-            emoji = i.emoji;
-            amount = i.amount;
-          } else if (i is RecurringExpense) {
-            title = i.title;
-            subtitle = i.category;
-            emoji = i.emoji;
-            amount = i.avgAmount;
-          } else {
-            return const SizedBox();
-          }
-
-          color = AppColors.primaryColor.withOpacity(0.12);
-
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: AppCard(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-              child: Row(
-                children: [
-                  EmojiBox(emoji, color),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          subtitle,
-                          style: TextStyle(fontSize: 10, color: c.textMuted),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    fmt(amount),
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.primaryColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }).toList(),
-      ],
+            );
+          }).toList(),
+        ],
+      ),
     );
   }
 }
