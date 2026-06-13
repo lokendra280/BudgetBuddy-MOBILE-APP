@@ -41,6 +41,12 @@ class _State extends ConsumerState<StatementsScreen> {
   bool _isLoading = true;
   bool _exporting = false;
 
+  // ── Pagination ─────────────────────────────────────────────────────────────
+  static const int _pageSize = 20;
+  int _visibleCount = 20;
+
+  void _resetPagination() => _visibleCount = _pageSize;
+
   @override
   void initState() {
     super.initState();
@@ -99,6 +105,7 @@ class _State extends ConsumerState<StatementsScreen> {
       _fromDate = range.start;
       _toDate = range.end;
       _mode = _Mode.dateRange;
+      _resetPagination();
     });
   }
 
@@ -139,11 +146,9 @@ class _State extends ConsumerState<StatementsScreen> {
   @override
   Widget build(BuildContext context) {
     // ── Read from providers ─────────────────────────────────────────────────
-    final all = ref
-        .watch(expenseProvider)
-        .all; // reactive: rebuilds on any expense change
-    final fmt = ref.watch(fmtProvider); // currency-aware formatter
-    final sym = ref.watch(symbolProvider); // currency symbol
+    final all = ref.watch(expenseProvider).all;
+    final fmt = ref.watch(fmtProvider);
+    final sym = ref.watch(symbolProvider);
 
     // ── Derived lists ───────────────────────────────────────────────────────
     final period = _period(all);
@@ -153,24 +158,29 @@ class _State extends ConsumerState<StatementsScreen> {
     final totalExp = expenses.fold(0.0, (s, e) => s + e.amount);
     final totalInc = incomes.fold(0.0, (s, e) => s + e.amount);
     final net = totalInc - totalExp;
+
     // Category map (expenses only, sorted by amount desc)
     final catMap = <String, double>{};
-    for (final e in expenses)
+    for (final e in expenses) {
       catMap[e.category] = (catMap[e.category] ?? 0) + e.amount;
+    }
     final cats = catMap.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
     final usedCats = period.map((e) => e.category).toSet().toList();
 
+    // ── Paginated slice ─────────────────────────────────────────────────────
+    final visibleItems = filtered.take(_visibleCount).toList();
+    final remaining = filtered.length - _visibleCount;
+    final hasMore = remaining > 0;
+
     return Scaffold(
       backgroundColor: context.c.bg,
-
       appBar: CustomAppBar(
         appElevation: 0,
         backgroundColor: context.c.surface,
         showBackButton: false,
         title: AppLocalizations.of(context)!.statements,
-
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -201,7 +211,7 @@ class _State extends ConsumerState<StatementsScreen> {
           : ListView(
               padding: const EdgeInsets.fromLTRB(18, 14, 18, 40),
               children: [
-                // ── Mode toggle ───────────────────────────────────────────────
+                // ── Mode toggle ─────────────────────────────────────────────
                 Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
@@ -214,7 +224,10 @@ class _State extends ConsumerState<StatementsScreen> {
                       ModeBtn(
                         AppLocalizations.of(context)!.month,
                         _mode == _Mode.month,
-                        () => setState(() => _mode = _Mode.month),
+                        () => setState(() {
+                          _mode = _Mode.month;
+                          _resetPagination();
+                        }),
                       ),
                       ModeBtn(
                         AppLocalizations.of(context)!.dataRange,
@@ -227,23 +240,22 @@ class _State extends ConsumerState<StatementsScreen> {
 
                 const SizedBox(height: 12),
 
-                // ── Month navigator / Date range display ──────────────────────
+                // ── Month navigator / Date range display ────────────────────
                 if (_mode == _Mode.month)
                   MonthNav(
                     month: _month,
-                    onPrev: () => setState(
-                      () => _month = DateTime(_month.year, _month.month - 1),
-                    ),
+                    onPrev: () => setState(() {
+                      _month = DateTime(_month.year, _month.month - 1);
+                      _resetPagination();
+                    }),
                     onNext:
                         _month.month == DateTime.now().month &&
                             _month.year == DateTime.now().year
                         ? null
-                        : () => setState(
-                            () => _month = DateTime(
-                              _month.year,
-                              _month.month + 1,
-                            ),
-                          ),
+                        : () => setState(() {
+                            _month = DateTime(_month.year, _month.month + 1);
+                            _resetPagination();
+                          }),
                     onTap: () async {
                       final picked = await showDatePicker(
                         context: context,
@@ -252,10 +264,12 @@ class _State extends ConsumerState<StatementsScreen> {
                         lastDate: DateTime.now(),
                         initialDatePickerMode: DatePickerMode.year,
                       );
-                      if (picked != null)
-                        setState(
-                          () => _month = DateTime(picked.year, picked.month),
-                        );
+                      if (picked != null) {
+                        setState(() {
+                          _month = DateTime(picked.year, picked.month);
+                          _resetPagination();
+                        });
+                      }
                     },
                   )
                 else
@@ -263,7 +277,7 @@ class _State extends ConsumerState<StatementsScreen> {
 
                 const SizedBox(height: 14),
 
-                // ── Summary: Income / Expense / Net ──────────────────────────
+                // ── Summary: Income / Expense / Net ────────────────────────
                 AppCard(
                   child: Row(
                     children: [
@@ -294,16 +308,15 @@ class _State extends ConsumerState<StatementsScreen> {
 
                 const SizedBox(height: 14),
 
-                // ── Pie chart ─────────────────────────────────────────────────
+                // ── Pie chart ───────────────────────────────────────────────
                 if (cats.isNotEmpty) ...[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SectionLabel(AppLocalizations.of(context)!.byCategory),
                       GestureDetector(
-                        onTap: () {
-                          NavigationService.push(target: HeatmapScreen());
-                        },
+                        onTap: () =>
+                            NavigationService.push(target: HeatmapScreen()),
                         child: SectionLabel('HeatMap'),
                       ),
                     ],
@@ -402,7 +415,7 @@ class _State extends ConsumerState<StatementsScreen> {
                   const SizedBox(height: 14),
                 ],
 
-                // ── Daily bar chart ───────────────────────────────────────────
+                // ── Daily bar chart ─────────────────────────────────────────
                 SectionLabel(AppLocalizations.of(context)!.dailyOverview),
                 const SizedBox(height: 10),
                 AppCard(
@@ -424,7 +437,7 @@ class _State extends ConsumerState<StatementsScreen> {
 
                 const SizedBox(height: 14),
 
-                // ── Chip filters ──────────────────────────────────────────────
+                // ── Chip filters ────────────────────────────────────────────
                 SectionLabel(AppLocalizations.of(context)!.filter),
                 const SizedBox(height: 8),
                 Wrap(
@@ -435,13 +448,19 @@ class _State extends ConsumerState<StatementsScreen> {
                       AppLocalizations.of(context)!.income,
                       _showIncome,
                       kGreen,
-                      () => setState(() => _showIncome = !_showIncome),
+                      () => setState(() {
+                        _showIncome = !_showIncome;
+                        _resetPagination();
+                      }),
                     ),
                     FiChip(
                       AppLocalizations.of(context)!.expense,
                       _showExpense,
                       kAccent,
-                      () => setState(() => _showExpense = !_showExpense),
+                      () => setState(() {
+                        _showExpense = !_showExpense;
+                        _resetPagination();
+                      }),
                     ),
                     ...usedCats.map(
                       (cat) => FiChip(
@@ -451,9 +470,10 @@ class _State extends ConsumerState<StatementsScreen> {
                         ),
                         _filterCat == cat,
                         AppColors.primaryColor,
-                        () => setState(
-                          () => _filterCat = _filterCat == cat ? null : cat,
-                        ),
+                        () => setState(() {
+                          _filterCat = _filterCat == cat ? null : cat;
+                          _resetPagination();
+                        }),
                       ),
                     ),
                   ],
@@ -461,7 +481,7 @@ class _State extends ConsumerState<StatementsScreen> {
 
                 const SizedBox(height: 14),
 
-                // ── Export card ───────────────────────────────────────────────
+                // ── Export card ─────────────────────────────────────────────
                 AppCard(
                   onTap: () => _export(filtered),
                   child: Row(
@@ -487,7 +507,7 @@ class _State extends ConsumerState<StatementsScreen> {
                           children: [
                             Text(
                               AppLocalizations.of(context)!.export,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -523,7 +543,7 @@ class _State extends ConsumerState<StatementsScreen> {
 
                 const SizedBox(height: 14),
 
-                // ── Transactions list ─────────────────────────────────────────
+                // ── Transactions list ───────────────────────────────────────
                 SectionLabel(
                   AppLocalizations.of(context)!.transactions,
                   trailing: Text(
@@ -555,14 +575,59 @@ class _State extends ConsumerState<StatementsScreen> {
                     ),
                   ),
 
-                ...filtered.map((e) => TransactionWidget(expense: e)),
+                // ── Paginated rows ──────────────────────────────────────────
+                ...visibleItems.map((e) => TransactionWidget(expense: e)),
+
+                // ── Pagination footer ───────────────────────────────────────
+                if (filtered.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  if (hasMore)
+                    GestureDetector(
+                      onTap: () => setState(() => _visibleCount += _pageSize),
+                      child: AppCard(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.expand_more_rounded,
+                              color: AppColors.primaryColor,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Load more  •  $remaining remaining',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.primaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  else if (filtered.length > _pageSize)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Center(
+                        child: Text(
+                          'All ${filtered.length} transactions shown',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: context.c.textMuted,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ],
             ),
     );
   }
 }
 
-// Summary column (Income / Expense / Net)
+// ─── Summary column ───────────────────────────────────────────────────────────
+
 class _SumCol extends StatelessWidget {
   final String label, prefix;
   final double amount;
@@ -575,6 +640,7 @@ class _SumCol extends StatelessWidget {
     required this.fmt,
     this.prefix = '',
   });
+
   @override
   Widget build(BuildContext context) => Expanded(
     child: Column(
@@ -603,11 +669,13 @@ class _SumCol extends StatelessWidget {
   );
 }
 
-// Legend dot
+// ─── Legend dot ───────────────────────────────────────────────────────────────
+
 class _Leg extends StatelessWidget {
   final Color color;
   final String label;
   const _Leg(this.color, this.label);
+
   @override
   Widget build(BuildContext context) => Row(
     mainAxisSize: MainAxisSize.min,
@@ -626,16 +694,15 @@ class _Leg extends StatelessWidget {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DAILY BAR CHART — pure StatelessWidget, receives list from parent
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Daily bar chart ──────────────────────────────────────────────────────────
+
 class _BarChart extends StatelessWidget {
   final List<Expense> expenses;
   const _BarChart({required this.expenses});
 
   @override
   Widget build(BuildContext context) {
-    if (expenses.isEmpty)
+    if (expenses.isEmpty) {
       return SizedBox(
         height: 80,
         child: Center(
@@ -645,6 +712,7 @@ class _BarChart extends StatelessWidget {
           ),
         ),
       );
+    }
 
     final days = expenses.map((e) => e.date.day).toSet().toList()..sort();
 
