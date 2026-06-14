@@ -696,6 +696,116 @@ class _Leg extends StatelessWidget {
 
 // ─── Daily bar chart ──────────────────────────────────────────────────────────
 
+// class _BarChart extends StatelessWidget {
+//   final List<Expense> expenses;
+//   const _BarChart({required this.expenses});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     if (expenses.isEmpty) {
+//       return SizedBox(
+//         height: 80,
+//         child: Center(
+//           child: Text(
+//             'No data for this period',
+//             style: TextStyle(fontSize: 12, color: context.c.textMuted),
+//           ),
+//         ),
+//       );
+//     }
+
+//     // final days = expenses.map((e) => e.date.day).toSet().toList()..sort();
+//     final Map<DateTime, List<Expense>> grouped = {};
+
+//     for (final e in expenses) {
+//       final key = DateTime(e.date.year, e.date.month);
+//       grouped.putIfAbsent(key, () => []);
+//       grouped[key]!.add(e);
+//     }
+//     // final groups = days.map((d) {
+//     //   final inc = expenses
+//     //       .where((e) => e.date.day == d && e.isIncome)
+//     //       .fold(0.0, (s, e) => s + e.amount);
+//     //   final exp = expenses
+//     //       .where((e) => e.date.day == d && !e.isIncome)
+//     //       .fold(0.0, (s, e) => s + e.amount);
+//     final groups = grouped.entries.map((entry) {
+//       final month = entry.key;
+//       final items = entry.value;
+
+//       final inc = items
+//           .where((e) => e.isIncome)
+//           .fold(0.0, (s, e) => s + e.amount);
+
+//       final exp = items
+//           .where((e) => !e.isIncome)
+//           .fold(0.0, (s, e) => s + e.amount);
+
+//       return BarChartGroupData(
+//         x: month.month,
+//         barsSpace: 2,
+//         barRods: [
+//           BarChartRodData(
+//             toY: inc,
+//             width: 7,
+//             color: kGreen.withOpacity(0.8),
+//             borderRadius: BorderRadius.circular(3),
+//           ),
+//           BarChartRodData(
+//             toY: exp,
+//             width: 7,
+//             color: kAccent.withOpacity(0.8),
+//             borderRadius: BorderRadius.circular(3),
+//           ),
+//         ],
+//       );
+//     }).toList();
+
+//     final maxY = groups
+//         .expand((g) => g.barRods.map((r) => r.toY))
+//         .fold(0.0, (a, b) => a > b ? a : b);
+//     if (maxY == 0) return const SizedBox.shrink();
+
+//     return SizedBox(
+//       height: 120,
+//       child: BarChart(
+//         BarChartData(
+//           maxY: maxY * 1.3,
+//           barGroups: groups,
+//           gridData: FlGridData(
+//             show: true,
+//             drawVerticalLine: false,
+//             getDrawingHorizontalLine: (_) =>
+//                 FlLine(color: context.c.border, strokeWidth: 0.5),
+//           ),
+//           borderData: FlBorderData(show: false),
+//           titlesData: FlTitlesData(
+//             leftTitles: const AxisTitles(
+//               sideTitles: SideTitles(showTitles: false),
+//             ),
+//             topTitles: const AxisTitles(
+//               sideTitles: SideTitles(showTitles: false),
+//             ),
+//             rightTitles: const AxisTitles(
+//               sideTitles: SideTitles(showTitles: false),
+//             ),
+//             bottomTitles: AxisTitles(
+//               sideTitles: SideTitles(
+//                 showTitles: true,
+//                 reservedSize: 18,
+//                 getTitlesWidget: (v, _) => Text(
+//                   '${v.toInt()}',
+//                   style: TextStyle(fontSize: 9, color: context.c.textMuted),
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
 class _BarChart extends StatelessWidget {
   final List<Expense> expenses;
   const _BarChart({required this.expenses});
@@ -714,17 +824,29 @@ class _BarChart extends StatelessWidget {
       );
     }
 
-    final days = expenses.map((e) => e.date.day).toSet().toList()..sort();
+    // ✅ GROUP BY MONTH (year + month)
+    final Map<DateTime, List<Expense>> grouped = {};
 
-    final groups = days.map((d) {
-      final inc = expenses
-          .where((e) => e.date.day == d && e.isIncome)
+    for (final e in expenses) {
+      final key = DateTime(e.date.year, e.date.month);
+      grouped.putIfAbsent(key, () => []);
+      grouped[key]!.add(e);
+    }
+
+    final groups = grouped.entries.map((entry) {
+      final month = entry.key;
+      final items = entry.value;
+
+      final inc = items
+          .where((e) => e.isIncome)
           .fold(0.0, (s, e) => s + e.amount);
-      final exp = expenses
-          .where((e) => e.date.day == d && !e.isIncome)
+
+      final exp = items
+          .where((e) => !e.isIncome)
           .fold(0.0, (s, e) => s + e.amount);
+
       return BarChartGroupData(
-        x: d,
+        x: month.month,
         barsSpace: 2,
         barRods: [
           BarChartRodData(
@@ -746,7 +868,23 @@ class _BarChart extends StatelessWidget {
     final maxY = groups
         .expand((g) => g.barRods.map((r) => r.toY))
         .fold(0.0, (a, b) => a > b ? a : b);
+
     if (maxY == 0) return const SizedBox.shrink();
+
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
 
     return SizedBox(
       height: 120,
@@ -761,6 +899,7 @@ class _BarChart extends StatelessWidget {
                 FlLine(color: context.c.border, strokeWidth: 0.5),
           ),
           borderData: FlBorderData(show: false),
+
           titlesData: FlTitlesData(
             leftTitles: const AxisTitles(
               sideTitles: SideTitles(showTitles: false),
@@ -775,10 +914,15 @@ class _BarChart extends StatelessWidget {
               sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 18,
-                getTitlesWidget: (v, _) => Text(
-                  '${v.toInt()}',
-                  style: TextStyle(fontSize: 9, color: context.c.textMuted),
-                ),
+                getTitlesWidget: (v, _) {
+                  final i = v.toInt();
+                  if (i < 1 || i > 12) return const SizedBox();
+
+                  return Text(
+                    months[i - 1],
+                    style: TextStyle(fontSize: 9, color: context.c.textMuted),
+                  );
+                },
               ),
             ),
           ),

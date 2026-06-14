@@ -231,7 +231,7 @@ class PdfService {
             ),
           ],
         ),
-        pw.Divider(color: PdfColors.indigo200, thickness: 1.5),
+        // pw.Divider(color: PdfColors.indigo200, thickness: 1.5),
         pw.SizedBox(height: 8),
       ],
     );
