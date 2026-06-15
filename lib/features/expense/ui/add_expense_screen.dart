@@ -318,24 +318,24 @@ class _S extends State<AddExpenseScreen> {
               color: AppColors.white,
             ),
           ),
-          SizedBox(height: 20),
-          if (!Platform.isIOS)
-            PrimaryButton(
-              onPressed: () {
-                NavigationService.push(target: SmsImportScreen());
-              },
-              title: AppLocalizations.of(context)!.importSms,
-              radius: 8,
-              height: 50,
-              textSize: 18,
-              color: AppColors.darkGrey,
-              icon: CommonSvgWidget(
-                svgName: Assets.sms,
-                height: 20,
-                width: 20,
-                color: AppColors.primaryColor,
-              ),
-            ),
+          // SizedBox(height: 20),
+          // if (!Platform.isIOS)
+          //   PrimaryButton(
+          //     onPressed: () {
+          //       NavigationService.push(target: SmsImportScreen());
+          //     },
+          //     title: AppLocalizations.of(context)!.importSms,
+          //     radius: 8,
+          //     height: 50,
+          //     textSize: 18,
+          //     color: AppColors.darkGrey,
+          //     icon: CommonSvgWidget(
+          //       svgName: Assets.sms,
+          //       height: 20,
+          //       width: 20,
+          //       color: AppColors.primaryColor,
+          //     ),
+          //   ),
         ],
       ),
       floatingActionButton: isKeyboardOpen
