@@ -1,58 +1,24 @@
 import 'package:budgetBuddy/features/ai_screen/services/ai_services.dart';
-import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final smartBudgetProvider = Provider<SmartBudget>((ref) {
-  ref.watch(expenseProvider);
-  return AiService.smartBudget();
-});
+// ── AI providers ──────────────────────────────────────────────────────────────
+// fmtProvider and symbolProvider are intentionally NOT defined here.
+// Import them from expense_provider.dart — they watch currencyProvider
+// and rebuild reactively whenever the user changes currency in Settings.
 
-final healthScoreProvider = Provider<FinancialHealthScore>((ref) {
-  ref.watch(expenseProvider);
-  return AiService.healthScore();
-});
-
-final burnRateProvider = Provider<BurnRate>((ref) {
-  ref.watch(expenseProvider);
-  return AiService.burnRate();
-});
-
-final predictionProvider = Provider<ExpensePrediction>((ref) {
-  ref.watch(expenseProvider);
-  return AiService.predict();
-});
-
-final alertsProvider = Provider<List<SmartAlert>>((ref) {
-  ref.watch(expenseProvider);
-  return AiService.alerts();
-});
-
-final aiSuggestionsProvider = Provider<List<AiSuggestion>>((ref) {
-  ref.watch(expenseProvider);
-  return AiService.suggestions();
-});
-
-final coachTipsProvider = Provider<List<CoachTip>>((ref) {
-  ref.watch(expenseProvider);
-  return AiService.coachTips();
-});
-
-final recurringProvider = Provider<List<RecurringExpense>>((ref) {
-  ref.watch(expenseProvider);
-  return AiService.detectRecurring();
-});
-
-final subscriptionsProvider = Provider<List<SubscriptionItem>>((ref) {
-  ref.watch(expenseProvider);
-  return AiService.detectSubscriptions();
-});
-
-final incomeHistoryProvider = Provider<Map<String, double>>((ref) {
-  ref.watch(expenseProvider);
-  return AiService.incomeHistory();
-});
-
-final incomeGrowthProvider = Provider<double>((ref) {
-  ref.watch(expenseProvider);
-  return AiService.incomeGrowthPercent();
-});
+final smartBudgetProvider = Provider((ref) => AiService.smartBudget());
+final healthScoreProvider = Provider((ref) => AiService.healthScore());
+final burnRateProvider = Provider((ref) => AiService.burnRate());
+final predictionProvider = Provider((ref) => AiService.predict());
+final alertsProvider = Provider((ref) => AiService.alerts());
+final aiSuggestionsProvider = Provider((ref) => AiService.suggestions());
+final subscriptionsProvider = Provider(
+  (ref) => AiService.detectSubscriptions(),
+);
+final recurringProvider = Provider((ref) => AiService.detectRecurring());
+final coachTipsProvider = Provider((ref) => AiService.coachTips());
+final incomeHistoryProvider = Provider((ref) => AiService.incomeHistory());
+final incomeGrowthProvider = Provider((ref) => AiService.incomeGrowthPercent());
+final billHealthProvider = Provider((ref) => AiService.billHealthSummary());
+final goalInsightsProvider = Provider((ref) => AiService.goalInsights());
+final cashFlowProvider = Provider((ref) => AiService.cashFlowForecast());

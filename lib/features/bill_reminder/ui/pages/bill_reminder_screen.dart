@@ -329,36 +329,3 @@ class _PageBtn extends StatelessWidget {
     ),
   );
 }
-
-// Alert strip
-// class _AlertStrip extends StatelessWidget {
-//   final String emoji, message;
-//   final Color color;
-//   const _AlertStrip({
-//     required this.emoji,
-//     required this.message,
-//     required this.color,
-//   });
-//   @override
-//   Widget build(BuildContext context) => Container(
-//     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-//     color: color.withOpacity(0.08),
-//     child: Row(
-//       children: [
-//         Text(emoji, style: const TextStyle(fontSize: 16)),
-//         const SizedBox(width: 10),
-//         Expanded(
-//           child: Text(
-//             message,
-//             style: TextStyle(
-//               fontSize: 12,
-//               fontWeight: FontWeight.w600,
-//               color: color,
-//             ),
-//           ),
-//         ),
-//         Icon(Icons.chevron_right_rounded, size: 18, color: color),
-//       ],
-//     ),
-//   );
-// }

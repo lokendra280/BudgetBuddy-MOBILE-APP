@@ -9,6 +9,7 @@ import 'package:budgetBuddy/features/auth/services/user_profile_service.dart';
 import 'package:budgetBuddy/features/expense/models/expense.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetBuddy/features/profile/ui/about_page.dart';
+import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,6 +23,7 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _State extends ConsumerState<SettingsScreen> {
   final _limitCtrl = TextEditingController();
+  final _limitFocus = FocusNode();
   bool _notif = false;
   bool _biometric = false;
   bool _bioAvail = false;
@@ -35,6 +37,7 @@ class _State extends ConsumerState<SettingsScreen> {
   @override
   void dispose() {
     _limitCtrl.dispose();
+    _limitFocus.dispose();
     super.dispose();
   }
 
@@ -44,10 +47,6 @@ class _State extends ConsumerState<SettingsScreen> {
     final avail = await BiometricService.isAvailable();
     if (!mounted) return;
     setState(() {
-      _limitCtrl.text = ref
-          .read(budgetProvider)
-          .monthlyLimit
-          .toStringAsFixed(0);
       _notif = prefs.getBool('notif') ?? false;
       _biometric = enabled;
       _bioAvail = avail;
@@ -62,7 +61,7 @@ class _State extends ConsumerState<SettingsScreen> {
     }
     HapticFeedback.mediumImpact();
     await ref.read(expenseProvider.notifier).updateBudget(limit: val);
-    _snack('Budget updated ', kGreen);
+    _snack('Budget updated', kGreen);
   }
 
   Future<void> _toggleNotif(bool v) async {
@@ -85,76 +84,17 @@ class _State extends ConsumerState<SettingsScreen> {
     if (mounted) setState(() => _biometric = v);
   }
 
-  // ── Currency picker ────────────────────────────────────────────────────────
-  Future<void> _selectCurrency() => showModalBottomSheet(
-    context: context,
-    backgroundColor: context.c.card,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
-    builder: (_) => Consumer(
-      builder: (ctx, ref, __) {
-        // Reactive: rebuilds inside the sheet when currency changes
-        final selectedCode = ref.watch(currencyProvider);
-        return SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 8),
-                Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: ctx.c.border,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                const Text(
-                  'Select Currency',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 8),
-                ...kCurrencies.map((cur) {
-                  final selected = cur.code == selectedCode;
-                  return ListTile(
-                    leading: Text(
-                      cur.flag,
-                      style: const TextStyle(fontSize: 24),
-                    ),
-                    title: Text(
-                      '${cur.name} (${cur.code})',
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    subtitle: Text('Symbol: ${cur.symbol}'),
-                    trailing: selected
-                        ? const Icon(
-                            Icons.check_circle_rounded,
-                            color: AppColors.primaryColor,
-                          )
-                        : null,
-                    onTap: () async {
-                      // 1. Save to Hive + update ALL providers instantly
-                      await ref
-                          .read(expenseProvider.notifier)
-                          .updateBudget(currency: cur.code);
-
-                      // 2. Sync to Supabase (fire & forget)
-                      await UserProfileService.saveProfile(currency: cur.code);
-
-                      if (ctx.mounted) Navigator.pop(ctx);
-                    },
-                  );
-                }),
-                const SizedBox(height: 8),
-              ],
-            ),
-          ),
-        );
-      },
-    ),
-  );
+  // Push as a proper Navigator route — NOT a bottom sheet.
+  // Bottom sheets get a detached BuildContext that breaks ref.watch reactivity.
+  Future<void> _selectCurrency() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const _CurrencyPickerPage()),
+    );
+    // expenseProvider version change already triggers rebuild via ref.watch above.
+    // ref.invalidate is an extra safety net in case navigation timing delays it.
+    if (mounted) ref.invalidate(expenseProvider);
+  }
 
   void _snack(String msg, Color col) =>
       ScaffoldMessenger.of(context).showSnackBar(
@@ -167,6 +107,10 @@ class _State extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Watch root provider FIRST — version field guarantees Riverpod
+    // always sees a new state on any budget/currency change
+    ref.watch(expenseProvider);
+
     final c = context.c;
     final budget = ref.watch(budgetProvider);
     final curInfo = currencyOf(ref.watch(currencyProvider));
@@ -174,6 +118,11 @@ class _State extends ConsumerState<SettingsScreen> {
     final lang = locale.languageCode;
     final native = LocaleNotifier.labels[lang]?.$1 ?? 'English';
     final flag = LocaleNotifier.flags[lang] ?? '🇬🇧';
+
+    if (!_limitFocus.hasFocus) {
+      final newText = budget.monthlyLimit.toStringAsFixed(0);
+      if (_limitCtrl.text != newText) _limitCtrl.text = newText;
+    }
 
     return Scaffold(
       backgroundColor: c.bg,
@@ -183,8 +132,8 @@ class _State extends ConsumerState<SettingsScreen> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Settings',
+        title: Text(
+          AppLocalizations.of(context)!.settings,
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
@@ -192,12 +141,11 @@ class _State extends ConsumerState<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(18),
         children: [
-          const _T('Appearance'),
+          _T(AppLocalizations.of(context)!.appearance),
           const SizedBox(height: 10),
           const _ThemeToggle(),
           const SizedBox(height: 20),
-
-          const _T('Language'),
+          _T(AppLocalizations.of(context)!.language),
           const SizedBox(height: 10),
           AppCard(
             onTap: () => Navigator.push(
@@ -212,8 +160,9 @@ class _State extends ConsumerState<SettingsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'App Language',
+                      Text(
+                        AppLocalizations.of(context)!.appLanguage,
+
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -231,8 +180,7 @@ class _State extends ConsumerState<SettingsScreen> {
             ),
           ),
           const SizedBox(height: 20),
-
-          const _T('Currency'),
+          _T(AppLocalizations.of(context)!.selectCurrency),
           const SizedBox(height: 10),
           AppCard(
             onTap: _selectCurrency,
@@ -257,14 +205,14 @@ class _State extends ConsumerState<SettingsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Display Currency',
+                      Text(
+                        AppLocalizations.of(context)!.displayCurrency,
+
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      // ✅ Watches currencyProvider — updates instantly when sheet closes
                       Text(
                         '${curInfo.name} · ${curInfo.symbol}',
                         style: TextStyle(fontSize: 11, color: c.textMuted),
@@ -277,8 +225,7 @@ class _State extends ConsumerState<SettingsScreen> {
             ),
           ),
           const SizedBox(height: 20),
-
-          const _T('Security'),
+          _T(AppLocalizations.of(context)!.security),
           const SizedBox(height: 10),
           AppCard(
             child: Column(
@@ -303,8 +250,9 @@ class _State extends ConsumerState<SettingsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Biometric lock',
+                          Text(
+                            AppLocalizations.of(context)!.biometricLock,
+
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -333,12 +281,13 @@ class _State extends ConsumerState<SettingsScreen> {
                       color: kGreen.withOpacity(0.07),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
                         Icon(Icons.shield_rounded, size: 14, color: kGreen),
                         SizedBox(width: 8),
                         Text(
-                          'App is biometric-protected',
+                          AppLocalizations.of(context)!.appBiometricProtected,
+
                           style: TextStyle(
                             fontSize: 11,
                             color: kGreen,
@@ -353,8 +302,7 @@ class _State extends ConsumerState<SettingsScreen> {
             ),
           ),
           const SizedBox(height: 20),
-
-          const _T('Monthly Budget'),
+          _T(AppLocalizations.of(context)!.monthlybudget),
           const SizedBox(height: 10),
           AppCard(
             child: Column(
@@ -362,6 +310,7 @@ class _State extends ConsumerState<SettingsScreen> {
                 InputField(
                   hint: 'Monthly spending limit',
                   controller: _limitCtrl,
+                  focusNode: _limitFocus,
                   keyboard: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
@@ -379,7 +328,8 @@ class _State extends ConsumerState<SettingsScreen> {
                 ),
                 const SizedBox(height: 12),
                 AppButton(
-                  label: 'Save Budget',
+                  label: AppLocalizations.of(context)!.saveBudget,
+
                   onTap: _saveLimit,
                   icon: Icons.check_rounded,
                 ),
@@ -387,7 +337,6 @@ class _State extends ConsumerState<SettingsScreen> {
             ),
           ),
           const SizedBox(height: 20),
-
           const _T('Notifications'),
           const SizedBox(height: 10),
           AppCard(
@@ -411,15 +360,16 @@ class _State extends ConsumerState<SettingsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Daily reminder',
+                      Text(
+                        AppLocalizations.of(context)!.dailyReminder,
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       Text(
-                        'Get reminded to log expenses',
+                        AppLocalizations.of(context)!.getRemindedToLog,
+
                         style: TextStyle(fontSize: 11, color: c.textMuted),
                       ),
                     ],
@@ -430,8 +380,7 @@ class _State extends ConsumerState<SettingsScreen> {
             ),
           ),
           const SizedBox(height: 20),
-
-          const _T('Activity'),
+          _T(AppLocalizations.of(context)!.active),
           const SizedBox(height: 10),
           AppCard(
             child: Row(
@@ -455,14 +404,14 @@ class _State extends ConsumerState<SettingsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${budget.streakDays} day streak',
+                        '${budget.streakDays} ${AppLocalizations.of(context)!.dayStreak}',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       Text(
-                        'Keep logging daily to maintain it',
+                        AppLocalizations.of(context)!.keepLoggingDaily,
                         style: TextStyle(fontSize: 11, color: c.textMuted),
                       ),
                     ],
@@ -491,8 +440,7 @@ class _State extends ConsumerState<SettingsScreen> {
             ),
           ),
           const SizedBox(height: 20),
-
-          const _T('About'),
+          _T(AppLocalizations.of(context)!.about),
           const SizedBox(height: 10),
           AppCard(
             onTap: () => Navigator.push(
@@ -537,7 +485,6 @@ class _State extends ConsumerState<SettingsScreen> {
               ],
             ),
           ),
-
           const SizedBox(height: 20),
           InkWell(
             borderRadius: BorderRadius.circular(16),
@@ -561,7 +508,6 @@ class _State extends ConsumerState<SettingsScreen> {
                   ],
                 ),
               );
-
               if (confirm == true) {
                 await ref.read(authProvider.notifier).deleteAccount();
               }
@@ -584,10 +530,10 @@ class _State extends ConsumerState<SettingsScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Expanded(
+                  const Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           'Delete Account',
                           style: TextStyle(
@@ -619,6 +565,121 @@ class _State extends ConsumerState<SettingsScreen> {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Currency Picker Page
+// Must be a full Navigator route — NOT showModalBottomSheet.
+// Bottom sheets run in a separate overlay route with a detached context,
+// so Consumer inside can't propagate changes back to the parent screen.
+// A pushed route shares the same ProviderScope and updates correctly.
+// ─────────────────────────────────────────────────────────────────────────────
+class _CurrencyPickerPage extends ConsumerWidget {
+  const _CurrencyPickerPage();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final c = context.c;
+    final selectedCode = ref.watch(currencyProvider);
+
+    return Scaffold(
+      backgroundColor: c.bg,
+      appBar: AppBar(
+        backgroundColor: c.surface,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Select Currency',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+        ),
+        centerTitle: true,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(18),
+        children: kCurrencies.map((cur) {
+          final selected = cur.code == selectedCode;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: GestureDetector(
+              onTap: () async {
+                HapticFeedback.selectionClick();
+                await ref
+                    .read(expenseProvider.notifier)
+                    .updateBudget(currency: cur.code);
+                UserProfileService.saveProfile(currency: cur.code);
+                if (context.mounted) Navigator.pop(context);
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: selected
+                      ? AppColors.primaryColor.withOpacity(0.08)
+                      : c.card,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: selected ? AppColors.primaryColor : c.border,
+                    width: selected ? 1.5 : 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Text(cur.flag, style: const TextStyle(fontSize: 26)),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${cur.name} (${cur.code})',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: selected ? AppColors.primaryColor : null,
+                            ),
+                          ),
+                          Text(
+                            'Symbol: ${cur.symbol}',
+                            style: TextStyle(fontSize: 11, color: c.textMuted),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (selected)
+                      Container(
+                        width: 22,
+                        height: 22,
+                        decoration: const BoxDecoration(
+                          color: AppColors.primaryColor,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.check_rounded,
+                          size: 14,
+                          color: Colors.white,
+                        ),
+                      )
+                    else
+                      Container(
+                        width: 22,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: c.border, width: 1.5),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+// ── Private widgets ───────────────────────────────────────────────────────────
 class _ThemeToggle extends ConsumerWidget {
   const _ThemeToggle();
   @override
@@ -663,6 +724,7 @@ class _B extends StatelessWidget {
   final bool active;
   final VoidCallback onTap;
   const _B(this.icon, this.label, this.active, this.onTap);
+
   @override
   Widget build(BuildContext context) => Expanded(
     child: GestureDetector(

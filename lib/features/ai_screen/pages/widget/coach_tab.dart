@@ -4,6 +4,7 @@ import 'package:budgetBuddy/features/ai_screen/providers/ai_providers.dart';
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -13,15 +14,17 @@ class CoachTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final tips = ref.watch(coachTipsProvider);
     final rec = ref.watch(recurringProvider);
+    final goalInsights = ref.watch(goalInsightsProvider);
     final fmt = ref.watch(fmtProvider);
     final c = context.c;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(18, 16, 18, 40),
       children: [
-        // ── Coach header ───────────────────────────────────────────────────────
+        // ── Coach header ─────────────────────────────────────────────────────
         Container(
           padding: const EdgeInsets.all(18),
           decoration: gradBox(AppColors.primaryColor),
@@ -45,16 +48,16 @@ class CoachTab extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Your AI Financial Coach',
-                      style: TextStyle(
+                    Text(
+                      l.yourAiFinancialCoach,
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Personalised tips from your spending patterns.',
+                      l.personalizedTips,
                       style: TextStyle(
                         fontSize: 12,
                         color: c.textMuted,
@@ -69,16 +72,119 @@ class CoachTab extends ConsumerWidget {
         ),
 
         const SizedBox(height: 16),
-        const SectionLabel('Personalised Advice'),
+
+        // ── Goal Tracker ─────────────────────────────────────────────────────
+        if (goalInsights.isNotEmpty) ...[
+          SectionLabel(l.goalTracker),
+          const SizedBox(height: 12),
+          ...goalInsights.map(
+            (g) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: AppCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(g.emoji, style: const TextStyle(fontSize: 22)),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                g.name,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              Text(
+                                '${g.daysLeft} ${l.daysLeft} · ${(g.progress * 100).toInt()}% ${l.complete}',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: c.textMuted,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        _GoalStatusBadge(g.onTrack, l),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    ProgressBar(
+                      g.progress,
+                      g.onTrack ? kGreen : kAmber,
+                      height: 8,
+                      clip: 4,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${fmt(g.saved)} ${l.saved}',
+                          style: TextStyle(fontSize: 10, color: c.textMuted),
+                        ),
+                        Text(
+                          '${fmt(g.target)} ${l.target}',
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: (g.onTrack ? kGreen : kAmber).withOpacity(0.07),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: (g.onTrack ? kGreen : kAmber).withOpacity(0.2),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            g.statusMessage,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: g.onTrack ? kGreen : kAmber,
+                            ),
+                          ),
+                          if (!g.onTrack && g.availableDailyAmount > 0) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              '${l.availablePerDay}: ${fmt(g.availableDailyAmount)}${l.perDay} · ${l.needPerDay}: ${fmt(g.requiredDailyAmount)}${l.perDay}',
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: c.textMuted,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+
+        // ── Personalised Tips ────────────────────────────────────────────────
+        SectionLabel(l.personalAdvice),
         const SizedBox(height: 12),
 
-        // ── Tips ───────────────────────────────────────────────────────────────
         if (tips.isEmpty)
-          const EmptyCard(
-            '🌱',
-            'Keep tracking!',
-            'Add more data to unlock personalised coaching.',
-          )
+          EmptyCard('🌱', l.keepTracking, l.addMoreDataUnlock)
         else
           ...tips.asMap().entries.map(
             (e) => Padding(
@@ -103,7 +209,7 @@ class CoachTab extends ConsumerWidget {
                             ),
                           ),
                         ),
-                        _TipBadge(e.key + 1),
+                        _TipBadge(e.key + 1, l),
                       ],
                     ),
                     const SizedBox(height: 12),
@@ -138,7 +244,7 @@ class CoachTab extends ConsumerWidget {
                         const Icon(Icons.bolt_rounded, size: 14, color: kAmber),
                         const SizedBox(width: 4),
                         Text(
-                          'Impact: ',
+                          '${l.impact}: ',
                           style: TextStyle(fontSize: 11, color: c.textMuted),
                         ),
                         Expanded(
@@ -161,16 +267,13 @@ class CoachTab extends ConsumerWidget {
           ),
 
         const SizedBox(height: 8),
-        const SectionLabel('Recurring Expenses'),
+
+        // ── Recurring Expenses ───────────────────────────────────────────────
+        SectionLabel(l.recurringExpenses),
         const SizedBox(height: 10),
 
-        // ── Recurring ──────────────────────────────────────────────────────────
         if (rec.isEmpty)
-          const EmptyCard(
-            Assets.refresh,
-            'No recurring detected',
-            'Repeated expenses appear here.',
-          )
+          EmptyCard(Assets.refresh, l.noRecurringDetected, l.repeatedExpenses)
         else
           ...rec.map(
             (r) => Padding(
@@ -238,9 +341,35 @@ class CoachTab extends ConsumerWidget {
   }
 }
 
+// ── Private widgets ───────────────────────────────────────────────────────────
+
+class _GoalStatusBadge extends StatelessWidget {
+  final bool onTrack;
+  final AppLocalizations l;
+  const _GoalStatusBadge(this.onTrack, this.l);
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+    decoration: BoxDecoration(
+      color: (onTrack ? kGreen : kAmber).withOpacity(0.12),
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: Text(
+      onTrack ? '✅ ${l.onTrack}' : '⚠️ ${l.atRisk}',
+      style: TextStyle(
+        fontSize: 9,
+        fontWeight: FontWeight.w700,
+        color: onTrack ? kGreen : kAmber,
+      ),
+    ),
+  );
+}
+
 class _TipBadge extends StatelessWidget {
   final int number;
-  const _TipBadge(this.number);
+  final AppLocalizations l;
+  const _TipBadge(this.number, this.l);
   @override
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),

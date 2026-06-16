@@ -5,6 +5,7 @@ import 'package:budgetBuddy/common/button.dart';
 import 'package:budgetBuddy/common/common_svg_widget.dart';
 import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:budgetBuddy/common/navigation_service.dart';
+import 'package:budgetBuddy/common/services/ads_service.dart';
 import 'package:budgetBuddy/common/widgets/emoji_image.dart';
 import 'package:budgetBuddy/features/bill_reminder/ui/pages/bill_reminder_screen.dart';
 import 'package:budgetBuddy/features/expense/models/expense.dart';
@@ -17,31 +18,40 @@ import 'package:budgetBuddy/features/voice_expense/view/voice_expense_screen.dar
 import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
 
-class AddExpenseScreen extends StatefulWidget {
+class AddExpenseScreen extends ConsumerStatefulWidget {
   const AddExpenseScreen({super.key});
   @override
-  State<AddExpenseScreen> createState() => _S();
+  ConsumerState<AddExpenseScreen> createState() => _S();
 }
 
-class _S extends State<AddExpenseScreen> {
+class _S extends ConsumerState<AddExpenseScreen> {
   bool _isIncome = false;
   bool _scanning = false;
   List<AppCategory> _cats = [];
   AppCategory? _selCat;
   final List<RowData> _rows = [];
+  BannerAd? _banner;
 
   @override
   void initState() {
     super.initState();
     _reload();
     _addRow();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _banner = ref.read(adServiceProvider).createBanner();
+      setState(() {});
+    });
   }
 
   @override
   void dispose() {
+    _banner?.dispose();
+
     for (final r in _rows) r.dispose();
     super.dispose();
   }
@@ -340,26 +350,40 @@ class _S extends State<AddExpenseScreen> {
       ),
       floatingActionButton: isKeyboardOpen
           ? null
-          : Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: PrimaryButton(
-                onPressed: _saveAll,
-                title: _rows.length == 1
-                    ? (_isIncome
-                          ? AppLocalizations.of(context)!.saveIncome
-                          : AppLocalizations.of(context)!.saveExpense)
-                    : 'Save $valid Item${valid == 1 ? '' : 's'}',
-                radius: 8,
-                height: 50,
-                textSize: 18,
-                color: _col,
-                icon: const Icon(
-                  Icons.check_rounded,
-                  color: Colors.white,
-                  size: 18,
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Banner ad above save button
+                if (_banner != null)
+                  Container(
+                    width: _banner!.size.width.toDouble(),
+                    height: _banner!.size.height.toDouble(),
+                    margin: const EdgeInsets.only(bottom: 8),
+                    child: AdWidget(ad: _banner!),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: PrimaryButton(
+                    onPressed: _saveAll,
+                    title: _rows.length == 1
+                        ? (_isIncome
+                              ? AppLocalizations.of(context)!.saveIncome
+                              : AppLocalizations.of(context)!.saveExpense)
+                        : 'Save $valid Item${valid == 1 ? '' : 's'}',
+                    radius: 8,
+                    height: 50,
+                    textSize: 18,
+                    color: _col,
+                    icon: const Icon(
+                      Icons.check_rounded,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
+
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }

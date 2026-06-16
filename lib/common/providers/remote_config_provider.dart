@@ -2,13 +2,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-// ── Remote config model ───────────────────────────────────────────────────────
+// ── Keys ─────────────────────────────────────────────────────────────────────
+const _kAds = 'rc_ads';
+const _kRewarded = 'rc_rewarded';
+const _kMaintenance = 'rc_maintenance';
+const _kPremium = 'rc_premium';
+const _kInterstitialFreq = 'rc_interstitial_freq';
+
+// ── Model ─────────────────────────────────────────────────────────────────────
 class RemoteConfig {
   final bool adsEnabled;
   final bool rewardedAdsEnabled;
   final bool maintenanceMode;
   final bool premiumEnabled;
   final int interstitialFreq;
+
   const RemoteConfig({
     this.adsEnabled = true,
     this.rewardedAdsEnabled = true,
@@ -17,31 +25,47 @@ class RemoteConfig {
     this.interstitialFreq = 3,
   });
 
+  // ── Supabase row → model ─────────────────────────────────────────────────
   factory RemoteConfig.fromMap(Map<String, dynamic> m) => RemoteConfig(
     adsEnabled: m['ads_enabled'] as bool? ?? true,
     rewardedAdsEnabled: m['rewarded_ads_enabled'] as bool? ?? true,
     maintenanceMode: m['maintenance_mode'] as bool? ?? false,
     premiumEnabled: m['premium_enabled'] as bool? ?? false,
+    interstitialFreq: m['interstitial_freq'] as int? ?? 3,
   );
 
-  // Persist to SharedPreferences for offline fallback
+  // ── Persist to SharedPreferences for offline fallback ────────────────────
   Future<void> save() async {
     final p = await SharedPreferences.getInstance();
-    await p.setBool('rc_ads', adsEnabled);
-    await p.setBool('rc_rewarded', rewardedAdsEnabled);
-    await p.setBool('rc_maintenance', maintenanceMode);
-    await p.setBool('rc_premium', premiumEnabled);
+    await Future.wait([
+      p.setBool(_kAds, adsEnabled),
+      p.setBool(_kRewarded, rewardedAdsEnabled),
+      p.setBool(_kMaintenance, maintenanceMode),
+      p.setBool(_kPremium, premiumEnabled),
+      p.setInt(_kInterstitialFreq, interstitialFreq),
+    ]);
   }
 
+  // ── Load from SharedPreferences (offline fallback) ────────────────────────
   static Future<RemoteConfig> loadCached() async {
     final p = await SharedPreferences.getInstance();
     return RemoteConfig(
-      adsEnabled: p.getBool('rc_ads') ?? true,
-      rewardedAdsEnabled: p.getBool('rc_rewarded') ?? true,
-      maintenanceMode: p.getBool('rc_maintenance') ?? false,
-      premiumEnabled: p.getBool('rc_premium') ?? false,
+      adsEnabled: p.getBool(_kAds) ?? true,
+      rewardedAdsEnabled: p.getBool(_kRewarded) ?? true,
+      maintenanceMode: p.getBool(_kMaintenance) ?? false,
+      premiumEnabled: p.getBool(_kPremium) ?? false,
+      interstitialFreq: p.getInt(_kInterstitialFreq) ?? 3,
     );
   }
+
+  @override
+  String toString() =>
+      'RemoteConfig('
+      'adsEnabled: $adsEnabled, '
+      'rewardedAdsEnabled: $rewardedAdsEnabled, '
+      'maintenanceMode: $maintenanceMode, '
+      'premiumEnabled: $premiumEnabled, '
+      'interstitialFreq: $interstitialFreq)';
 }
 
 // ── Notifier ──────────────────────────────────────────────────────────────────
@@ -56,16 +80,22 @@ class RemoteConfigNotifier extends AsyncNotifier<RemoteConfig> {
           .select()
           .limit(1)
           .maybeSingle();
+
       if (row == null) return RemoteConfig.loadCached();
+
       final cfg = RemoteConfig.fromMap(row);
-      await cfg.save(); // cache for offline
+      await cfg.save();
       return cfg;
     } catch (_) {
-      return RemoteConfig.loadCached(); // safe offline fallback
+      return RemoteConfig.loadCached();
     }
   }
 
-  Future<void> refresh() async => state = AsyncData(await _fetch());
+  /// Re-fetch from Supabase, handling errors gracefully.
+  Future<void> refresh() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(_fetch);
+  }
 }
 
 final remoteConfigProvider =
@@ -86,4 +116,8 @@ final rewardedAdsEnabledProvider = Provider<bool>(
 final maintenanceModeProvider = Provider<bool>(
   (ref) =>
       ref.watch(remoteConfigProvider).valueOrNull?.maintenanceMode ?? false,
+);
+
+final premiumEnabledProvider = Provider<bool>(
+  (ref) => ref.watch(remoteConfigProvider).valueOrNull?.premiumEnabled ?? false,
 );

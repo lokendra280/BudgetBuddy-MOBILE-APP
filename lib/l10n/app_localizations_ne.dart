@@ -499,4 +499,280 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get addSchedule => 'रिमाइन्डर थप्नुहोस् र तालिका बनाउनुहोस्';
+
+  @override
+  String get financialHealth => 'वित्तीय स्वास्थ्य';
+
+  @override
+  String get savingRate => 'बचत दर';
+
+  @override
+  String get budgetControl => 'बजेट नियन्त्रण';
+
+  @override
+  String get expenseBalance => 'खर्च सन्तुलन';
+
+  @override
+  String get consistency => 'निरन्तरता';
+
+  @override
+  String get billLoad => 'बिल भार';
+
+  @override
+  String get goalProgress => 'लक्ष्य प्रगति';
+
+  @override
+  String get burnRate => 'खर्च दर र रनवे';
+
+  @override
+  String get nextMonthCashFlow => 'अर्को महिनाको नगद प्रवाह';
+
+  @override
+  String get billCommitments => 'बिल प्रतिबद्धताहरू';
+
+  @override
+  String get projectedIncome => 'अनुमानित आम्दानी';
+
+  @override
+  String get projectedExpenses => 'अनुमानित खर्च';
+
+  @override
+  String get projectedSurplus => 'अनुमानित बचत';
+
+  @override
+  String get projectedShortfall => 'अनुमानित कमी';
+
+  @override
+  String get committedBills => 'प्रतिबद्ध बिलहरू';
+
+  @override
+  String get goalsRequired => 'लक्ष्य आवश्यक';
+
+  @override
+  String get upcomingBillImpact => 'आउँदो बिलको प्रभाव';
+
+  @override
+  String get overdueBills => 'म्याद नाघेको — अहिले तिर्नुहोस्';
+
+  @override
+  String get dueSoon => 'चाँडै देय';
+
+  @override
+  String get largestBills => 'सबैभन्दा ठूला प्रतिबद्धताहरू';
+
+  @override
+  String get ofIncome => 'आम्दानीको';
+
+  @override
+  String get overdue => 'म्याद नाघेको';
+
+  @override
+  String get monthlyBills => 'मासिक बिलहरू';
+
+  @override
+  String get billsVsIncome => 'बिल बनाम आम्दानी';
+
+  @override
+  String get largestBillsLabel => 'सबैभन्दा ठूला बिलहरू';
+
+  @override
+  String get goalTracker => 'लक्ष्य ट्र्याकर';
+
+  @override
+  String get daysLeft => 'दिन बाँकी';
+
+  @override
+  String get onTrack => 'सही बाटोमा';
+
+  @override
+  String get atRisk => 'जोखिममा';
+
+  @override
+  String get availablePerDay => 'उपलब्ध';
+
+  @override
+  String get needPerDay => 'आवश्यक';
+
+  @override
+  String get perDay => '/दिन';
+
+  @override
+  String get smartAlerts => 'स्मार्ट अलर्टहरू';
+
+  @override
+  String get keepTracking => 'ट्र्याक गरिरहनुहोस्!';
+
+  @override
+  String get addMoreDataUnlock => 'व्यक्तिगत कोचिङ अनलक गर्न थप डेटा थप्नुहोस्।';
+
+  @override
+  String get disposableIncome => 'बिल पछिको उपयोगयोग्य आम्दानी';
+
+  @override
+  String get basedOnIncome => 'तपाईंको आम्दानीमा आधारित';
+
+  @override
+  String get needs => 'आवश्यकता (५०%)';
+
+  @override
+  String get wants => 'इच्छा (३०%)';
+
+  @override
+  String get savings => 'बचत (२०%)';
+
+  @override
+  String get needsDescription => 'भाडा, खाना, बिल, यातायात';
+
+  @override
+  String get wantsDescription => 'मनोरञ्जन, किनमेल, बाहिर खाना';
+
+  @override
+  String get savingsDescription => 'आपतकालीन कोष, लगानी, लक्ष्य';
+
+  @override
+  String get savingsRateThisMonth => 'यस महिना बचत दर';
+
+  @override
+  String get target20 => 'लक्ष्य: २०%';
+
+  @override
+  String get billCommitmentSubtitle => 'विवेकाधीन खर्च अघि निश्चित मासिक बहिर्गमन';
+
+  @override
+  String get selectCurrency => 'मुद्रा छान्नुहोस्';
+
+  @override
+  String get displayCurrency => 'प्रदर्शन मुद्रा';
+
+  @override
+  String get appLanguage => 'एप भाषा';
+
+  @override
+  String get biometricLock => 'बायोमेट्रिक लक';
+
+  @override
+  String get requireFingerprint => 'खोल्न औँठाछाप वा अनुहार आवश्यक छ';
+
+  @override
+  String get notAvailableDevice => 'यो यन्त्रमा उपलब्ध छैन';
+
+  @override
+  String get appBiometricProtected => 'एप बायोमेट्रिक-सुरक्षित छ';
+
+  @override
+  String get monthlySpendingLimit => 'मासिक खर्च सीमा';
+
+  @override
+  String get saveBudget => 'बजेट सुरक्षित गर्नुहोस्';
+
+  @override
+  String get dailyReminder => 'दैनिक रिमाइन्डर';
+
+  @override
+  String get getRemindedToLog => 'खर्च लग गर्न सम्झाउनुहोस्';
+
+  @override
+  String get dayStreak => 'दिनको स्ट्रिक';
+
+  @override
+  String get keepLoggingDaily => 'यसलाई कायम राख्न दैनिक लग गर्नुहोस्';
+
+  @override
+  String get aboutBudgetBuddy => 'BudgetBuddy बारेमा';
+
+  @override
+  String get versionMarketsLegal => 'संस्करण, बजार, कानुनी';
+
+  @override
+  String get deleteAccount => 'खाता मेट्नुहोस्';
+
+  @override
+  String get deleteAccountPermanently => 'आफ्नो खाता स्थायी रूपमा मेट्न';
+
+  @override
+  String get deleteAccountConfirm => 'के तपाईं निश्चित हुनुहुन्छ? यो कार्य पूर्ववत गर्न सकिँदैन।';
+
+  @override
+  String get cancel => 'रद्द गर्नुहोस्';
+
+  @override
+  String get delete => 'मेट्नुहोस्';
+
+  @override
+  String get budgetUpdated => 'बजेट अपडेट भयो';
+
+  @override
+  String get enterValidAmount => 'मान्य रकम प्रविष्ट गर्नुहोस्';
+
+  @override
+  String get perMonth => '/महिना';
+
+  @override
+  String get tooHigh => 'धेरै बढी';
+
+  @override
+  String get moderate => 'मध्यम';
+
+  @override
+  String get healthy => 'स्वस्थ';
+
+  @override
+  String get security => 'सुरक्षा';
+
+  @override
+  String get noSaving => 'अहिलेसम्म कुनै बचत लक्ष्य छैन';
+
+  @override
+  String get createAGoal => 'लक्ष्य बनाउनुहोस् र प्रगति ट्र्याक गर्नुहोस्';
+
+  @override
+  String get createMyFirst => 'मेरो पहिलो लक्ष्य बनाउनुहोस्';
+
+  @override
+  String get newSavingGoal => 'नयाँ बचत लक्ष्य';
+
+  @override
+  String get goalNam => 'लक्ष्यको नाम (जस्तै नयाँ फोन)';
+
+  @override
+  String get targetAmount => 'लक्ष्य रकम';
+
+  @override
+  String get days => 'दिन';
+
+  @override
+  String get createGoal => 'लक्ष्य सिर्जना गर्नुहोस्';
+
+  @override
+  String get savingsRate => 'बचत दर';
+
+  @override
+  String get ofLimitUsed => 'सीमा प्रयोग';
+
+  @override
+  String get noBudgetSet => 'कुनै बजेट सेट छैन';
+
+  @override
+  String get noExpensesYet => 'अहिलेसम्म कुनै खर्च छैन';
+
+  @override
+  String get noIncomeLooged => 'कुनै आम्दानी दर्ज छैन';
+
+  @override
+  String get ofIncomeCommitted => 'आम्दानी प्रतिबद्ध';
+
+  @override
+  String get inBills => 'बिलमा';
+
+  @override
+  String get noActiveBills => 'कुनै सक्रिय बिल छैन';
+
+  @override
+  String get noActiveGoals => 'कुनै सक्रिय लक्ष्य छैन';
+
+  @override
+  String get inProgress => 'प्रगतिमा';
+
+  @override
+  String get top => 'शीर्ष';
 }

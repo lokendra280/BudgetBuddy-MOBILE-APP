@@ -6,11 +6,12 @@ import 'package:budgetBuddy/common/navigation_service.dart';
 import 'package:budgetBuddy/common/services/ads_service.dart';
 import 'package:budgetBuddy/common/services/notification_service.dart';
 import 'package:budgetBuddy/common/theme_provider.dart';
+import 'package:budgetBuddy/features/expense/models/expense.dart';
+import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetBuddy/features/bill_reminder/ui/pages/bill_reminder_screen.dart';
 import 'package:budgetBuddy/features/dashboard/pages/dashboard_page.dart';
 import 'package:budgetBuddy/features/expense/services/category_services.dart';
 import 'package:budgetBuddy/features/expense/services/hive_migrate_service.dart';
-import 'package:budgetBuddy/features/home/ui/pages/home_screen.dart';
 import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:budgetBuddy/features/splash/ui/splash_page.dart';
 import 'package:flutter/foundation.dart';
@@ -19,7 +20,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 int _lastRestartMs = 0;
@@ -29,10 +30,10 @@ Future<void> _init() async {
   FlutterNativeSplash.preserve(widgetsBinding: binding);
   FlutterNativeSplash.remove();
 
-  await Future.delayed(Duration(milliseconds: 500));
-  await loadPrefsBeforeRunApp();
+  await Future.delayed(const Duration(milliseconds: 500));
+  await loadPrefsBeforeRunApp(); // loads theme + locale + currency from SharedPreferences
 
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: '.env');
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
@@ -40,11 +41,28 @@ Future<void> _init() async {
   await HiveMigrationService.initSafely();
   await AdService.init();
   await HiveStorage.init();
-  await NotificationService.init();
-  // await NotificationService.requestPermission();
 
+  // Sync currency from SharedPreferences into Hive BEFORE runApp
+  // so the very first frame reads the correct currency — same pattern as theme/locale
+  final savedCurrency = await ExpenseNotifier.loadCurrency();
+  final budgetBox = Hive.box<Budget>('budget');
+  if (budgetBox.isNotEmpty) {
+    final old = budgetBox.getAt(0)!;
+    if (old.currency != savedCurrency) {
+      final updated = Budget(
+        monthlyLimit: old.monthlyLimit,
+        streakDays: old.streakDays,
+        lastActiveDate: old.lastActiveDate,
+        referralCode: old.referralCode,
+        referralCount: old.referralCount,
+        currency: savedCurrency,
+      );
+      await budgetBox.clear();
+      await budgetBox.add(updated);
+    }
+  }
+  await NotificationService.init();
   await NotificationService.scheduleDailyReminder();
-  await AdService.init();
   await CategoryService.init();
 }
 
@@ -93,17 +111,21 @@ class SpendSenseApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Read theme + locale from Riverpod providers
     final themeMode = ref.watch(themeProvider);
-    final locale = ref.watch(localeProvider);
+    final locale = ref.watch(localeProvider); // ← reactive locale
 
     return MaterialApp(
       navigatorKey: NavigationService.navigationKey,
       title: 'Budget Buddy',
       debugShowCheckedModeBanner: false,
       themeMode: themeMode,
-      theme: buildTheme(false), // light
-      darkTheme: buildTheme(true), // dark
+      theme: buildTheme(false),
+      darkTheme: buildTheme(true),
+
+      // ── Locale ────────────────────────────────────────────────────────────
+      // locale: is set explicitly from the provider — do NOT add
+      // localeResolutionCallback, it fires on every rebuild and overrides
+      // the user's chosen language with the device locale.
       locale: locale,
       supportedLocales: LocaleNotifier.supported,
       localizationsDelegates: const [
@@ -112,30 +134,25 @@ class SpendSenseApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      localeResolutionCallback: (deviceLocale, supported) {
-        if (deviceLocale == null) return const Locale('en');
-        for (final s in supported) {
-          if (s.languageCode == deviceLocale.languageCode) return s;
-        }
-        return const Locale('en');
-      },
+
+      // ── Removed localeResolutionCallback ─────────────────────────────────
+      // It was overriding locale: with the device locale on every rebuild,
+      // causing the user's language choice to be ignored until restart.
       routes: {
         '/home': (_) => const DashboardPage(),
         '/bills': (_) => const BillReminderScreen(),
       },
       home: const SplashScreen(),
       builder: (ctx, child) {
-        ErrorWidget.builder = (details) => _ErrorView(
-          error: details.exceptionAsString(),
-          // onRestart: _scheduleRestart,
-          onRestart: () {},
-        );
+        ErrorWidget.builder = (details) =>
+            _ErrorView(error: details.exceptionAsString(), onRestart: () {});
         return child ?? const SizedBox.shrink();
       },
     );
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
 class _ErrorView extends StatelessWidget {
   final String error;
   final VoidCallback onRestart;
@@ -224,5 +241,4 @@ class _ErrorView extends StatelessWidget {
   );
 }
 
-
-//flutter build apk --split-per-abi
+// flutter build apk --split-per-abi

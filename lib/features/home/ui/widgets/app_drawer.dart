@@ -12,6 +12,7 @@ import 'package:budgetBuddy/features/insights/ui/insight_feed_screen.dart';
 import 'package:budgetBuddy/features/profile/ui/about_page.dart';
 import 'package:budgetBuddy/features/profile/ui/profile_screen.dart';
 import 'package:budgetBuddy/features/profile/ui/setting_screen.dart';
+import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -114,40 +115,55 @@ class AppDrawer extends ConsumerWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
-                  _DrawerItem(Assets.insights, 'Insights', null, () {
-                    Navigator.pop(context);
-                    onPush(const InsightsFeedScreen());
-                  }),
+                  _DrawerItem(
+                    Assets.insights,
+                    AppLocalizations.of(context)!.insight,
+                    null,
+                    () {
+                      Navigator.pop(context);
+                      onPush(const InsightsFeedScreen());
+                    },
+                  ),
 
                   // _DrawerItem(Assets.insights, 'Forecast', null, () {
                   //   Navigator.pop(context);
                   //   onPush(const ForecastScreen());
                   // }),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                    child: Divider(),
-                  ),
+                  // const Padding(
+                  //   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  //   child: Divider(),
+                  // ),
 
-                  _DrawerItem(Assets.share, 'Share Report', kGreen, () {
-                    Navigator.pop(context);
-                    onShare();
-                  }),
+                  // _DrawerItem(Assets.share, 'Share Report', kGreen, () {
+                  //   Navigator.pop(context);
+                  //   onShare();
+                  // }),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     child: Divider(),
                   ),
-                  _DrawerItem(Assets.settings, 'Settings', null, () {
-                    Navigator.pop(context);
-                    onPush(const SettingsScreen());
-                  }),
-                  _DrawerItem(Assets.about, 'About', null, () {
-                    Navigator.pop(context);
-                    onPush(const AboutScreen());
-                  }),
+                  _DrawerItem(
+                    Assets.settings,
+                    AppLocalizations.of(context)!.settings,
+                    null,
+                    () {
+                      Navigator.pop(context);
+                      onPush(const SettingsScreen());
+                    },
+                  ),
+                  _DrawerItem(
+                    Assets.about,
+                    AppLocalizations.of(context)!.about,
+                    null,
+                    () {
+                      Navigator.pop(context);
+                      onPush(const AboutScreen());
+                    },
+                  ),
                   if (!isLogged)
                     _DrawerItem(
                       Assets.login,
-                      'Sign In',
+                      AppLocalizations.of(context)!.signIn,
                       AppColors.primaryColor,
                       () {
                         Navigator.pop(context);

@@ -51,6 +51,9 @@ class _H extends ConsumerState<HomeScreen> {
     Future.delayed(const Duration(milliseconds: 700), () {
       if (mounted) setState(() => _isLoading = false);
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(adServiceProvider).preloadRewarded();
+    });
   }
 
   void _startBackgroundServices() {
@@ -294,12 +297,22 @@ class _H extends ConsumerState<HomeScreen> {
                             e: e,
                             color: col,
                             onDelete: () async {
-                              // ← Delete through syncProvider (removes from
-                              //   both Hive and Supabase, updates state)
-                              await ref
-                                  .read(syncProvider.notifier)
-                                  .deleteExpense(e);
-                              // AdService.trackAction();
+                              ref
+                                  .read(adServiceProvider)
+                                  .showRewarded(
+                                    onRewarded: () async {
+                                      await ref
+                                          .read(syncProvider.notifier)
+                                          .deleteExpense(e);
+                                    },
+                                    onNotAvailable: () async {
+                                      // No ad loaded yet — delete anyway so UX isn't blocked.
+                                      // Remove this if you want to strictly gate deletion behind an ad.
+                                      await ref
+                                          .read(syncProvider.notifier)
+                                          .deleteExpense(e);
+                                    },
+                                  );
                             },
                           ),
                         );

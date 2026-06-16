@@ -8,6 +8,7 @@ import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
 import 'package:budgetBuddy/features/ai_screen/services/goal_service.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -55,12 +56,12 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'New Savings Goal',
+              Text(
+                AppLocalizations.of(context)!.newSavingGoal,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 16),
-              _Field(name, ctx, 'Goal name (e.g. New Phone)'),
+              _Field(name, ctx, AppLocalizations.of(context)!.goalNam),
               const SizedBox(height: 10),
               Row(
                 children: [
@@ -68,7 +69,7 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                     child: _Field(
                       target,
                       ctx,
-                      'Target amount',
+                      AppLocalizations.of(context)!.targetAmount,
                       prefix: sym,
                       type: const TextInputType.numberWithOptions(
                         decimal: true,
@@ -81,7 +82,7 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                       days,
                       ctx,
                       'Days to save',
-                      suffix: 'days',
+                      suffix: AppLocalizations.of(context)!.days,
                       type: TextInputType.number,
                     ),
                   ),
@@ -89,7 +90,7 @@ class _GoalsState extends ConsumerState<GoalsTab> {
               ),
               const SizedBox(height: 16),
               PrimaryButton(
-                title: 'Create Goal',
+                title: AppLocalizations.of(context)!.createGoal,
                 color: AppColors.primaryColor,
                 icon: CommonSvgWidget(svgName: Assets.add),
                 height: 50,
@@ -187,7 +188,7 @@ class _GoalsState extends ConsumerState<GoalsTab> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SectionLabel('Savings Goals'),
+            SectionLabel(AppLocalizations.of(context)!.savingGoal),
             GestureDetector(
               onTap: _showAdd,
               child: Container(
@@ -199,13 +200,13 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                   color: AppColors.primaryColor,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.add_rounded, size: 14, color: Colors.white),
                     SizedBox(width: 4),
                     Text(
-                      'New Goal',
+                      AppLocalizations.of(context)!.newGoal,
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -227,13 +228,13 @@ class _GoalsState extends ConsumerState<GoalsTab> {
               children: [
                 CommonSvgWidget(svgName: Assets.goal, height: 70),
                 const SizedBox(height: 12),
-                const Text(
-                  'No savings goals yet',
+                Text(
+                  AppLocalizations.of(context)!.noSaving,
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Create a goal to track progress towards a target.',
+                  AppLocalizations.of(context)!.createAGoal,
                   style: TextStyle(fontSize: 12, color: c.textMuted),
                   textAlign: TextAlign.center,
                 ),
@@ -243,7 +244,7 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                   width: 90,
                   height: 45,
                   radius: 8,
-                  title: 'Create my first goal',
+                  title: AppLocalizations.of(context)!.createMyFirst,
                   onPressed: _showAdd,
                 ),
               ],

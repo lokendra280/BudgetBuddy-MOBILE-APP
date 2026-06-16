@@ -1,9 +1,10 @@
+import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/common/common_widget.dart';
 import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:budgetBuddy/features/ai_screen/pages/widget/shared_wdiget.dart';
 import 'package:budgetBuddy/features/ai_screen/providers/ai_providers.dart';
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/common_widget.dart' hide BudgetBar;
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,17 +13,24 @@ class BudgetTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final b = ref.watch(smartBudgetProvider);
+    final billHealth = ref.watch(billHealthProvider);
     final fmt = ref.watch(fmtProvider);
     final sym = ref.watch(symbolProvider);
     final c = context.c;
+
     final rem = (b.income - b.currentSpend).clamp(0.0, b.income);
     final pct = b.income > 0 ? ((rem / b.income) * 100).toInt() : 0;
+    final billRatioPct = (billHealth.incomeCommitmentRatio * 100).toInt().clamp(
+      0,
+      100,
+    );
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(18, 16, 18, 40),
       children: [
-        // ── 50/30/20 Bars ────────────────────────────────────────────────────────
+        // ── 50/30/20 Bars ────────────────────────────────────────────────────
         AppCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,35 +38,32 @@ class BudgetTab extends ConsumerWidget {
               IconLabel(
                 Assets.saving,
                 'Smart Budget — 50/30/20 Rule',
-                sub:
-                    'Based on ${b.income > 0 ? "your income" : "budget limit"}',
+                sub: b.income > 0 ? l.disposableIncome : l.monthlybudget,
               ),
               const SizedBox(height: 16),
-              BudgetBar(
-                'Needs (50%)',
+              SmartBudgetBar(
+                l.needs,
                 b.needsBudget,
                 b.currentSpend,
                 AppColors.primaryColor,
                 sym,
-                'Rent, food, bills, transport',
+                l.needsDescription,
               ),
-              const SizedBox(height: 12),
-              BudgetBar(
-                'Wants (30%)',
+              SmartBudgetBar(
+                l.wants,
                 b.wantsBudget,
                 b.currentSpend * 0.3,
                 kAmber,
                 sym,
-                'Entertainment, shopping, dining out',
+                l.wantsDescription,
               ),
-              const SizedBox(height: 12),
-              BudgetBar(
-                'Savings (20%)',
+              SmartBudgetBar(
+                l.savings,
                 b.savingsGoal,
                 rem,
                 kGreen,
                 sym,
-                'Emergency fund, investments, goals',
+                l.savingsDescription,
               ),
             ],
           ),
@@ -66,29 +71,32 @@ class BudgetTab extends ConsumerWidget {
 
         const SizedBox(height: 14),
 
-        // ── This month summary ───────────────────────────────────────────────────
+        // ── This month summary ───────────────────────────────────────────────
         AppCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'This Month',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+              Text(
+                l.thisMonth,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 14),
               Row(
                 children: [
-                  IncomeStat('Income', fmt(b.income), kGreen),
+                  IncomeStat(l.income, fmt(b.income), kGreen),
                   Container(width: 1, height: 40, color: c.border),
-                  IncomeStat('Spent', fmt(b.currentSpend), kAccent),
+                  IncomeStat(l.spend, fmt(b.currentSpend), kAccent),
                   Container(width: 1, height: 40, color: c.border),
-                  IncomeStat('Saved', '$pct%', pct >= 20 ? kGreen : kAmber),
+                  IncomeStat(l.saved, '$pct%', pct >= 20 ? kGreen : kAmber),
                 ],
               ),
               if (b.income > 0) ...[
                 const SizedBox(height: 14),
                 Text(
-                  'Savings rate this month',
+                  l.savingsRateThisMonth,
                   style: TextStyle(fontSize: 11, color: c.textMuted),
                 ),
                 const SizedBox(height: 6),
@@ -107,12 +115,12 @@ class BudgetTab extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '$pct% achieved',
+                      '$pct% ${l.achieved}',
                       style: TextStyle(fontSize: 11, color: c.textMuted),
                     ),
-                    const Text(
-                      'Target: 20%',
-                      style: TextStyle(
+                    Text(
+                      l.target20,
+                      style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: kGreen,
@@ -127,55 +135,171 @@ class BudgetTab extends ConsumerWidget {
 
         const SizedBox(height: 14),
 
-        // ── Auto-categorization tip ──────────────────────────────────────────────
-        // AppCard(
-        //   child: Column(
-        //     crossAxisAlignment: CrossAxisAlignment.start,
-        //     children: [
-        //       const IconLabel('🏷️', 'Auto-Categorization'),
-        //       const SizedBox(height: 12),
-        //       Text(
-        //         'SpendSense detects categories automatically from your entry titles:',
-        //         style: TextStyle(fontSize: 12, color: c.textMuted),
-        //       ),
-        //       const SizedBox(height: 10),
-        //       Wrap(
-        //         spacing: 8,
-        //         runSpacing: 8,
-        //         children:
-        //             [
-        //                   'Uber → Transport 🚗',
-        //                   'Netflix → Entertainment 🎬',
-        //                   "McDonald's → Food 🍜",
-        //                   'Pharmacy → Health 💊',
-        //                   'Amazon → Shopping 🛍',
-        //                   'Salary → Income 💼',
-        //                 ]
-        //                 .map(
-        //                   (ex) => Container(
-        //                     padding: const EdgeInsets.symmetric(
-        //                       horizontal: 10,
-        //                       vertical: 5,
-        //                     ),
-        //                     decoration: BoxDecoration(
-        //                       color: AppColors.primaryColor.withOpacity(0.07),
-        //                       borderRadius: BorderRadius.circular(20),
-        //                     ),
-        //                     child: Text(
-        //                       ex,
-        //                       style: const TextStyle(
-        //                         fontSize: 11,
-        //                         fontWeight: FontWeight.w600,
-        //                         color: AppColors.primaryColor,
-        //                       ),
-        //                     ),
-        //                   ),
-        //                 )
-        //                 .toList(),
-        //       ),
-        //     ],
-        //   ),
-        // ),
+        // ── Bill Commitment Breakdown ────────────────────────────────────────
+        AppCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              IconLabel(
+                Assets.balance,
+                l.billCommitments,
+                sub: l.billCommitmentSubtitle,
+              ),
+              const SizedBox(height: 14),
+
+              // Ratio bar
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l.billsVsIncome,
+                    style: TextStyle(fontSize: 11, color: c.textMuted),
+                  ),
+                  Text(
+                    '$billRatioPct%',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: billHealth.isCritical
+                          ? kAccent
+                          : billHealth.isHigh
+                          ? kAmber
+                          : kGreen,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              ProgressBar(
+                billHealth.incomeCommitmentRatio.clamp(0.0, 1.0),
+                billHealth.isCritical
+                    ? kAccent
+                    : billHealth.isHigh
+                    ? kAmber
+                    : kGreen,
+                height: 8,
+                clip: 4,
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${fmt(billHealth.totalMonthlyCommitment)}${l.perMonth} committed',
+                    style: TextStyle(fontSize: 10, color: c.textMuted),
+                  ),
+                  Text(
+                    billRatioPct > 50
+                        ? '⚠️ ${l.tooHigh}'
+                        : billRatioPct > 35
+                        ? '↗ ${l.moderate}'
+                        : '✅ ${l.healthy}',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: billHealth.isCritical
+                          ? kAccent
+                          : billHealth.isHigh
+                          ? kAmber
+                          : kGreen,
+                    ),
+                  ),
+                ],
+              ),
+
+              if (billHealth.largestBills.isNotEmpty) ...[
+                const SizedBox(height: 14),
+                const Divider(height: 1),
+                const SizedBox(height: 12),
+                Text(
+                  l.largestBillsLabel,
+                  style: TextStyle(fontSize: 11, color: c.textMuted),
+                ),
+                const SizedBox(height: 8),
+                ...billHealth.largestBills.map(
+                  (bill) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      children: [
+                        Text(bill.emoji, style: const TextStyle(fontSize: 18)),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                bill.title,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                bill.category,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: c.textMuted,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              fmt(bill.amount),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.primaryColor,
+                              ),
+                            ),
+                            Text(
+                              b.income > 0
+                                  ? '${(bill.amount / b.income * 100).toInt()}% ${l.ofIncome}'
+                                  : l.perMonth,
+                              style: TextStyle(fontSize: 9, color: c.textMuted),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+
+              // Due soon strip
+              if (billHealth.dueSoonList.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: kAmber.withOpacity(0.07),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: kAmber.withOpacity(0.2)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Text('⏰', style: TextStyle(fontSize: 14)),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          '${billHealth.dueSoonList.length} ${l.bill.toLowerCase()}${billHealth.dueSoonList.length > 1 ? "s" : ""} ${l.dueSoon.toLowerCase()} — ${billHealth.dueSoonList.map((b) => b.title).take(2).join(', ')}',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: kAmber,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
       ],
     );
   }

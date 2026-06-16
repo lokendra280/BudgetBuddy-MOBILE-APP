@@ -44,7 +44,7 @@ class Budget extends HiveObject {
   @HiveField(4)
   int referralCount;
   @HiveField(5)
-  String currency; // user's preferred currency
+  String currency; 
 
   Budget({
     this.monthlyLimit = 10000,

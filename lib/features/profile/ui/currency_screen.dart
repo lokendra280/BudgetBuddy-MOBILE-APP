@@ -21,13 +21,23 @@ class _State extends ConsumerState<CurrencyScreen> {
   @override
   void initState() {
     super.initState();
-    _sel = widget.suggestedCurrency;
+    // Use stored currency if already set, fall back to suggested
+    final stored = ref.read(currencyProvider);
+    _sel = stored.isNotEmpty ? stored : widget.suggestedCurrency;
   }
 
   Future<void> _confirm() async {
     HapticFeedback.mediumImpact();
+
+    // updateBudget handles everything:
+    // 1. saveCurrency() → SharedPreferences (persists across restarts)
+    // 2. clear() + add(new Budget) → new Hive object reference
+    // 3. _refresh() → version++ → all watchers rebuild instantly
     await ref.read(expenseProvider.notifier).updateBudget(currency: _sel);
-    await UserProfileService.saveProfile(currency: _sel);
+
+    // Sync to Supabase (fire & forget — don't await)
+    UserProfileService.saveProfile(currency: _sel);
+
     if (!mounted) return;
     Navigator.pushReplacement(
       context,
@@ -42,7 +52,6 @@ class _State extends ConsumerState<CurrencyScreen> {
 
     return Scaffold(
       backgroundColor: c.bg,
-      // Use resizeToAvoidBottomInset so keyboard doesn't cause overflow
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Padding(
@@ -79,8 +88,6 @@ class _State extends ConsumerState<CurrencyScreen> {
                     crossAxisCount: 2,
                     mainAxisSpacing: 10,
                     crossAxisSpacing: 10,
-                    // FIX: use a fixed item extent ratio — avoids overflow from
-                    // content trying to expand beyond the cell height
                     childAspectRatio: 1.65,
                   ),
                   itemCount: kCurrencies.length,
@@ -114,15 +121,10 @@ class _State extends ConsumerState<CurrencyScreen> {
                                 ]
                               : null,
                         ),
-                        // FIX: Remove the invalid `Expanded` that was here.
-                        // Expanded only works as a direct child of Row/Column/Flex.
-                        // Inside a Container/AnimatedContainer it causes
-                        // "RenderFlex overflowed" because the parent has no
-                        // flex context to expand into.
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min, // ← don't try to fill
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Row(
                               children: [
@@ -148,17 +150,6 @@ class _State extends ConsumerState<CurrencyScreen> {
                               ],
                             ),
                             const SizedBox(height: 5),
-                            // Text(
-                            //   cur.symbol,
-                            //   style: TextStyle(
-                            //     fontSize: 20,
-                            //     fontWeight: FontWeight.w800,
-                            //     color: isSel
-                            //         ? AppColors.primaryColor
-                            //         : context.textPrimary,
-                            //   ),
-                            // ),
-                            // const SizedBox(height: 2),
                             Text(
                               '${cur.name} (${cur.code})',
                               style: TextStyle(
@@ -216,7 +207,7 @@ class _State extends ConsumerState<CurrencyScreen> {
               const SizedBox(height: 14),
 
               AppButton(
-                label: 'Get Started ',
+                label: 'Get Started',
                 onTap: _confirm,
                 icon: Icons.arrow_forward_rounded,
               ),

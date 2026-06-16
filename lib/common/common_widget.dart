@@ -251,15 +251,18 @@ class AppButton extends StatelessWidget {
 class InputField extends StatelessWidget {
   final String hint;
   final TextEditingController controller;
+  final FocusNode? focusNode; // ← added
   final TextInputType? keyboard;
   final Widget? prefix;
   final bool obscure;
   final Widget? suffix;
   final ValueChanged<String>? onChanged;
+
   const InputField({
     super.key,
     required this.hint,
     required this.controller,
+    this.focusNode, // ← added
     this.keyboard,
     this.prefix,
     this.obscure = false,
@@ -272,6 +275,7 @@ class InputField extends StatelessWidget {
     final c = context.c;
     return TextField(
       controller: controller,
+      focusNode: focusNode, // ← added
       keyboardType: keyboard,
       obscureText: obscure,
       onChanged: onChanged,
@@ -379,6 +383,85 @@ class BudgetBar extends StatelessWidget {
             backgroundColor: context.c.border,
             valueColor: AlwaysStoppedAnimation(color),
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class SmartBudgetBar extends StatelessWidget {
+  final String label;
+  final double budget;
+  final double spent;
+  final Color color;
+  final String symbol;
+  final String description;
+
+  const SmartBudgetBar(
+    this.label,
+    this.budget,
+    this.spent,
+    this.color,
+    this.symbol,
+    this.description, {
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final percent = budget > 0 ? (spent / budget).clamp(0.0, 1.0) : 0.0;
+    final overBudget = spent > budget;
+    final displayColor = overBudget ? kAccent : color;
+    final c = context.c;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+            ),
+            Text(
+              '$symbol${spent.toStringAsFixed(0)} / $symbol${budget.toStringAsFixed(0)}',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: displayColor,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: percent,
+            minHeight: 7,
+            backgroundColor: c.border,
+            valueColor: AlwaysStoppedAnimation(displayColor),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              description,
+              style: TextStyle(fontSize: 10, color: c.textMuted),
+            ),
+            Text(
+              overBudget
+                  ? '⚠️ Over by $symbol${(spent - budget).toStringAsFixed(0)}'
+                  : '${(percent * 100).toInt()}% used',
+              style: TextStyle(
+                fontSize: 10,
+                color: overBudget ? kAccent : c.textMuted,
+              ),
+            ),
+          ],
         ),
       ],
     );

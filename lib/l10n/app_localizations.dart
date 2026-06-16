@@ -808,7 +808,7 @@ abstract class AppLocalizations {
   /// No description provided for @saved.
   ///
   /// In en, this message translates to:
-  /// **'Saved'**
+  /// **'saved'**
   String get saved;
 
   /// No description provided for @achieved.
@@ -1080,6 +1080,558 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add & Schedule Reminder'**
   String get addSchedule;
+
+  /// No description provided for @financialHealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Financial Health'**
+  String get financialHealth;
+
+  /// No description provided for @savingRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving Rate'**
+  String get savingRate;
+
+  /// No description provided for @budgetControl.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget Control'**
+  String get budgetControl;
+
+  /// No description provided for @expenseBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense Balance'**
+  String get expenseBalance;
+
+  /// No description provided for @consistency.
+  ///
+  /// In en, this message translates to:
+  /// **'Consistency'**
+  String get consistency;
+
+  /// No description provided for @billLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill Load'**
+  String get billLoad;
+
+  /// No description provided for @goalProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal Progress'**
+  String get goalProgress;
+
+  /// No description provided for @burnRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Burn Rate & Runway'**
+  String get burnRate;
+
+  /// No description provided for @nextMonthCashFlow.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Month Cash Flow'**
+  String get nextMonthCashFlow;
+
+  /// No description provided for @billCommitments.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill Commitments'**
+  String get billCommitments;
+
+  /// No description provided for @projectedIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Projected Income'**
+  String get projectedIncome;
+
+  /// No description provided for @projectedExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Projected Expenses'**
+  String get projectedExpenses;
+
+  /// No description provided for @projectedSurplus.
+  ///
+  /// In en, this message translates to:
+  /// **'Projected Surplus'**
+  String get projectedSurplus;
+
+  /// No description provided for @projectedShortfall.
+  ///
+  /// In en, this message translates to:
+  /// **'Projected Shortfall'**
+  String get projectedShortfall;
+
+  /// No description provided for @committedBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Committed Bills'**
+  String get committedBills;
+
+  /// No description provided for @goalsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Goals Required'**
+  String get goalsRequired;
+
+  /// No description provided for @upcomingBillImpact.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Bill Impact'**
+  String get upcomingBillImpact;
+
+  /// No description provided for @overdueBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue — pay now'**
+  String get overdueBills;
+
+  /// No description provided for @dueSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Due Soon'**
+  String get dueSoon;
+
+  /// No description provided for @largestBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Largest commitments'**
+  String get largestBills;
+
+  /// No description provided for @ofIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'of income'**
+  String get ofIncome;
+
+  /// No description provided for @overdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get overdue;
+
+  /// No description provided for @monthlyBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Bills'**
+  String get monthlyBills;
+
+  /// No description provided for @billsVsIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Bills vs Income'**
+  String get billsVsIncome;
+
+  /// No description provided for @largestBillsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Largest bills'**
+  String get largestBillsLabel;
+
+  /// No description provided for @goalTracker.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal Tracker'**
+  String get goalTracker;
+
+  /// No description provided for @daysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'days left'**
+  String get daysLeft;
+
+  /// No description provided for @onTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'On Track'**
+  String get onTrack;
+
+  /// No description provided for @atRisk.
+  ///
+  /// In en, this message translates to:
+  /// **'At Risk'**
+  String get atRisk;
+
+  /// No description provided for @availablePerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get availablePerDay;
+
+  /// No description provided for @needPerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Need'**
+  String get needPerDay;
+
+  /// No description provided for @perDay.
+  ///
+  /// In en, this message translates to:
+  /// **'/day'**
+  String get perDay;
+
+  /// No description provided for @smartAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Alerts'**
+  String get smartAlerts;
+
+  /// No description provided for @keepTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep tracking!'**
+  String get keepTracking;
+
+  /// No description provided for @addMoreDataUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Add more data to unlock personalised coaching.'**
+  String get addMoreDataUnlock;
+
+  /// No description provided for @disposableIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'disposable income after bills'**
+  String get disposableIncome;
+
+  /// No description provided for @basedOnIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on your income'**
+  String get basedOnIncome;
+
+  /// No description provided for @needs.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs (50%)'**
+  String get needs;
+
+  /// No description provided for @wants.
+  ///
+  /// In en, this message translates to:
+  /// **'Wants (30%)'**
+  String get wants;
+
+  /// No description provided for @savings.
+  ///
+  /// In en, this message translates to:
+  /// **'Savings (20%)'**
+  String get savings;
+
+  /// No description provided for @needsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Rent, food, bills, transport'**
+  String get needsDescription;
+
+  /// No description provided for @wantsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Entertainment, shopping, dining out'**
+  String get wantsDescription;
+
+  /// No description provided for @savingsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency fund, investments, goals'**
+  String get savingsDescription;
+
+  /// No description provided for @savingsRateThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Savings rate this month'**
+  String get savingsRateThisMonth;
+
+  /// No description provided for @target20.
+  ///
+  /// In en, this message translates to:
+  /// **'Target: 20%'**
+  String get target20;
+
+  /// No description provided for @billCommitmentSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed monthly outflows before discretionary spend'**
+  String get billCommitmentSubtitle;
+
+  /// No description provided for @selectCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Currency'**
+  String get selectCurrency;
+
+  /// No description provided for @displayCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Currency'**
+  String get displayCurrency;
+
+  /// No description provided for @appLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'App Language'**
+  String get appLanguage;
+
+  /// No description provided for @biometricLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric lock'**
+  String get biometricLock;
+
+  /// No description provided for @requireFingerprint.
+  ///
+  /// In en, this message translates to:
+  /// **'Require fingerprint or face to open'**
+  String get requireFingerprint;
+
+  /// No description provided for @notAvailableDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available on this device'**
+  String get notAvailableDevice;
+
+  /// No description provided for @appBiometricProtected.
+  ///
+  /// In en, this message translates to:
+  /// **'App is biometric-protected'**
+  String get appBiometricProtected;
+
+  /// No description provided for @monthlySpendingLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly spending limit'**
+  String get monthlySpendingLimit;
+
+  /// No description provided for @saveBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Budget'**
+  String get saveBudget;
+
+  /// No description provided for @dailyReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily reminder'**
+  String get dailyReminder;
+
+  /// No description provided for @getRemindedToLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Get reminded to log expenses'**
+  String get getRemindedToLog;
+
+  /// No description provided for @dayStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'day streak'**
+  String get dayStreak;
+
+  /// No description provided for @keepLoggingDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep logging daily to maintain it'**
+  String get keepLoggingDaily;
+
+  /// No description provided for @aboutBudgetBuddy.
+  ///
+  /// In en, this message translates to:
+  /// **'About BudgetBuddy'**
+  String get aboutBudgetBuddy;
+
+  /// No description provided for @versionMarketsLegal.
+  ///
+  /// In en, this message translates to:
+  /// **'Version, markets, legal'**
+  String get versionMarketsLegal;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountPermanently.
+  ///
+  /// In en, this message translates to:
+  /// **'To Delete Your Account Permanently'**
+  String get deleteAccountPermanently;
+
+  /// No description provided for @deleteAccountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure? This action cannot be undone.'**
+  String get deleteAccountConfirm;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @budgetUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget updated'**
+  String get budgetUpdated;
+
+  /// No description provided for @enterValidAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid amount'**
+  String get enterValidAmount;
+
+  /// No description provided for @perMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'/mo'**
+  String get perMonth;
+
+  /// No description provided for @tooHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Too high'**
+  String get tooHigh;
+
+  /// No description provided for @moderate.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate'**
+  String get moderate;
+
+  /// No description provided for @healthy.
+  ///
+  /// In en, this message translates to:
+  /// **'Healthy'**
+  String get healthy;
+
+  /// No description provided for @security.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get security;
+
+  /// No description provided for @noSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'No Saving Goal Yet'**
+  String get noSaving;
+
+  /// No description provided for @createAGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Create A Goal To Track Progress Towards A Target'**
+  String get createAGoal;
+
+  /// No description provided for @createMyFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Create My First Goal'**
+  String get createMyFirst;
+
+  /// No description provided for @newSavingGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'New Saving Goal'**
+  String get newSavingGoal;
+
+  /// No description provided for @goalNam.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal name (e.g. New Phone)'**
+  String get goalNam;
+
+  /// No description provided for @targetAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Amount'**
+  String get targetAmount;
+
+  /// No description provided for @days.
+  ///
+  /// In en, this message translates to:
+  /// **'Days'**
+  String get days;
+
+  /// No description provided for @createGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Goal'**
+  String get createGoal;
+
+  /// No description provided for @savingsRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Savings Rate'**
+  String get savingsRate;
+
+  /// No description provided for @ofLimitUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'of limit used'**
+  String get ofLimitUsed;
+
+  /// No description provided for @noBudgetSet.
+  ///
+  /// In en, this message translates to:
+  /// **'No budget set'**
+  String get noBudgetSet;
+
+  /// No description provided for @noExpensesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No expenses yet'**
+  String get noExpensesYet;
+
+  /// No description provided for @noIncomeLooged.
+  ///
+  /// In en, this message translates to:
+  /// **'No income logged'**
+  String get noIncomeLooged;
+
+  /// No description provided for @ofIncomeCommitted.
+  ///
+  /// In en, this message translates to:
+  /// **'of income committed'**
+  String get ofIncomeCommitted;
+
+  /// No description provided for @inBills.
+  ///
+  /// In en, this message translates to:
+  /// **'in bills'**
+  String get inBills;
+
+  /// No description provided for @noActiveBills.
+  ///
+  /// In en, this message translates to:
+  /// **'No active bills'**
+  String get noActiveBills;
+
+  /// No description provided for @noActiveGoals.
+  ///
+  /// In en, this message translates to:
+  /// **'No active goals'**
+  String get noActiveGoals;
+
+  /// No description provided for @inProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'in progress'**
+  String get inProgress;
+
+  /// No description provided for @top.
+  ///
+  /// In en, this message translates to:
+  /// **'Top'**
+  String get top;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

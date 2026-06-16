@@ -113,8 +113,8 @@ class HiveStorage {
   }
 
   static Future<void> saveBudget(Budget b) async {
-    await b.save();
-    SyncService.pushBudget(b); // fire & forget
+    await budget.putAt(0, b); // ← putAt instead of b.save()
+    SyncService.pushBudget(b);
   }
 
   // ── Goals ─────────────────────────────────────────────────────
@@ -143,7 +143,13 @@ class HiveStorage {
   // add mount
   static Future<void> addToGoal(String id, double amount) async {
     try {
-      final g = goals.values.firstWhere((g) => g.id == id);
+      final entries = goals.values.toList();
+      final idx = entries.indexWhere((g) => g.id == id);
+      if (idx < 0) {
+        debugPrint('[HiveStorage] addToGoal: goal $id not found');
+        return;
+      }
+      final g = entries[idx];
       g.transactions.add(
         GoalTransaction(
           id: const Uuid().v4(),
@@ -152,10 +158,10 @@ class HiveStorage {
         ),
       );
       g.saved = (g.saved + amount).clamp(0, g.target);
-      await g.save();
+      await goals.putAt(idx, g); // ← putAt instead of g.save()
       SyncService.pushGoal(g);
     } catch (e) {
-      debugPrint('[HiveStorage] addToGoal: goal $id not found');
+      debugPrint('[HiveStorage] addToGoal error: $e');
     }
   }
 

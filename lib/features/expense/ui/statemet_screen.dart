@@ -4,6 +4,7 @@ import 'package:budgetBuddy/common/common_widget.dart';
 import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:budgetBuddy/common/localization/category_localization.dart';
 import 'package:budgetBuddy/common/navigation_service.dart';
+import 'package:budgetBuddy/common/services/ads_service.dart';
 import 'package:budgetBuddy/common/widgets/custom_appbar.dart';
 import 'package:budgetBuddy/common/widgets/scaffold_widget.dart';
 import 'package:budgetBuddy/common/widgets/shimmer_widget.dart';
@@ -120,6 +121,29 @@ class _State extends ConsumerState<StatementsScreen> {
       );
       return;
     }
+
+    // Show rewarded ad before exporting
+    ref
+        .read(adServiceProvider)
+        .showRewarded(
+          onRewarded: () async {
+            await _doExport(expenses);
+            ref
+                .read(adServiceProvider)
+                .preloadRewarded(); // ready for next export
+          },
+          onNotAvailable: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Ad not ready, please try again in a moment'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          },
+        );
+  }
+
+  Future<void> _doExport(List<Expense> expenses) async {
     setState(() => _exporting = true);
     try {
       final from = _mode == _Mode.dateRange && _fromDate != null

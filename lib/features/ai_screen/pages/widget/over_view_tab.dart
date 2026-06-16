@@ -7,6 +7,7 @@ import 'package:budgetBuddy/features/ai_screen/pages/widget/shared_wdiget.dart';
 import 'package:budgetBuddy/features/ai_screen/providers/ai_providers.dart';
 import 'package:budgetBuddy/features/ai_screen/services/ai_services.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,12 +16,15 @@ class OverviewTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final score = ref.watch(healthScoreProvider);
     final burn = ref.watch(burnRateProvider);
     final alerts = ref.watch(alertsProvider);
     final insights = ref.watch(aiSuggestionsProvider);
     final subs = ref.watch(subscriptionsProvider);
     final rec = ref.watch(recurringProvider);
+    final billHealth = ref.watch(billHealthProvider);
+    final cashFlow = ref.watch(cashFlowProvider);
     final fmt = ref.watch(fmtProvider);
     final c = context.c;
 
@@ -28,7 +32,7 @@ class OverviewTab extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(18, 16, 18, 40),
         children: [
-          // ── Financial Health Score ─────────────────────────────────────────────
+          // ── Financial Health Score ───────────────────────────────────────────
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -44,16 +48,15 @@ class OverviewTab extends ConsumerWidget {
             ),
             child: Row(
               children: [
-                // Score ring
                 AwesomeScoreWidget(score: score),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Financial Health',
-                        style: TextStyle(
+                      Text(
+                        l.financialHealth,
+                        style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
                           color: Color(0xFF9090B0),
@@ -85,7 +88,7 @@ class OverviewTab extends ConsumerWidget {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          f.label,
+                                          f.resolveLabel(l),
                                           style: const TextStyle(
                                             fontSize: 10,
                                             fontWeight: FontWeight.w600,
@@ -107,6 +110,13 @@ class OverviewTab extends ConsumerWidget {
                                       score.color,
                                       height: 4,
                                     ),
+                                    Text(
+                                      f.resolveDetail(l),
+                                      style: TextStyle(
+                                        fontSize: 9,
+                                        color: c.textMuted,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -123,23 +133,23 @@ class OverviewTab extends ConsumerWidget {
 
           const SizedBox(height: 14),
 
-          // ── Burn Rate ──────────────────────────────────────────────────────────
+          // ── Burn Rate ────────────────────────────────────────────────────────
           AppCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const IconLabel(Assets.strike, 'Burn Rate & Runway'),
+                IconLabel(Assets.strike, l.burnRateAndRunWay),
                 const SizedBox(height: 14),
                 Row(
                   children: [
-                    StatCol('Daily Spend', fmt(burn.dailySpend), kAccent),
+                    StatCol(l.dailySpend, fmt(burn.dailySpend), kAccent),
                     StatCol(
-                      'Monthly Rate',
+                      l.monthlyRate,
                       fmt(burn.monthlySpend),
                       AppColors.primaryColor,
                     ),
                     StatCol(
-                      'Runway',
+                      l.runWay,
                       '${burn.runwayDays} days',
                       burn.runwayDays < 30
                           ? kAccent
@@ -197,12 +207,91 @@ class OverviewTab extends ConsumerWidget {
 
           const SizedBox(height: 14),
 
-          // ── Smart Alerts ───────────────────────────────────────────────────────
+          // ── Cash Flow Forecast ───────────────────────────────────────────────
+          AppCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                IconLabel(Assets.balance, l.nextMonthCashFlow),
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    StatCol(l.income, fmt(cashFlow.projectedIncome), kGreen),
+                    StatCol(
+                      l.expense,
+                      fmt(cashFlow.projectedExpenses),
+                      kAccent,
+                    ),
+                    StatCol(
+                      cashFlow.projectedSurplus >= 0 ? l.saved : l.netDeficit,
+                      fmt(cashFlow.projectedSurplus.abs()),
+                      cashFlow.projectedSurplus >= 0 ? kGreen : kAccent,
+                    ),
+                  ],
+                ),
+                if (cashFlow.upcomingBillsTotal > 0 ||
+                    cashFlow.goalsRequiredThisMonth > 0) ...[
+                  const SizedBox(height: 12),
+                  const Divider(height: 1),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      if (cashFlow.upcomingBillsTotal > 0)
+                        Expanded(
+                          child: _MiniStat(
+                            '📋 ${l.bill}',
+                            fmt(cashFlow.upcomingBillsTotal),
+                            kAmber,
+                          ),
+                        ),
+                      if (cashFlow.goalsRequiredThisMonth > 0)
+                        Expanded(
+                          child: _MiniStat(
+                            '🎯 ${l.goals}',
+                            fmt(cashFlow.goalsRequiredThisMonth),
+                            AppColors.primaryColor,
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+                if (cashFlow.warnings.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  ...cashFlow.warnings.map(
+                    (w) => Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('⚠️', style: TextStyle(fontSize: 12)),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              w,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: c.textMuted,
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          // ── Smart Alerts ─────────────────────────────────────────────────────
           if (alerts.isNotEmpty) ...[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const SectionLabel('Smart Alerts'),
+                SectionLabel(l.smartAlerts),
                 Chip(
                   label: Text(
                     '${alerts.length}',
@@ -267,15 +356,122 @@ class OverviewTab extends ConsumerWidget {
             const SizedBox(height: 6),
           ],
 
-          // ── AI Spending Insights ───────────────────────────────────────────────
-          const SectionLabel('AI Spending Insights'),
+          // ── Bill Commitments ─────────────────────────────────────────────────
+          SectionLabel(l.billCommitments),
+          const SizedBox(height: 10),
+          AppCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: _MiniStat(
+                        l.monthlyBills,
+                        fmt(billHealth.totalMonthlyCommitment),
+                        billHealth.isCritical
+                            ? kAccent
+                            : billHealth.isHigh
+                            ? kAmber
+                            : kGreen,
+                      ),
+                    ),
+                    Expanded(
+                      child: _MiniStat(
+                        l.ofIncome,
+                        '${(billHealth.incomeCommitmentRatio * 100).toInt()}%',
+                        billHealth.isCritical
+                            ? kAccent
+                            : billHealth.isHigh
+                            ? kAmber
+                            : kGreen,
+                      ),
+                    ),
+                    Expanded(
+                      child: _MiniStat(
+                        l.overdue,
+                        '${billHealth.overdueList.length}',
+                        billHealth.overdueList.isEmpty ? kGreen : kAccent,
+                      ),
+                    ),
+                  ],
+                ),
+                if (billHealth.largestBills.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  const Divider(height: 1),
+                  const SizedBox(height: 10),
+                  Text(
+                    l.largestBills,
+                    style: TextStyle(fontSize: 11, color: c.textMuted),
+                  ),
+                  const SizedBox(height: 8),
+                  ...billHealth.largestBills.map(
+                    (b) => Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Row(
+                        children: [
+                          Text(b.emoji, style: const TextStyle(fontSize: 16)),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              b.title,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            fmt(b.amount),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+                if (billHealth.overdueList.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: kAccent.withOpacity(0.07),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: kAccent.withOpacity(0.2)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Text('🔴', style: TextStyle(fontSize: 14)),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            '${billHealth.overdueList.map((b) => b.title).take(2).join(', ')} ${l.overdue.toLowerCase()}',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: kAccent,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          // ── AI Spending Insights ─────────────────────────────────────────────
+          SectionLabel(l.aiSpendingInsight),
           const SizedBox(height: 10),
           if (insights.isEmpty)
-            const EmptyCard(
-              Assets.star,
-              'Add more expenses',
-              'We\'ll analyse patterns once you have more data.',
-            )
+            EmptyCard(Assets.star, l.addMoreExpenses, l.wellAnalysisPatternOnce)
           else
             ...insights.map(
               (s) => Padding(
@@ -315,18 +511,15 @@ class OverviewTab extends ConsumerWidget {
               ),
             ),
 
-          // ── Subscriptions + Recurring ──────────────────────────────────────────
+          // ── Subscriptions + Recurring ────────────────────────────────────────
           const SizedBox(height: 8),
-          const SectionLabel('Subscriptions & Recurring'),
+          SectionLabel(l.subscriptions),
           const SizedBox(height: 10),
-
-          // combine subscriptions and recurring items, take up to 5 and render each as a card
           ...[...subs, ...rec].take(5).map((i) {
             late final String title;
             late final String subtitle;
             late final String emoji;
             late final double amount;
-            late final Color color;
 
             if (i is SubscriptionItem) {
               title = i.name;
@@ -342,8 +535,6 @@ class OverviewTab extends ConsumerWidget {
               return const SizedBox();
             }
 
-            color = AppColors.primaryColor.withOpacity(0.12);
-
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: AppCard(
@@ -353,7 +544,7 @@ class OverviewTab extends ConsumerWidget {
                 ),
                 child: Row(
                   children: [
-                    EmojiBox(emoji, color),
+                    EmojiBox(emoji, AppColors.primaryColor.withOpacity(0.12)),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -392,4 +583,29 @@ class OverviewTab extends ConsumerWidget {
       ),
     );
   }
+}
+
+// ── Private widgets ───────────────────────────────────────────────────────────
+class _MiniStat extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+  const _MiniStat(this.label, this.value, this.color);
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(label, style: TextStyle(fontSize: 10, color: context.c.textMuted)),
+      const SizedBox(height: 2),
+      Text(
+        value,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
+      ),
+    ],
+  );
 }

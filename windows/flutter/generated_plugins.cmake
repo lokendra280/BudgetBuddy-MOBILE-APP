@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
   file_selector_windows
   flutter_localization
+  flutter_timezone
   local_auth_windows
   permission_handler_windows
   printing

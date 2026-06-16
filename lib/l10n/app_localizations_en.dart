@@ -363,7 +363,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get spend => 'Spend';
 
   @override
-  String get saved => 'Saved';
+  String get saved => 'saved';
 
   @override
   String get achieved => 'Achieved';
@@ -499,4 +499,280 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addSchedule => 'Add & Schedule Reminder';
+
+  @override
+  String get financialHealth => 'Financial Health';
+
+  @override
+  String get savingRate => 'Saving Rate';
+
+  @override
+  String get budgetControl => 'Budget Control';
+
+  @override
+  String get expenseBalance => 'Expense Balance';
+
+  @override
+  String get consistency => 'Consistency';
+
+  @override
+  String get billLoad => 'Bill Load';
+
+  @override
+  String get goalProgress => 'Goal Progress';
+
+  @override
+  String get burnRate => 'Burn Rate & Runway';
+
+  @override
+  String get nextMonthCashFlow => 'Next Month Cash Flow';
+
+  @override
+  String get billCommitments => 'Bill Commitments';
+
+  @override
+  String get projectedIncome => 'Projected Income';
+
+  @override
+  String get projectedExpenses => 'Projected Expenses';
+
+  @override
+  String get projectedSurplus => 'Projected Surplus';
+
+  @override
+  String get projectedShortfall => 'Projected Shortfall';
+
+  @override
+  String get committedBills => 'Committed Bills';
+
+  @override
+  String get goalsRequired => 'Goals Required';
+
+  @override
+  String get upcomingBillImpact => 'Upcoming Bill Impact';
+
+  @override
+  String get overdueBills => 'Overdue — pay now';
+
+  @override
+  String get dueSoon => 'Due Soon';
+
+  @override
+  String get largestBills => 'Largest commitments';
+
+  @override
+  String get ofIncome => 'of income';
+
+  @override
+  String get overdue => 'Overdue';
+
+  @override
+  String get monthlyBills => 'Monthly Bills';
+
+  @override
+  String get billsVsIncome => 'Bills vs Income';
+
+  @override
+  String get largestBillsLabel => 'Largest bills';
+
+  @override
+  String get goalTracker => 'Goal Tracker';
+
+  @override
+  String get daysLeft => 'days left';
+
+  @override
+  String get onTrack => 'On Track';
+
+  @override
+  String get atRisk => 'At Risk';
+
+  @override
+  String get availablePerDay => 'Available';
+
+  @override
+  String get needPerDay => 'Need';
+
+  @override
+  String get perDay => '/day';
+
+  @override
+  String get smartAlerts => 'Smart Alerts';
+
+  @override
+  String get keepTracking => 'Keep tracking!';
+
+  @override
+  String get addMoreDataUnlock => 'Add more data to unlock personalised coaching.';
+
+  @override
+  String get disposableIncome => 'disposable income after bills';
+
+  @override
+  String get basedOnIncome => 'Based on your income';
+
+  @override
+  String get needs => 'Needs (50%)';
+
+  @override
+  String get wants => 'Wants (30%)';
+
+  @override
+  String get savings => 'Savings (20%)';
+
+  @override
+  String get needsDescription => 'Rent, food, bills, transport';
+
+  @override
+  String get wantsDescription => 'Entertainment, shopping, dining out';
+
+  @override
+  String get savingsDescription => 'Emergency fund, investments, goals';
+
+  @override
+  String get savingsRateThisMonth => 'Savings rate this month';
+
+  @override
+  String get target20 => 'Target: 20%';
+
+  @override
+  String get billCommitmentSubtitle => 'Fixed monthly outflows before discretionary spend';
+
+  @override
+  String get selectCurrency => 'Select Currency';
+
+  @override
+  String get displayCurrency => 'Display Currency';
+
+  @override
+  String get appLanguage => 'App Language';
+
+  @override
+  String get biometricLock => 'Biometric lock';
+
+  @override
+  String get requireFingerprint => 'Require fingerprint or face to open';
+
+  @override
+  String get notAvailableDevice => 'Not available on this device';
+
+  @override
+  String get appBiometricProtected => 'App is biometric-protected';
+
+  @override
+  String get monthlySpendingLimit => 'Monthly spending limit';
+
+  @override
+  String get saveBudget => 'Save Budget';
+
+  @override
+  String get dailyReminder => 'Daily reminder';
+
+  @override
+  String get getRemindedToLog => 'Get reminded to log expenses';
+
+  @override
+  String get dayStreak => 'day streak';
+
+  @override
+  String get keepLoggingDaily => 'Keep logging daily to maintain it';
+
+  @override
+  String get aboutBudgetBuddy => 'About BudgetBuddy';
+
+  @override
+  String get versionMarketsLegal => 'Version, markets, legal';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountPermanently => 'To Delete Your Account Permanently';
+
+  @override
+  String get deleteAccountConfirm => 'Are you sure? This action cannot be undone.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get budgetUpdated => 'Budget updated';
+
+  @override
+  String get enterValidAmount => 'Enter a valid amount';
+
+  @override
+  String get perMonth => '/mo';
+
+  @override
+  String get tooHigh => 'Too high';
+
+  @override
+  String get moderate => 'Moderate';
+
+  @override
+  String get healthy => 'Healthy';
+
+  @override
+  String get security => 'Security';
+
+  @override
+  String get noSaving => 'No Saving Goal Yet';
+
+  @override
+  String get createAGoal => 'Create A Goal To Track Progress Towards A Target';
+
+  @override
+  String get createMyFirst => 'Create My First Goal';
+
+  @override
+  String get newSavingGoal => 'New Saving Goal';
+
+  @override
+  String get goalNam => 'Goal name (e.g. New Phone)';
+
+  @override
+  String get targetAmount => 'Target Amount';
+
+  @override
+  String get days => 'Days';
+
+  @override
+  String get createGoal => 'Create Goal';
+
+  @override
+  String get savingsRate => 'Savings Rate';
+
+  @override
+  String get ofLimitUsed => 'of limit used';
+
+  @override
+  String get noBudgetSet => 'No budget set';
+
+  @override
+  String get noExpensesYet => 'No expenses yet';
+
+  @override
+  String get noIncomeLooged => 'No income logged';
+
+  @override
+  String get ofIncomeCommitted => 'of income committed';
+
+  @override
+  String get inBills => 'in bills';
+
+  @override
+  String get noActiveBills => 'No active bills';
+
+  @override
+  String get noActiveGoals => 'No active goals';
+
+  @override
+  String get inProgress => 'in progress';
+
+  @override
+  String get top => 'Top';
 }

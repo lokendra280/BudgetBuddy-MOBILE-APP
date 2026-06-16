@@ -499,4 +499,280 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get addSchedule => 'रिमाइंडर जोड़ें और शेड्यूल करें';
+
+  @override
+  String get financialHealth => 'वित्तीय स्वास्थ्य';
+
+  @override
+  String get savingRate => 'बचत दर';
+
+  @override
+  String get budgetControl => 'बजट नियंत्रण';
+
+  @override
+  String get expenseBalance => 'खर्च संतुलन';
+
+  @override
+  String get consistency => 'निरंतरता';
+
+  @override
+  String get billLoad => 'बिल भार';
+
+  @override
+  String get goalProgress => 'लक्ष्य प्रगति';
+
+  @override
+  String get burnRate => 'खर्च दर और रनवे';
+
+  @override
+  String get nextMonthCashFlow => 'अगले महीने का नकद प्रवाह';
+
+  @override
+  String get billCommitments => 'बिल प्रतिबद्धताएँ';
+
+  @override
+  String get projectedIncome => 'अनुमानित आय';
+
+  @override
+  String get projectedExpenses => 'अनुमानित खर्च';
+
+  @override
+  String get projectedSurplus => 'अनुमानित अधिशेष';
+
+  @override
+  String get projectedShortfall => 'अनुमानित कमी';
+
+  @override
+  String get committedBills => 'प्रतिबद्ध बिल';
+
+  @override
+  String get goalsRequired => 'लक्ष्य आवश्यक';
+
+  @override
+  String get upcomingBillImpact => 'आने वाले बिल का प्रभाव';
+
+  @override
+  String get overdueBills => 'अतिदेय — अभी भुगतान करें';
+
+  @override
+  String get dueSoon => 'जल्द देय';
+
+  @override
+  String get largestBills => 'सबसे बड़ी प्रतिबद्धताएँ';
+
+  @override
+  String get ofIncome => 'आय का';
+
+  @override
+  String get overdue => 'अतिदेय';
+
+  @override
+  String get monthlyBills => 'मासिक बिल';
+
+  @override
+  String get billsVsIncome => 'बिल बनाम आय';
+
+  @override
+  String get largestBillsLabel => 'सबसे बड़े बिल';
+
+  @override
+  String get goalTracker => 'लक्ष्य ट्रैकर';
+
+  @override
+  String get daysLeft => 'दिन बचे';
+
+  @override
+  String get onTrack => 'सही रास्ते पर';
+
+  @override
+  String get atRisk => 'जोखिम में';
+
+  @override
+  String get availablePerDay => 'उपलब्ध';
+
+  @override
+  String get needPerDay => 'आवश्यक';
+
+  @override
+  String get perDay => '/दिन';
+
+  @override
+  String get smartAlerts => 'स्मार्ट अलर्ट';
+
+  @override
+  String get keepTracking => 'ट्रैक करते रहें!';
+
+  @override
+  String get addMoreDataUnlock => 'व्यक्तिगत कोचिंग अनलॉक करने के लिए अधिक डेटा जोड़ें।';
+
+  @override
+  String get disposableIncome => 'बिल के बाद उपयोग योग्य आय';
+
+  @override
+  String get basedOnIncome => 'आपकी आय के आधार पर';
+
+  @override
+  String get needs => 'जरूरतें (50%)';
+
+  @override
+  String get wants => 'इच्छाएं (30%)';
+
+  @override
+  String get savings => 'बचत (20%)';
+
+  @override
+  String get needsDescription => 'किराया, भोजन, बिल, परिवहन';
+
+  @override
+  String get wantsDescription => 'मनोरंजन, खरीदारी, बाहर खाना';
+
+  @override
+  String get savingsDescription => 'आपातकालीन निधि, निवेश, लक्ष्य';
+
+  @override
+  String get savingsRateThisMonth => 'इस महीने बचत दर';
+
+  @override
+  String get target20 => 'लक्ष्य: 20%';
+
+  @override
+  String get billCommitmentSubtitle => 'विवेकाधीन खर्च से पहले निश्चित मासिक बहिर्वाह';
+
+  @override
+  String get selectCurrency => 'मुद्रा चुनें';
+
+  @override
+  String get displayCurrency => 'प्रदर्शन मुद्रा';
+
+  @override
+  String get appLanguage => 'ऐप भाषा';
+
+  @override
+  String get biometricLock => 'बायोमेट्रिक लॉक';
+
+  @override
+  String get requireFingerprint => 'खोलने के लिए फिंगरप्रिंट या फेस की आवश्यकता है';
+
+  @override
+  String get notAvailableDevice => 'इस डिवाइस पर उपलब्ध नहीं';
+
+  @override
+  String get appBiometricProtected => 'ऐप बायोमेट्रिक-सुरक्षित है';
+
+  @override
+  String get monthlySpendingLimit => 'मासिक खर्च सीमा';
+
+  @override
+  String get saveBudget => 'बजट सहेजें';
+
+  @override
+  String get dailyReminder => 'दैनिक रिमाइंडर';
+
+  @override
+  String get getRemindedToLog => 'खर्च लॉग करने की याद दिलाएं';
+
+  @override
+  String get dayStreak => 'दिन की स्ट्रीक';
+
+  @override
+  String get keepLoggingDaily => 'इसे बनाए रखने के लिए रोज़ लॉग करें';
+
+  @override
+  String get aboutBudgetBuddy => 'BudgetBuddy के बारे में';
+
+  @override
+  String get versionMarketsLegal => 'संस्करण, बाजार, कानूनी';
+
+  @override
+  String get deleteAccount => 'खाता हटाएं';
+
+  @override
+  String get deleteAccountPermanently => 'अपना खाता स्थायी रूप से हटाने के लिए';
+
+  @override
+  String get deleteAccountConfirm => 'क्या आप सुनिश्चित हैं? यह क्रिया पूर्ववत नहीं की जा सकती।';
+
+  @override
+  String get cancel => 'रद्द करें';
+
+  @override
+  String get delete => 'हटाएं';
+
+  @override
+  String get budgetUpdated => 'बजट अपडेट किया गया';
+
+  @override
+  String get enterValidAmount => 'एक मान्य राशि दर्ज करें';
+
+  @override
+  String get perMonth => '/माह';
+
+  @override
+  String get tooHigh => 'बहुत अधिक';
+
+  @override
+  String get moderate => 'मध्यम';
+
+  @override
+  String get healthy => 'स्वस्थ';
+
+  @override
+  String get security => 'सुरक्षा';
+
+  @override
+  String get noSaving => 'अभी तक कोई बचत लक्ष्य नहीं';
+
+  @override
+  String get createAGoal => 'एक लक्ष्य बनाएं और अपनी प्रगति ट्रैक करें';
+
+  @override
+  String get createMyFirst => 'मेरा पहला लक्ष्य बनाएं';
+
+  @override
+  String get newSavingGoal => 'नया बचत लक्ष्य';
+
+  @override
+  String get goalNam => 'लक्ष्य का नाम (जैसे नया फोन)';
+
+  @override
+  String get targetAmount => 'लक्ष्य राशि';
+
+  @override
+  String get days => 'दिन';
+
+  @override
+  String get createGoal => 'लक्ष्य बनाएं';
+
+  @override
+  String get savingsRate => 'बचत दर';
+
+  @override
+  String get ofLimitUsed => 'सीमा उपयोग';
+
+  @override
+  String get noBudgetSet => 'कोई बजट सेट नहीं';
+
+  @override
+  String get noExpensesYet => 'अभी तक कोई खर्च नहीं';
+
+  @override
+  String get noIncomeLooged => 'कोई आय दर्ज नहीं';
+
+  @override
+  String get ofIncomeCommitted => 'आय प्रतिबद्ध';
+
+  @override
+  String get inBills => 'बिल में';
+
+  @override
+  String get noActiveBills => 'कोई सक्रिय बिल नहीं';
+
+  @override
+  String get noActiveGoals => 'कोई सक्रिय लक्ष्य नहीं';
+
+  @override
+  String get inProgress => 'प्रगति में';
+
+  @override
+  String get top => 'शीर्ष';
 }
