@@ -1,6 +1,7 @@
 import 'package:budgetBuddy/features/ai_screen/models/goals_transaction.dart';
 import 'package:budgetBuddy/features/ai_screen/models/goals_model.dart';
 import 'package:budgetBuddy/features/bill_reminder/models/bill_reminder.dart';
+import 'package:budgetBuddy/features/bill_reminder/models/emi_loan.dart';
 import 'package:budgetBuddy/features/expense/models/expense.dart';
 import 'package:budgetBuddy/features/home/services/sync_services.dart';
 import 'package:flutter/foundation.dart';
@@ -20,8 +21,10 @@ class HiveStorage {
       Hive.box<BillReminder>('bill_reminders');
   static Box<GoalTransaction> get goalsTransaction =>
       Hive.box<GoalTransaction>('goals_transaction');
+  static Box<EmiLoan> get emiLoans => Hive.box<EmiLoan>('emi_loans');
+
   // ── Init ──────────────────────────────────────────────────────
-  static const int _schemaVersion = 5;
+  static const int _schemaVersion = 6;
   static const String _versionKey = 'hive_schema_v';
 
   static Future<void> init() async {
@@ -50,6 +53,11 @@ class HiveStorage {
       Hive.registerAdapter(BillReminderAdapter());
     if (!Hive.isAdapterRegistered(4))
       Hive.registerAdapter(GoalTransactionAdapter());
+    if (!Hive.isAdapterRegistered(5))
+      Hive.registerAdapter(EmiLoanAdapter()); // ← new
+
+    if (!Hive.isAdapterRegistered(6))
+      Hive.registerAdapter(EmiPaymentAdapter()); // ← new
   }
 
   static Future<void> _openWithRecovery() async {
@@ -60,6 +68,7 @@ class HiveStorage {
         Hive.openBox<GoalEntry>('goals'),
         Hive.openBox<BillReminder>('bill_reminders'),
         Hive.openBox<GoalTransaction>('goals_transaction'),
+        Hive.openBox<EmiLoan>('emi_loans'), // ← new
       ]);
     } catch (e) {
       debugPrint('[HiveStorage] Open failed: $e — wiping');
@@ -74,6 +83,7 @@ class HiveStorage {
       'goals',
       'bill_reminders',
       'goals_transaction',
+      'emi_loans',
     ]) {
       try {
         if (Hive.isBoxOpen(name)) await Hive.box(name).close();
@@ -86,6 +96,7 @@ class HiveStorage {
       Hive.openBox<GoalEntry>('goals'),
       Hive.openBox<BillReminder>('bill_reminders'),
       Hive.openBox<GoalTransaction>('goals_transaction'),
+      Hive.openBox<EmiLoan>('emi_loans'), // ← new
     ]);
   }
 
@@ -185,4 +196,16 @@ class HiveStorage {
   static List<BillReminder> allBillReminders() => billReminders.values.toList();
   static List<BillReminder> activeBillReminders() =>
       billReminders.values.where((b) => b.isActive).toList();
+  // ── EMI / Loans ────────────────────────────────────────────────────────────
+  static Future<void> saveEmiLoan(EmiLoan loan) async =>
+      emiLoans.put(loan.id, loan);
+
+  static Future<void> deleteEmiLoan(String id) async => emiLoans.delete(id);
+
+  /// Returns null (not a throw) so callers can use null-check safely.
+  static EmiLoan? getEmiLoan(String id) => emiLoans.get(id);
+
+  static List<EmiLoan> allEmiLoans() => emiLoans.values.toList();
+  static List<EmiLoan> activeEmiLoans() =>
+      emiLoans.values.where((l) => l.isActive).toList();
 }

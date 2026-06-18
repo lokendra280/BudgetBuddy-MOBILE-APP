@@ -255,7 +255,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get signIntoApply => 'रेफरल कोड प्रयोग गर्न साइन इन गर्नुहोस् र स्ट्रिक दिन कमाउनुहोस्';
 
   @override
-  String get shareReport => 'रिपोर्ट साझा गर्नुहोस्';
+  String get shareReport => 'मेरो रिपोर्ट सेयर गर्नुहोस्';
 
   @override
   String get shareMonthly => 'मासिक खर्च सारांश तस्बिरको रूपमा सेयर गर्नुहोस्';
@@ -351,7 +351,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get addMoreExpenses => 'थप खर्च थप्नुहोस्';
 
   @override
-  String get wellAnalysisPatternOnce => 'We Will analyses pattern once you have more data';
+  String get wellAnalysisPatternOnce => 'थप डेटा भएपछि हामी ढाँचा विश्लेषण गर्नेछौं';
 
   @override
   String get subscriptions => 'सदस्यता र आवर्ती भुक्तानी';
@@ -372,7 +372,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get autoCategorization => 'स्वतः वर्गीकरण';
 
   @override
-  String get budgetBuddyDetects => 'BudgetBuddy detect categories automatically from your entry title';
+  String get budgetBuddyDetects => 'BudgetBuddy ले तपाईंको इन्ट्री शीर्षकबाट स्वचालित रूपमा श्रेणी पत्ता लगाउँछ';
 
   @override
   String get nextMonthForecast => 'अर्को महिनाको पूर्वानुमान';
@@ -384,7 +384,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get predictedIncome => 'पूर्वानुमानित आम्दानी';
 
   @override
-  String get estBalance => 'Est.Balance';
+  String get estBalance => 'अनुमानित ब्यालेन्स';
 
   @override
   String get categoryForecast => 'श्रेणी पूर्वानुमान';
@@ -429,7 +429,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get impact => 'प्रभाव';
 
   @override
-  String get recurringExpenses => 'Recurring Expenses';
+  String get recurringExpenses => 'आवर्ती खर्चहरू';
 
   @override
   String get noRecurringDetected => 'कुनै आवर्ती खर्च भेटिएन';
@@ -775,4 +775,125 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get top => 'शीर्ष';
+
+  @override
+  String get commitments => 'प्रतिबद्धताहरू';
+
+  @override
+  String get bills => 'बिलहरू';
+
+  @override
+  String get emiAndLoans => 'EMI र ऋणहरू';
+
+  @override
+  String get deleteBill => 'बिल मेट्ने?';
+
+  @override
+  String get deleteLoan => 'ऋण मेट्ने?';
+
+  @override
+  String willBeRemoved(Object title) {
+    return '$title हटाइनेछ।';
+  }
+
+  @override
+  String get yourLoans => 'तपाईंका ऋणहरू';
+
+  @override
+  String get outstanding => 'बाँकी रकम';
+
+  @override
+  String get monthlyEmis => 'मासिक EMI हरू';
+
+  @override
+  String get missed => 'छुटेको';
+
+  @override
+  String get noLoansYet => 'अहिलेसम्म कुनै ऋण छैन';
+
+  @override
+  String get noLoansDesc => 'EMI ट्र्याक गर्नुहोस्, प्रगति हेर्नुहोस्\nर देय मितिभन्दा पहिले रिमाइन्डर पाउनुहोस्।';
+
+  @override
+  String get addFirstLoan => 'पहिलो ऋण थप्नुहोस्';
+
+  @override
+  String get addBillLabel => 'बिल थप्नुहोस्';
+
+  @override
+  String get addLoan => 'ऋण थप्नुहोस्';
+
+  @override
+  String get recordPayment => 'भुक्तानी दर्ज गर्नुहोस्';
+
+  @override
+  String emiPaymentHint(Object amount, Object title) {
+    return '$title · EMI $amount';
+  }
+
+  @override
+  String get noteOptional => 'नोट (वैकल्पिक)';
+
+  @override
+  String get extraPartPayment => 'अतिरिक्त / आंशिक भुक्तानी';
+
+  @override
+  String get reducesPrincipal => 'मूलधन घटाउँछ';
+
+  @override
+  String get saving => 'सुरक्षित गर्दै…';
+
+  @override
+  String get recordExtraPayment => 'अतिरिक्त भुक्तानी दर्ज गर्नुहोस्';
+
+  @override
+  String get markAsPaid => 'तिरिएको चिह्नित गर्नुहोस्';
+
+  @override
+  String get editLoan => 'ऋण सम्पादन गर्नुहोस्';
+
+  @override
+  String get addEmiLoan => 'EMI / ऋण थप्नुहोस्';
+
+  @override
+  String get loanNameHint => 'ऋणको नाम (जस्तै होम लोन, कार EMI)';
+
+  @override
+  String get lenderHint => 'ऋणदाता / बैंकको नाम';
+
+  @override
+  String get lenderUnknown => 'अज्ञात';
+
+  @override
+  String get principalAmount => 'मूलधन रकम';
+
+  @override
+  String get ratePerAnnum => 'दर % प्रति वर्ष';
+
+  @override
+  String get tenureMonths => 'अवधि (महिना)';
+
+  @override
+  String get autoCalcEmi => 'EMI स्वतः गणना गर्नुहोस्';
+
+  @override
+  String get autoCalcEmiSub => 'मूलधन, दर र अवधिबाट';
+
+  @override
+  String get monthlyEmiAmount => 'मासिक EMI रकम';
+
+  @override
+  String get loanStarted => 'ऋण सुरु भएको:';
+
+  @override
+  String get emiDueDay => 'EMI देय दिवस';
+
+  @override
+  String get day => 'दिन';
+
+  @override
+  String get notesOptional => 'नोटहरू (वैकल्पिक)';
+
+  @override
+  String get updateLoan => 'ऋण अपडेट गर्नुहोस्';
 }

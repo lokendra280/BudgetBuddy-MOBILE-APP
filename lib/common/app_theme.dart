@@ -1,9 +1,8 @@
+import 'package:budgetBuddy/common/constant/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 // ── Brand palette ─────────────────────────────────────────────────────────────
-// indigo
 const kAccent = Color(0xFFF43F5E); // rose
 const kGreen = Color(0xFF10B981); // emerald
 const kAmber = Color(0xFFF59E0B); // amber
@@ -80,9 +79,12 @@ extension AppColorsX on BuildContext {
 }
 
 // ── Theme builder ─────────────────────────────────────────────────────────────
+//
+// Now delegates all text styling to AppTypography.buildTextTheme() so there
+// is a single source of truth for fonts across the app.
+//
 ThemeData buildTheme(bool dark) {
   final c = dark ? AppColors.dark : AppColors.light;
-  final base = dark ? ThemeData.dark() : ThemeData.light();
 
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(
@@ -91,9 +93,15 @@ ThemeData buildTheme(bool dark) {
     ),
   );
 
+  final base = dark ? ThemeData.dark() : ThemeData.light();
+
   return base.copyWith(
     useMaterial3: true,
     scaffoldBackgroundColor: c.bg,
+
+    // ── Typography — single source of truth ────────────────────────────────
+    textTheme: AppTypography.buildTextTheme(dark: dark),
+
     colorScheme:
         (dark
                 ? const ColorScheme.dark(
@@ -105,21 +113,24 @@ ThemeData buildTheme(bool dark) {
                     secondary: kAccent,
                   ))
             .copyWith(surface: c.surface),
-    textTheme: GoogleFonts.poppinsTextTheme(base.textTheme).apply(
-      bodyColor: dark ? Colors.white : const Color(0xFF0F0F1A),
-      displayColor: dark ? Colors.white : const Color(0xFF0F0F1A),
-    ),
+
     appBarTheme: AppBarTheme(
       backgroundColor: c.surface,
       elevation: 0,
-      foregroundColor: dark ? Colors.white : const Color(0xFF0F0F1A),
       surfaceTintColor: Colors.transparent,
+      foregroundColor: dark ? Colors.white : const Color(0xFF0F0F1A),
+      // AppBar title style sourced from AppTypography
+      titleTextStyle: AppTypography.appBarTitle.copyWith(
+        color: dark ? Colors.white : const Color(0xFF0F0F1A),
+      ),
     ),
+
     cardTheme: CardThemeData(
       color: c.card,
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
+
     switchTheme: SwitchThemeData(
       thumbColor: WidgetStateProperty.resolveWith(
         (s) => s.contains(WidgetState.selected)
@@ -132,38 +143,12 @@ ThemeData buildTheme(bool dark) {
             : (dark ? const Color(0xFF252538) : const Color(0xFFDDDDEE)),
       ),
     ),
+
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
-        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.android: ZoomPageTransitionsBuilder(),
+        TargetPlatform.iOS: ZoomPageTransitionsBuilder(),
       },
     ),
   );
 }
-
-
-
-
-
-
-// class AppColors {
-//   // 🌿 Primary (Main brand)
-//   static const primary = Color(0xFF10B981); // Green
-//   static const primaryDark = Color(0xFF059669);
-
-//   // 💰 Money states
-//   static const income = Color(0xFF22C55E);
-//   static const expense = Color(0xFFEF4444);
-//   static const warning = Color(0xFFF59E0B);
-
-//   // 🎨 UI Backgrounds
-//   static const backgroundLight = Color(0xFFF8FAF9);
-//   static const cardLight = Color(0xFFFFFFFF);
-
-//   static const backgroundDark = Color(0xFF0B1411);
-//   static const cardDark = Color(0xFF111C1A);
-
-//   // 📝 Text
-//   static const textPrimary = Color(0xFF0F172A);
-//   static const textSecondary = Color(0xFF64748B);
-// }

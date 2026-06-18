@@ -738,7 +738,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get targetAmount => 'Target Amount';
 
   @override
-  String get days => 'Days';
+  String get days => 'days';
 
   @override
   String get createGoal => 'Create Goal';
@@ -775,4 +775,125 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get top => 'Top';
+
+  @override
+  String get commitments => 'Commitments';
+
+  @override
+  String get bills => 'Bills';
+
+  @override
+  String get emiAndLoans => 'EMI & Loans';
+
+  @override
+  String get deleteBill => 'Delete bill?';
+
+  @override
+  String get deleteLoan => 'Delete loan?';
+
+  @override
+  String willBeRemoved(Object title) {
+    return '$title will be removed.';
+  }
+
+  @override
+  String get yourLoans => 'Your Loans';
+
+  @override
+  String get outstanding => 'Outstanding';
+
+  @override
+  String get monthlyEmis => 'Monthly EMIs';
+
+  @override
+  String get missed => 'Missed';
+
+  @override
+  String get noLoansYet => 'No Loans Yet';
+
+  @override
+  String get noLoansDesc => 'Track EMIs, monitor progress\nand get reminded before due dates.';
+
+  @override
+  String get addFirstLoan => 'Add First Loan';
+
+  @override
+  String get addBillLabel => 'Add Bill';
+
+  @override
+  String get addLoan => 'Add Loan';
+
+  @override
+  String get recordPayment => 'Record Payment';
+
+  @override
+  String emiPaymentHint(Object amount, Object title) {
+    return '$title · EMI $amount';
+  }
+
+  @override
+  String get noteOptional => 'Note (optional)';
+
+  @override
+  String get extraPartPayment => 'Extra / Part Payment';
+
+  @override
+  String get reducesPrincipal => 'Reduces principal balance';
+
+  @override
+  String get saving => 'Saving…';
+
+  @override
+  String get recordExtraPayment => 'Record Extra Payment';
+
+  @override
+  String get markAsPaid => 'Mark as Paid';
+
+  @override
+  String get editLoan => 'Edit Loan';
+
+  @override
+  String get addEmiLoan => 'Add EMI / Loan';
+
+  @override
+  String get loanNameHint => 'Loan name (e.g. Home Loan, Car EMI)';
+
+  @override
+  String get lenderHint => 'Lender / Bank name';
+
+  @override
+  String get lenderUnknown => 'Unknown';
+
+  @override
+  String get principalAmount => 'Principal Amount';
+
+  @override
+  String get ratePerAnnum => 'Rate % p.a.';
+
+  @override
+  String get tenureMonths => 'Tenure (months)';
+
+  @override
+  String get autoCalcEmi => 'Auto-calculate EMI';
+
+  @override
+  String get autoCalcEmiSub => 'From principal, rate & tenure';
+
+  @override
+  String get monthlyEmiAmount => 'Monthly EMI Amount';
+
+  @override
+  String get loanStarted => 'Loan started:';
+
+  @override
+  String get emiDueDay => 'EMI Due Day';
+
+  @override
+  String get day => 'day';
+
+  @override
+  String get notesOptional => 'Notes (optional)';
+
+  @override
+  String get updateLoan => 'Update Loan';
 }

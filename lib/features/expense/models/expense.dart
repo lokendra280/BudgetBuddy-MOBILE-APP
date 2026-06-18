@@ -44,7 +44,7 @@ class Budget extends HiveObject {
   @HiveField(4)
   int referralCount;
   @HiveField(5)
-  String currency; 
+  String currency;
 
   Budget({
     this.monthlyLimit = 10000,
@@ -63,11 +63,26 @@ class CurrencyInfo {
 }
 
 const kCurrencies = [
+  // Asia-Pacific
   CurrencyInfo('NPR', 'Rs.', 'Nepali Rupee', '🇳🇵'),
-  CurrencyInfo('USD', '\$', 'US Dollar', '🇺🇸'),
   CurrencyInfo('INR', '₹', 'Indian Rupee', '🇮🇳'),
+  CurrencyInfo('CNY', '¥', 'Chinese Yuan', '🇨🇳'),
+  CurrencyInfo('JPY', '¥', 'Japanese Yen', '🇯🇵'),
+  CurrencyInfo('AUD', 'A\$', 'Australian Dollar', '🇦🇺'),
+  CurrencyInfo('SGD', 'S\$', 'Singapore Dollar', '🇸🇬'),
+  // Europe
   CurrencyInfo('EUR', '€', 'Euro', '🇪🇺'),
-  CurrencyInfo('AUD', 'A\$', 'AUD Dollar', '🇦🇺'),
+  CurrencyInfo('GBP', '£', 'British Pound', '🇬🇧'),
+  CurrencyInfo('CHF', 'CHF', 'Swiss Franc', '🇨🇭'),
+  // Americas
+  CurrencyInfo('USD', '\$', 'US Dollar', '🇺🇸'),
+  CurrencyInfo('CAD', 'C\$', 'Canadian Dollar', '🇨🇦'),
+  CurrencyInfo('BRL', 'R\$', 'Brazilian Real', '🇧🇷'),
+  CurrencyInfo('MXN', 'MX\$', 'Mexican Peso', '🇲🇽'),
+  // Middle-East
+  CurrencyInfo('AED', 'د.إ', 'UAE Dirham', '🇦🇪'),
+  CurrencyInfo('SAR', '﷼', 'Saudi Riyal', '🇸🇦'),
+  CurrencyInfo('KRW', '₩', 'South Korean Won', '🇰🇷'),
 ];
 
 CurrencyInfo currencyOf(String code) => kCurrencies.firstWhere(

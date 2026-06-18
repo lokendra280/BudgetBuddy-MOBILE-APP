@@ -257,7 +257,7 @@ class InputField extends StatelessWidget {
   final bool obscure;
   final Widget? suffix;
   final ValueChanged<String>? onChanged;
-
+  final bool enabled;
   const InputField({
     super.key,
     required this.hint,
@@ -266,6 +266,7 @@ class InputField extends StatelessWidget {
     this.keyboard,
     this.prefix,
     this.obscure = false,
+    this.enabled = true,
     this.suffix,
     this.onChanged,
   });
@@ -279,6 +280,7 @@ class InputField extends StatelessWidget {
       keyboardType: keyboard,
       obscureText: obscure,
       onChanged: onChanged,
+      enabled: enabled,
       style: TextStyle(color: context.textPrimary, fontSize: 14),
       decoration: InputDecoration(
         hintText: hint,
@@ -286,7 +288,8 @@ class InputField extends StatelessWidget {
         prefixIcon: prefix,
         suffixIcon: suffix,
         filled: true,
-        fillColor: c.card,
+        fillColor: enabled ? c.card : c.surface, // dimmed when disabled
+
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 14,
@@ -298,6 +301,11 @@ class InputField extends StatelessWidget {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(13),
           borderSide: BorderSide(color: c.border),
+        ),
+        disabledBorder: OutlineInputBorder(
+          // ← added
+          borderRadius: BorderRadius.circular(13),
+          borderSide: BorderSide(color: c.border.withOpacity(0.5)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(13),

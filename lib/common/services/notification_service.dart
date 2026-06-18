@@ -1,11 +1,12 @@
 import 'package:budgetBuddy/features/bill_reminder/models/bill_reminder.dart';
+import 'package:budgetBuddy/features/bill_reminder/models/emi_loan.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
-import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
   NotificationService._();
@@ -13,8 +14,14 @@ class NotificationService {
   static final _plugin = FlutterLocalNotificationsPlugin();
   static GlobalKey<NavigatorState>? navigatorKey;
 
-  // ── Channel definitions ───────────────────────────────────────────────────
-  static const _dailyDetails = AndroidNotificationDetails(
+  // ── ID ranges (no collisions) ──────────────────────────────────────────────
+  // Daily reminder  : 0
+  // Bill reminders  : hashCode % 100_000          (1 – 99_999)
+  // EMI reminders   : hashCode % 100_000 + 100_000 (100_000 – 199_999)
+  // Goal achieved   : hashCode % 100_000 + 200_000 (200_000 – 299_999)
+
+  // ── Android channel definitions ────────────────────────────────────────────
+  static const _dailyChannel = AndroidNotificationDetails(
     'daily_reminder',
     'Daily Reminder',
     channelDescription: 'Reminds you to log daily expenses',
@@ -24,7 +31,7 @@ class NotificationService {
     color: Color(0xFF6366F1),
   );
 
-  static const _billDetails = AndroidNotificationDetails(
+  static const _billChannel = AndroidNotificationDetails(
     'bill_reminders',
     'Bill Reminders',
     channelDescription: 'Upcoming bill and EMI payment reminders',
@@ -34,7 +41,17 @@ class NotificationService {
     color: Color(0xFFF59E0B),
   );
 
-  static const _goalDetails = AndroidNotificationDetails(
+  static const _emiChannel = AndroidNotificationDetails(
+    'emi_reminders',
+    'EMI & Loan Reminders',
+    channelDescription: 'Monthly EMI and loan due date reminders',
+    importance: Importance.high,
+    priority: Priority.high,
+    icon: '@mipmap/launcher_icon',
+    color: Color(0xFF10B981),
+  );
+
+  static const _goalChannel = AndroidNotificationDetails(
     'goal_achievements',
     'Goal Achievements',
     channelDescription: 'Notifications when savings goals are completed',
@@ -44,47 +61,48 @@ class NotificationService {
     color: Color(0xFF10B981),
   );
 
-  // ── iOS details (shared) ──────────────────────────────────────────────────
-  static const _iosDefault = DarwinNotificationDetails(
+  // ── iOS details (shared) ───────────────────────────────────────────────────
+  static const _ios = DarwinNotificationDetails(
     presentAlert: true,
     presentBadge: true,
     presentSound: true,
   );
 
-  // ── Notification details bundles ──────────────────────────────────────────
-  static const _dailyNotifDetails = NotificationDetails(
-    android: _dailyDetails,
-    iOS: _iosDefault,
+  // ── Notification details bundles ───────────────────────────────────────────
+  static const _dailyDetails = NotificationDetails(
+    android: _dailyChannel,
+    iOS: _ios,
+  );
+  static const _billDetails = NotificationDetails(
+    android: _billChannel,
+    iOS: _ios,
+  );
+  static const _emiDetails = NotificationDetails(
+    android: _emiChannel,
+    iOS: _ios,
+  );
+  static const _goalDetails = NotificationDetails(
+    android: _goalChannel,
+    iOS: _ios,
   );
 
-  static const _billNotifDetails = NotificationDetails(
-    android: _billDetails,
-    iOS: _iosDefault,
-  );
-
-  static const _goalNotifDetails = NotificationDetails(
-    android: _goalDetails,
-    iOS: _iosDefault,
-  );
-
-  // ── Payloads ──────────────────────────────────────────────────────────────
+  // ── Payload constants ──────────────────────────────────────────────────────
   static const billPayload = 'screen:bills';
+  static const emiPayload = 'screen:emi';
   static const goalPayload = 'screen:goals';
   static const homePayload = 'screen:home';
 
-  // ── Init ──────────────────────────────────────────────────────────────────
+  // ── Init ───────────────────────────────────────────────────────────────────
   static Future<void> init() async {
     try {
       tz_data.initializeTimeZones();
       final timezoneInfo = await FlutterTimezone.getLocalTimezone();
-      final String localTimezone = timezoneInfo.localizedName!.name;
-      tz.setLocalLocation(tz.getLocation(localTimezone));
+      tz.setLocalLocation(tz.getLocation(timezoneInfo.localizedName!.name));
 
       await _plugin.initialize(
-        settings: InitializationSettings(
-          android: const AndroidInitializationSettings('@mipmap/launcher_icon'),
-          iOS: const DarwinInitializationSettings(
-            // Request permissions explicitly via requestPermission()
+        settings: const InitializationSettings(
+          android: AndroidInitializationSettings('@mipmap/launcher_icon'),
+          iOS: DarwinInitializationSettings(
             requestAlertPermission: false,
             requestBadgePermission: false,
             requestSoundPermission: false,
@@ -96,7 +114,6 @@ class NotificationService {
 
       await requestPermission();
 
-      // Handle app launched from terminated state via notification
       final launchDetails = await _plugin.getNotificationAppLaunchDetails();
       if (launchDetails?.didNotificationLaunchApp == true) {
         _routeByPayload(launchDetails?.notificationResponse?.payload);
@@ -107,21 +124,18 @@ class NotificationService {
   }
 
   static Future<void> requestPermission() async {
-    // iOS
     await _plugin
         .resolvePlatformSpecificImplementation<
           IOSFlutterLocalNotificationsPlugin
         >()
         ?.requestPermissions(alert: true, badge: true, sound: true);
 
-    // Android 13+
     await _plugin
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
         >()
         ?.requestNotificationsPermission();
 
-    // Android — exact alarm permission (required for bill reminders)
     await _plugin
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
@@ -129,29 +143,28 @@ class NotificationService {
         ?.requestExactAlarmsPermission();
   }
 
-  // ── Tap routing ───────────────────────────────────────────────────────────
-  static void _onNotifTap(NotificationResponse response) =>
-      _routeByPayload(response.payload);
+  // ── Tap routing ────────────────────────────────────────────────────────────
+  static void _onNotifTap(NotificationResponse r) => _routeByPayload(r.payload);
 
   @pragma('vm:entry-point')
-  static void _onBgNotifTap(NotificationResponse response) =>
-      _routeByPayload(response.payload);
+  static void _onBgNotifTap(NotificationResponse r) =>
+      _routeByPayload(r.payload);
 
   static void _routeByPayload(String? payload) {
     if (payload == null) return;
     final nav = navigatorKey?.currentState;
     if (nav == null) return;
-
-    if (payload.startsWith('screen:bills')) {
+    if (payload.startsWith('screen:bills'))
       nav.pushNamed('/bills');
-    } else if (payload.startsWith('screen:goals')) {
+    else if (payload.startsWith('screen:emi'))
+      nav.pushNamed('/emi');
+    else if (payload.startsWith('screen:goals'))
       nav.pushNamed('/goals');
-    } else if (payload.startsWith('screen:home')) {
+    else if (payload.startsWith('screen:home'))
       nav.pushNamedAndRemoveUntil('/home', (_) => false);
-    }
   }
 
-  // ── Daily reminder ────────────────────────────────────────────────────────
+  // ── Daily reminder ─────────────────────────────────────────────────────────
   static Future<void> scheduleDailyReminder() async {
     try {
       await _plugin.periodicallyShow(
@@ -159,7 +172,7 @@ class NotificationService {
         title: 'BudgetBuddy',
         body: "Don't forget to log today's expenses!",
         repeatInterval: RepeatInterval.daily,
-        notificationDetails: _dailyNotifDetails,
+        notificationDetails: _dailyDetails,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         payload: homePayload,
       );
@@ -169,24 +182,18 @@ class NotificationService {
     }
   }
 
-  // ── Bill reminder ─────────────────────────────────────────────────────────
-  /// Schedules a notification [bill.remindDaysBefore] days before the due date.
-  /// Handles past-due dates by rolling to the next occurrence for recurring bills.
+  // ── Bill reminder ──────────────────────────────────────────────────────────
+  /// Schedules a notification [bill.remindDaysBefore] days before due date.
+  /// For recurring bills, rolls to next month if this month is already past.
   static Future<void> scheduleBillReminder(BillReminder bill) async {
     try {
       final due = bill.computedDueDate;
       final notifAt = due.subtract(Duration(days: bill.remindDaysBefore));
-      var scheduledDate = tz.TZDateTime.from(
-        DateTime(notifAt.year, notifAt.month, notifAt.day, 9, 0),
-        tz.local,
-      );
-
+      var scheduled = _toTZ(notifAt, hour: 9);
       final now = tz.TZDateTime.now(tz.local);
 
-      // If the scheduled time is already past, roll to next month for recurring
-      if (scheduledDate.isBefore(now)) {
+      if (scheduled.isBefore(now)) {
         if (!bill.isRecurring) return;
-
         final nextDue = DateTime(
           due.year,
           due.month + 1,
@@ -195,12 +202,8 @@ class NotificationService {
         final nextNotif = nextDue.subtract(
           Duration(days: bill.remindDaysBefore),
         );
-        scheduledDate = tz.TZDateTime.from(
-          DateTime(nextNotif.year, nextNotif.month, nextNotif.day, 9, 0),
-          tz.local,
-        );
-
-        if (scheduledDate.isBefore(now)) return; // still in the past — skip
+        scheduled = _toTZ(nextNotif, hour: 9);
+        if (scheduled.isBefore(now)) return;
       }
 
       await _plugin.zonedSchedule(
@@ -209,18 +212,15 @@ class NotificationService {
             '${bill.emoji} ${bill.title} due in ${bill.remindDaysBefore} days',
         body:
             '${bill.category} · ${bill.currency} ${bill.amount.toStringAsFixed(0)}',
-        scheduledDate: scheduledDate,
-        notificationDetails: _billNotifDetails,
+        scheduledDate: scheduled,
+        notificationDetails: _billDetails,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         matchDateTimeComponents: bill.isRecurring
             ? DateTimeComponents.dayOfMonthAndTime
             : null,
         payload: billPayload,
       );
-
-      debugPrint(
-        '[NotificationService] Bill "${bill.title}" scheduled at $scheduledDate',
-      );
+      debugPrint('[NotificationService] Bill "${bill.title}" → $scheduled');
     } catch (e) {
       debugPrint('[NotificationService] scheduleBillReminder error: $e');
     }
@@ -234,32 +234,88 @@ class NotificationService {
     }
   }
 
-  /// Re-schedules all active bill reminders (call on app start / device restart).
   static Future<void> rescheduleAllBillReminders(
     List<BillReminder> reminders,
   ) async {
-    for (final bill in reminders) {
-      await scheduleBillReminder(bill);
-    }
+    for (final bill in reminders) await scheduleBillReminder(bill);
     debugPrint(
       '[NotificationService] Rescheduled ${reminders.length} bill reminders',
     );
   }
 
-  // Stable int ID derived from string UUID
-  static int _billNotifId(String id) => id.hashCode.abs() % 100000;
+  // ── EMI / Loan reminder ────────────────────────────────────────────────────
+  /// Schedules a notification [loan.remindDaysBefore] days before the EMI due date.
+  /// Recurring monthly: uses [DateTimeComponents.dayOfMonthAndTime] so it
+  /// fires automatically every month without re-scheduling.
+  static Future<void> scheduleEmiReminder(EmiLoan loan) async {
+    try {
+      final due = loan.nextDueDate;
+      final notifAt = due.subtract(Duration(days: loan.remindDaysBefore));
+      var scheduled = _toTZ(notifAt, hour: 9);
+      final now = tz.TZDateTime.now(tz.local);
 
-  // ── Goal achievement ──────────────────────────────────────────────────────
+      if (scheduled.isBefore(now)) {
+        // Roll to next month
+        final nextDue = DateTime(
+          due.year,
+          due.month + 1,
+          loan.dayOfMonth.clamp(1, 28),
+        );
+        final nextNotif = nextDue.subtract(
+          Duration(days: loan.remindDaysBefore),
+        );
+        scheduled = _toTZ(nextNotif, hour: 9);
+        if (scheduled.isBefore(now)) return;
+      }
+
+      final amtFmt = NumberFormat('#,##0', 'en_US').format(loan.emiAmount);
+
+      await _plugin.zonedSchedule(
+        id: _emiNotifId(loan.id),
+        title: '${loan.emoji} EMI Due Soon — ${loan.title}',
+        body:
+            '${loan.lenderName} · ${loan.currency} $amtFmt due ${DateFormat('MMM d').format(due)}',
+        scheduledDate: scheduled,
+        notificationDetails: _emiDetails,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        // Recurring monthly — fires on the same day each month automatically
+        matchDateTimeComponents: DateTimeComponents.dayOfMonthAndTime,
+        payload: emiPayload,
+      );
+      debugPrint('[NotificationService] EMI "${loan.title}" → $scheduled');
+    } catch (e) {
+      debugPrint('[NotificationService] scheduleEmiReminder error: $e');
+    }
+  }
+
+  static Future<void> cancelEmiReminder(String loanId) async {
+    try {
+      await _plugin.cancel(id: _emiNotifId(loanId));
+    } catch (e) {
+      debugPrint('[NotificationService] cancelEmiReminder error: $e');
+    }
+  }
+
+  static Future<void> rescheduleAllEmiReminders(List<EmiLoan> loans) async {
+    for (final loan in loans) {
+      if (loan.remindersEnabled && loan.isActive)
+        await scheduleEmiReminder(loan);
+    }
+    debugPrint(
+      '[NotificationService] Rescheduled ${loans.length} EMI reminders',
+    );
+  }
+
+  // ── Goal achievement ───────────────────────────────────────────────────────
   static Future<void> showGoalCompletedNotification({
     required String goalName,
   }) async {
     try {
       await _plugin.show(
-        id: goalName.hashCode.abs() % 100000,
+        id: goalName.hashCode.abs() % 100000 + 200000,
         title: '🎉 Goal Achieved!',
-        body:
-            'Congratulations! You have reached your "$goalName" savings goal.',
-        notificationDetails: _goalNotifDetails,
+        body: 'Congratulations! You reached your "$goalName" savings goal.',
+        notificationDetails: _goalDetails,
         payload: goalPayload,
       );
     } catch (e) {
@@ -269,7 +325,7 @@ class NotificationService {
     }
   }
 
-  // ── Debug / testing ───────────────────────────────────────────────────────
+  // ── Debug ──────────────────────────────────────────────────────────────────
   static Future<void> showNow({
     String title = 'BudgetBuddy',
     String body = 'Your finances are waiting!',
@@ -279,17 +335,28 @@ class NotificationService {
         id: 1,
         title: title,
         body: body,
-        notificationDetails: _dailyNotifDetails,
+        notificationDetails: _dailyDetails,
       );
     } catch (e) {
       debugPrint('[NotificationService] showNow error: $e');
     }
   }
 
-  // ── Cancel ────────────────────────────────────────────────────────────────
   static Future<void> cancelAll() async {
     try {
       await _plugin.cancelAll();
     } catch (_) {}
   }
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  /// Convert a [DateTime] to a [tz.TZDateTime] at the given [hour]:00 local.
+  static tz.TZDateTime _toTZ(DateTime d, {int hour = 9}) =>
+      tz.TZDateTime(tz.local, d.year, d.month, d.day, hour);
+
+  /// Stable int notification ID for bills (range 1 – 99_999).
+  static int _billNotifId(String id) => id.hashCode.abs() % 100000;
+
+  /// Stable int notification ID for EMIs (range 100_000 – 199_999).
+  /// Offset by 100_000 guarantees zero collision with bill IDs.
+  static int _emiNotifId(String id) => id.hashCode.abs() % 100000 + 100000;
 }

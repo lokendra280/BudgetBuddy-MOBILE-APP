@@ -17,7 +17,6 @@ class ThemeNotifier extends Notifier<ThemeMode> {
 
   @override
   ThemeMode build() {
-    // Reads directly from pre-loaded prefs → correct value on frame 1
     final saved = _prefs.getString(_key);
     if (saved == 'dark') return ThemeMode.dark;
     if (saved == 'system') return ThemeMode.system;
@@ -41,31 +40,64 @@ final themeProvider = NotifierProvider<ThemeNotifier, ThemeMode>(
 // ── Locale ────────────────────────────────────────────────────────────────────
 class LocaleNotifier extends Notifier<Locale> {
   static const _key = 'locale';
-  static const supported = [Locale('en'), Locale('ne'), Locale('hi')];
+
+  // ── Supported locales — keep in sync with kLanguages in app_catalogue.dart ─
+  static const supported = [
+    Locale('en'),
+    Locale('ne'),
+    Locale('hi'),
+    Locale('pt'), // ← Portuguese (BR)
+    Locale('zh'), // ← Chinese (Simplified)
+  ];
+
+  // (nativeName, englishName) pairs — used in settings language picker
   static const labels = {
-    'en': ('English', 'English'),
+    'en': ('English', 'English (US)'),
     'ne': ('नेपाली', 'Nepali'),
     'hi': ('हिन्दी', 'Hindi'),
+    'pt': ('Português', 'Portuguese (BR)'),
+    'zh': ('中文', 'Chinese (Simplified)'),
   };
-  static const flags = {'en': '🇬🇧', 'ne': '🇳🇵', 'hi': '🇮🇳'};
+
+  // Country flags — used next to language names in UI
+  static const flags = {
+    'en': '🇺🇸',
+    'ne': '🇳🇵',
+    'hi': '🇮🇳',
+    'pt': '🇧🇷',
+    'zh': '🇨🇳',
+  };
+
+  // Default currency suggestion per locale —
+  // mirrors LangOption.defaultCurrency in app_catalogue.dart
+  static const defaultCurrency = {
+    'en': 'USD',
+    'ne': 'NPR',
+    'hi': 'INR',
+    'pt': 'BRL',
+    'zh': 'CNY',
+  };
 
   @override
   Locale build() {
-    // Reads directly from pre-loaded prefs → correct locale on frame 1
-    // FIX: Previously build() always returned Locale('en') and relied on
-    // init() being called later from SplashScreen. That caused:
-    //   1. A flash of English on every cold start
-    //   2. App defaulting to English on hot restart (init() not re-called)
-    //   3. Language reverting after app kill if init() hadn't run yet
+    // Reads directly from pre-loaded prefs → correct locale on frame 1.
+    // Falls back to 'en' if nothing saved yet.
     final code = _prefs.getString(_key) ?? 'en';
-    return Locale(code);
+    // Safety: if a stored code is no longer supported, fall back to 'en'
+    final isSupported = supported.any((l) => l.languageCode == code);
+    return Locale(isSupported ? code : 'en');
   }
 
   Future<void> setLocale(Locale locale) async {
     state = locale;
-    // Save immediately — next cold start build() will read this value
     await _prefs.setString(_key, locale.languageCode);
   }
+
+  // Convenience getter used by LanguageScreen / settings
+  String get currentCode => state.languageCode;
+
+  // Returns the suggested currency code for the current locale
+  String get suggestedCurrency => defaultCurrency[state.languageCode] ?? 'USD';
 }
 
 final localeProvider = NotifierProvider<LocaleNotifier, Locale>(

@@ -1,5 +1,7 @@
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
+import 'package:budgetBuddy/common/constant/app_catalogue.dart';
+import 'package:budgetBuddy/common/constant/app_typography.dart';
 import 'package:budgetBuddy/common/theme_provider.dart';
 import 'package:budgetBuddy/features/profile/ui/currency_screen.dart';
 import 'package:flutter/material.dart';
@@ -9,61 +11,36 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class LanguageScreen extends ConsumerStatefulWidget {
   const LanguageScreen({super.key});
   @override
-  ConsumerState<LanguageScreen> createState() => _State(); // ← was State<LanguageScreen>
+  ConsumerState<LanguageScreen> createState() => _LanguageScreenState();
 }
 
-class _LangOption {
-  final String code, flag, native, english, defaultCurrency;
-  const _LangOption(
-    this.code,
-    this.flag,
-    this.native,
-    this.english,
-    this.defaultCurrency,
-  );
-}
-
-const _langs = [
-  _LangOption('ne', '🇳🇵', 'नेपाली', 'Nepali', 'NPR'),
-  _LangOption('en', '🇺🇸', 'English', 'English (US)', 'USD'),
-  _LangOption('hi', '🇮🇳', 'हिन्दी', 'Hindi', 'INR'),
-];
-
-class _State extends ConsumerState<LanguageScreen> {
+class _LanguageScreenState extends ConsumerState<LanguageScreen> {
   int _sel = 0;
 
   @override
   void initState() {
     super.initState();
-    // Pre-select the language that is currently active so the screen
-    // doesn't always open on the first item.
     final currentCode = ref.read(localeProvider).languageCode;
-    final idx = _langs.indexWhere((l) => l.code == currentCode);
+    final idx = kLanguages.indexWhere((l) => l.code == currentCode);
     if (idx >= 0) _sel = idx;
   }
 
-  // BUG FIX 1a: change language INSTANTLY on tap — MaterialApp.locale is
-  // driven by localeProvider which SpendSenseApp watches. Calling setLocale()
-  // here means the whole widget tree rebuilds immediately with the new locale,
-  // so the user sees translated strings before they even press Next.
   Future<void> _select(int index) async {
     HapticFeedback.selectionClick();
     setState(() => _sel = index);
-    // Instant language switch — MaterialApp.locale updates in the same frame
     await ref
         .read(localeProvider.notifier)
-        .setLocale(Locale(_langs[index].code));
+        .setLocale(Locale(kLanguages[index].code));
   }
 
   Future<void> _next() async {
     HapticFeedback.mediumImpact();
-    final lang = _langs[_sel];
-    // setLocale already called in _select — no need to call again
     if (!mounted) return;
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => CurrencyScreen(suggestedCurrency: lang.defaultCurrency),
+        builder: (_) =>
+            CurrencyScreen(suggestedCurrency: kLanguages[_sel].defaultCurrency),
       ),
     );
   }
@@ -71,8 +48,6 @@ class _State extends ConsumerState<LanguageScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    // Watch the provider so the screen itself rebuilds when locale changes
-    // (e.g. the title text would update if it used AppLocalizations)
     ref.watch(localeProvider);
 
     return Scaffold(
@@ -89,109 +64,84 @@ class _State extends ConsumerState<LanguageScreen> {
 
               const Text('🌐', style: TextStyle(fontSize: 44)),
               const SizedBox(height: 16),
-              const Text(
-                'Pick your language',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                  height: 1.2,
-                ),
-              ),
+              Text('Pick your language', style: context.t.h1),
               const SizedBox(height: 8),
               Text(
                 'You can change this anytime in Settings',
-                style: TextStyle(fontSize: 14, color: c.textMuted),
+                style: context.t.bodySub,
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 28),
 
-              ..._langs.asMap().entries.map((e) {
-                final lang = e.value;
-                final sel = _sel == e.key;
-                return GestureDetector(
-                  onTap: () => _select(e.key), // ← calls setLocale immediately
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: sel
-                          ? AppColors.primaryColor.withOpacity(0.08)
-                          : c.card,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: sel ? AppColors.primaryColor : c.border,
-                        width: sel ? 1.5 : 1,
-                      ),
-                      boxShadow: !context.isDark && !sel
-                          ? [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.04),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ]
-                          : null,
-                    ),
-                    child: Row(
-                      children: [
-                        Text(lang.flag, style: const TextStyle(fontSize: 28)),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                lang.native,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: sel
-                                      ? AppColors.primaryColor
-                                      : context.textPrimary,
-                                ),
-                              ),
-                              Text(
-                                lang.english,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: c.textMuted,
-                                ),
-                              ),
-                            ],
+              // Language list — now iterates kLanguages from app_catalogue.dart
+              Expanded(
+                child: ListView.builder(
+                  itemCount: kLanguages.length,
+                  itemBuilder: (_, i) {
+                    final lang = kLanguages[i];
+                    final sel = _sel == i;
+                    return GestureDetector(
+                      onTap: () => _select(i),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: sel
+                              ? AppColors.primaryColor.withOpacity(0.08)
+                              : c.card,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: sel ? AppColors.primaryColor : c.border,
+                            width: sel ? 1.5 : 1,
                           ),
+                          boxShadow: !context.isDark && !sel
+                              ? [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.04),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                              : null,
                         ),
-                        if (sel)
-                          Container(
-                            width: 22,
-                            height: 22,
-                            decoration: const BoxDecoration(
-                              color: AppColors.primaryColor,
-                              shape: BoxShape.circle,
+                        child: Row(
+                          children: [
+                            Text(
+                              lang.flag,
+                              style: const TextStyle(fontSize: 28),
                             ),
-                            child: const Icon(
-                              Icons.check_rounded,
-                              size: 14,
-                              color: Colors.white,
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    lang.native,
+                                    style: context.t.h4.colored(
+                                      sel
+                                          ? AppColors.primaryColor
+                                          : context.textPrimary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    lang.english,
+                                    style: context.t.labelMuted,
+                                  ),
+                                ],
+                              ),
                             ),
-                          )
-                        else
-                          Container(
-                            width: 22,
-                            height: 22,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: c.border, width: 1.5),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
+                            _SelectionDot(selected: sel),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
 
-              const Spacer(),
-
+              const SizedBox(height: 8),
               AppButton(
                 label: 'Next — Select Currency',
                 onTap: _next,
@@ -205,6 +155,40 @@ class _State extends ConsumerState<LanguageScreen> {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared sub-widgets
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Green check dot when selected, empty circle when not.
+class _SelectionDot extends StatelessWidget {
+  final bool selected;
+  const _SelectionDot({required this.selected});
+
+  @override
+  Widget build(BuildContext context) {
+    if (selected) {
+      return Container(
+        width: 22,
+        height: 22,
+        decoration: const BoxDecoration(
+          color: AppColors.primaryColor,
+          shape: BoxShape.circle,
+        ),
+        child: const Icon(Icons.check_rounded, size: 14, color: Colors.white),
+      );
+    }
+    return Container(
+      width: 22,
+      height: 22,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: context.c.border, width: 1.5),
+      ),
+    );
+  }
+}
+
+/// Segmented progress bar + "Step N of M" label.
 class _StepIndicator extends StatelessWidget {
   final int step, total;
   const _StepIndicator({required this.step, required this.total});
@@ -231,14 +215,7 @@ class _StepIndicator extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          'Step $step of $total',
-          style: TextStyle(
-            fontSize: 11,
-            color: c.textMuted,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        Text('Step $step of $total', style: context.t.overline),
       ],
     );
   }

@@ -1,5 +1,6 @@
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
+import 'package:budgetBuddy/common/constant/app_typography.dart';
 import 'package:budgetBuddy/common/widgets/empty_widget.dart';
 import 'package:budgetBuddy/features/bill_reminder/models/bill_reminder.dart';
 import 'package:budgetBuddy/features/bill_reminder/providers/bill_reminder_provider.dart';
@@ -22,19 +23,19 @@ class BillReminderScreen extends ConsumerWidget {
     final c = context.c;
     final dueSoon = state.dueSoon;
     final overdue = state.overdue;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: c.bg,
       appBar: AppBar(
         backgroundColor: c.surface,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          AppLocalizations.of(context)!.billReminder,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-        ),
+        title: Text(l10n.billReminder, style: context.t.appBarTitle),
         centerTitle: true,
         actions: [
           IconButton(
@@ -43,11 +44,12 @@ class BillReminderScreen extends ConsumerWidget {
               color: AppColors.primaryColor,
               size: 24,
             ),
-            tooltip: AppLocalizations.of(context)!.addBill,
+            tooltip: l10n.addBill,
             onPressed: () => _showAddSheet(context, ref, sym),
           ),
         ],
       ),
+
       body: state.isLoading
           ? const Center(
               child: CircularProgressIndicator(
@@ -57,7 +59,7 @@ class BillReminderScreen extends ConsumerWidget {
             )
           : Column(
               children: [
-                // ── Overdue alert strip ─────────────────────────────────────────
+                // ── Alert strips ───────────────────────────────────────────
                 if (overdue.isNotEmpty)
                   BillAlertStrip(
                     overdue: overdue,
@@ -65,26 +67,15 @@ class BillReminderScreen extends ConsumerWidget {
                     fmt: fmt,
                     onTap: () {},
                   ),
-
-                // ── Due soon strip ──────────────────────────────────────────────
                 if (dueSoon.isNotEmpty && overdue.isEmpty)
                   BillAlertStrip(
-                    overdue: [],
+                    overdue: const [],
                     dueSoon: dueSoon,
                     fmt: fmt,
                     onTap: () {},
                   ),
 
-                // ── Due soon strip ──────────────────────────────────────────────
-                // if (dueSoon.isNotEmpty && overdue.isEmpty)
-                //   BillAlertStrip(
-                //     overdue: [],
-                //     dueSoon: dueSoon,
-                //     fmt: (double p1) {},
-                //     onTap: () {},
-                //   ),
-
-                // ── Monthly commitment summary ───────────────────────────────────
+                // ── Monthly commitment summary ──────────────────────────────
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                   child: AppCard(
@@ -95,21 +86,14 @@ class BillReminderScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                AppLocalizations.of(
-                                  context,
-                                )!.monthlyCommitments,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: c.textMuted,
-                                ),
+                                l10n.monthlyCommitments,
+                                style: context.t.labelMuted,
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 fmt(state.monthlyTotal),
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w900,
-                                  color: kAccent,
+                                style: AppTypography.amountLarge.colored(
+                                  kAccent,
                                 ),
                               ),
                             ],
@@ -119,19 +103,13 @@ class BillReminderScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              '${state.all.length} ${AppLocalizations.of(context)!.bill}',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: c.textMuted,
-                              ),
+                              '${state.all.length} ${l10n.bill}',
+                              style: context.t.labelMuted,
                             ),
                             Text(
-                              '${state.all.where((b) => b.isActive).length} ${AppLocalizations.of(context)!.active}',
-                              style: const TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: kGreen,
-                              ),
+                              '${state.all.where((b) => b.isActive).length}'
+                              ' ${l10n.active}',
+                              style: AppTypography.labelLarge.colored(kGreen),
                             ),
                           ],
                         ),
@@ -141,7 +119,7 @@ class BillReminderScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 10),
 
-                // ── Paginated bill list ─────────────────────────────────────────
+                // ── Bill list / empty state ─────────────────────────────────
                 Expanded(
                   child: state.all.isEmpty
                       ? EmptyState(
@@ -170,24 +148,25 @@ class BillReminderScreen extends ConsumerWidget {
                         ),
                 ),
 
-                // ── Pagination controls ─────────────────────────────────────────
+                // ── Pagination ──────────────────────────────────────────────
                 if (state.totalPages > 1)
                   _PaginationBar(state: state, ref: ref),
               ],
             ),
 
-      // ── FAB — add bill ────────────────────────────────────────────────────
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddSheet(context, ref, sym),
         backgroundColor: AppColors.primaryColor,
         icon: const Icon(Icons.add_rounded, color: Colors.white),
         label: Text(
-          AppLocalizations.of(context)!.addBill,
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+          l10n.addBill,
+          style: AppTypography.buttonSmall.colored(Colors.white),
         ),
       ),
     );
   }
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
 
   Future<void> _confirmDelete(
     BuildContext context,
@@ -198,19 +177,19 @@ class BillReminderScreen extends ConsumerWidget {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: context.c.card,
-        title: const Text(
-          'Delete bill?',
-          style: TextStyle(fontWeight: FontWeight.w700),
+        title: Text('Delete bill?', style: AppTypography.h3),
+        content: Text(
+          '${bill.title} will be removed.',
+          style: AppTypography.body,
         ),
-        content: Text('${bill.title} will be removed.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text('Cancel', style: AppTypography.body),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete', style: TextStyle(color: kAccent)),
+            child: Text('Delete', style: AppTypography.body.colored(kAccent)),
           ),
         ],
       ),
@@ -223,22 +202,21 @@ class BillReminderScreen extends ConsumerWidget {
     WidgetRef ref,
     String sym, {
     BillReminder? existing,
-  }) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: context.c.card,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (_) => AddBillSheet(existing: existing, sym: sym),
-    );
-  }
+  }) => showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: context.c.card,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    ),
+    builder: (_) => AddBillSheet(existing: existing, sym: sym),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PAGINATION BAR
+// Pagination bar
 // ─────────────────────────────────────────────────────────────────────────────
+
 class _PaginationBar extends StatelessWidget {
   final BillReminderState state;
   final WidgetRef ref;
@@ -248,6 +226,7 @@ class _PaginationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final notifier = ref.read(billReminderProvider.notifier);
     final c = context.c;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
@@ -257,14 +236,14 @@ class _PaginationBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Prev
           _PageBtn(
             Icons.chevron_left_rounded,
             state.hasPrevPage,
             notifier.prevPage,
           ),
           const SizedBox(width: 12),
-          // Page indicator dots
+
+          // Dot indicators
           ...List.generate(
             state.totalPages,
             (i) => GestureDetector(
@@ -281,8 +260,8 @@ class _PaginationBar extends StatelessWidget {
               ),
             ),
           ),
+
           const SizedBox(width: 12),
-          // Next
           _PageBtn(
             Icons.chevron_right_rounded,
             state.hasNextPage,
@@ -291,7 +270,7 @@ class _PaginationBar extends StatelessWidget {
           const SizedBox(width: 12),
           Text(
             '${state.page + 1} / ${state.totalPages}',
-            style: TextStyle(fontSize: 12, color: c.textMuted),
+            style: context.t.labelMuted,
           ),
         ],
       ),
@@ -304,6 +283,7 @@ class _PageBtn extends StatelessWidget {
   final bool enabled;
   final VoidCallback onTap;
   const _PageBtn(this.icon, this.enabled, this.onTap);
+
   @override
   Widget build(BuildContext context) => GestureDetector(
     onTap: enabled ? onTap : null,

@@ -8,6 +8,8 @@ import 'package:budgetBuddy/common/navigation_service.dart';
 import 'package:budgetBuddy/common/services/ads_service.dart';
 import 'package:budgetBuddy/common/widgets/emoji_image.dart';
 import 'package:budgetBuddy/features/bill_reminder/ui/pages/bill_reminder_screen.dart';
+import 'package:budgetBuddy/features/bill_reminder/ui/pages/commitments_screen.dart';
+import 'package:budgetBuddy/features/bill_reminder/ui/pages/emi_loan_screen.dart';
 import 'package:budgetBuddy/features/expense/models/expense.dart';
 import 'package:budgetBuddy/features/expense/services/category_services.dart';
 import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
@@ -190,7 +192,7 @@ class _S extends ConsumerState<AddExpenseScreen> {
                   }),
                 ),
                 _Tog(AppLocalizations.of(context)!.emi, false, c.border, () {
-                  NavigationService.push(target: BillReminderScreen());
+                  NavigationService.push(target: CommitmentsScreen());
                 }),
               ],
             ),

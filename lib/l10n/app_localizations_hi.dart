@@ -495,7 +495,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get dueOnDayOfMonth => 'महीने के किस दिन देय है';
 
   @override
-  String get remindMeBefore => 'पहले रिमाइंड करें';
+  String get remindMeBefore => 'पहले याद दिलाएं';
 
   @override
   String get addSchedule => 'रिमाइंडर जोड़ें और शेड्यूल करें';
@@ -775,4 +775,125 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get top => 'शीर्ष';
+
+  @override
+  String get commitments => 'प्रतिबद्धताएं';
+
+  @override
+  String get bills => 'बिल';
+
+  @override
+  String get emiAndLoans => 'EMI और ऋण';
+
+  @override
+  String get deleteBill => 'बिल हटाएं?';
+
+  @override
+  String get deleteLoan => 'ऋण हटाएं?';
+
+  @override
+  String willBeRemoved(Object title) {
+    return '$title हटा दिया जाएगा।';
+  }
+
+  @override
+  String get yourLoans => 'आपके ऋण';
+
+  @override
+  String get outstanding => 'बकाया';
+
+  @override
+  String get monthlyEmis => 'मासिक EMI';
+
+  @override
+  String get missed => 'चूका';
+
+  @override
+  String get noLoansYet => 'अभी कोई ऋण नहीं';
+
+  @override
+  String get noLoansDesc => 'EMI ट्रैक करें, प्रगति देखें\nऔर देय तिथि से पहले अनुस्मारक पाएं।';
+
+  @override
+  String get addFirstLoan => 'पहला ऋण जोड़ें';
+
+  @override
+  String get addBillLabel => 'बिल जोड़ें';
+
+  @override
+  String get addLoan => 'ऋण जोड़ें';
+
+  @override
+  String get recordPayment => 'भुगतान दर्ज करें';
+
+  @override
+  String emiPaymentHint(Object amount, Object title) {
+    return '$title · EMI $amount';
+  }
+
+  @override
+  String get noteOptional => 'नोट (वैकल्पिक)';
+
+  @override
+  String get extraPartPayment => 'अतिरिक्त / आंशिक भुगतान';
+
+  @override
+  String get reducesPrincipal => 'मूलधन को कम करता है';
+
+  @override
+  String get saving => 'सहेज रहा है…';
+
+  @override
+  String get recordExtraPayment => 'अतिरिक्त भुगतान दर्ज करें';
+
+  @override
+  String get markAsPaid => 'भुगतान किया गया चिह्नित करें';
+
+  @override
+  String get editLoan => 'ऋण संपादित करें';
+
+  @override
+  String get addEmiLoan => 'EMI / ऋण जोड़ें';
+
+  @override
+  String get loanNameHint => 'ऋण का नाम (जैसे होम लोन, कार EMI)';
+
+  @override
+  String get lenderHint => 'ऋणदाता / बैंक का नाम';
+
+  @override
+  String get lenderUnknown => 'अज्ञात';
+
+  @override
+  String get principalAmount => 'मूलधन राशि';
+
+  @override
+  String get ratePerAnnum => 'दर % प्रति वर्ष';
+
+  @override
+  String get tenureMonths => 'अवधि (महीने)';
+
+  @override
+  String get autoCalcEmi => 'EMI स्वतः गणना करें';
+
+  @override
+  String get autoCalcEmiSub => 'मूलधन, दर और अवधि से';
+
+  @override
+  String get monthlyEmiAmount => 'मासिक EMI राशि';
+
+  @override
+  String get loanStarted => 'ऋण प्रारंभ:';
+
+  @override
+  String get emiDueDay => 'EMI देय दिवस';
+
+  @override
+  String get day => 'दिन';
+
+  @override
+  String get notesOptional => 'नोट (वैकल्पिक)';
+
+  @override
+  String get updateLoan => 'ऋण अपडेट करें';
 }

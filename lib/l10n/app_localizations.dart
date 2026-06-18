@@ -8,6 +8,8 @@ import 'package:intl/intl.dart' as intl;
 import 'app_localizations_en.dart';
 import 'app_localizations_hi.dart';
 import 'app_localizations_ne.dart';
+import 'app_localizations_pt.dart';
+import 'app_localizations_zh.dart';
 
 // ignore_for_file: type=lint
 
@@ -94,7 +96,9 @@ abstract class AppLocalizations {
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
     Locale('hi'),
-    Locale('ne')
+    Locale('ne'),
+    Locale('pt'),
+    Locale('zh')
   ];
 
   /// No description provided for @appName.
@@ -1558,7 +1562,7 @@ abstract class AppLocalizations {
   /// No description provided for @days.
   ///
   /// In en, this message translates to:
-  /// **'Days'**
+  /// **'days'**
   String get days;
 
   /// No description provided for @createGoal.
@@ -1632,6 +1636,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Top'**
   String get top;
+
+  /// No description provided for @commitments.
+  ///
+  /// In en, this message translates to:
+  /// **'Commitments'**
+  String get commitments;
+
+  /// No description provided for @bills.
+  ///
+  /// In en, this message translates to:
+  /// **'Bills'**
+  String get bills;
+
+  /// No description provided for @emiAndLoans.
+  ///
+  /// In en, this message translates to:
+  /// **'EMI & Loans'**
+  String get emiAndLoans;
+
+  /// No description provided for @deleteBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete bill?'**
+  String get deleteBill;
+
+  /// No description provided for @deleteLoan.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete loan?'**
+  String get deleteLoan;
+
+  /// No description provided for @willBeRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} will be removed.'**
+  String willBeRemoved(Object title);
+
+  /// No description provided for @yourLoans.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Loans'**
+  String get yourLoans;
+
+  /// No description provided for @outstanding.
+  ///
+  /// In en, this message translates to:
+  /// **'Outstanding'**
+  String get outstanding;
+
+  /// No description provided for @monthlyEmis.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly EMIs'**
+  String get monthlyEmis;
+
+  /// No description provided for @missed.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed'**
+  String get missed;
+
+  /// No description provided for @noLoansYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No Loans Yet'**
+  String get noLoansYet;
+
+  /// No description provided for @noLoansDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Track EMIs, monitor progress\nand get reminded before due dates.'**
+  String get noLoansDesc;
+
+  /// No description provided for @addFirstLoan.
+  ///
+  /// In en, this message translates to:
+  /// **'Add First Loan'**
+  String get addFirstLoan;
+
+  /// No description provided for @addBillLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Bill'**
+  String get addBillLabel;
+
+  /// No description provided for @addLoan.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Loan'**
+  String get addLoan;
+
+  /// No description provided for @recordPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Payment'**
+  String get recordPayment;
+
+  /// No description provided for @emiPaymentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} · EMI {amount}'**
+  String emiPaymentHint(Object amount, Object title);
+
+  /// No description provided for @noteOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get noteOptional;
+
+  /// No description provided for @extraPartPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Extra / Part Payment'**
+  String get extraPartPayment;
+
+  /// No description provided for @reducesPrincipal.
+  ///
+  /// In en, this message translates to:
+  /// **'Reduces principal balance'**
+  String get reducesPrincipal;
+
+  /// No description provided for @saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get saving;
+
+  /// No description provided for @recordExtraPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Extra Payment'**
+  String get recordExtraPayment;
+
+  /// No description provided for @markAsPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as Paid'**
+  String get markAsPaid;
+
+  /// No description provided for @editLoan.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Loan'**
+  String get editLoan;
+
+  /// No description provided for @addEmiLoan.
+  ///
+  /// In en, this message translates to:
+  /// **'Add EMI / Loan'**
+  String get addEmiLoan;
+
+  /// No description provided for @loanNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan name (e.g. Home Loan, Car EMI)'**
+  String get loanNameHint;
+
+  /// No description provided for @lenderHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Lender / Bank name'**
+  String get lenderHint;
+
+  /// No description provided for @lenderUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get lenderUnknown;
+
+  /// No description provided for @principalAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Principal Amount'**
+  String get principalAmount;
+
+  /// No description provided for @ratePerAnnum.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate % p.a.'**
+  String get ratePerAnnum;
+
+  /// No description provided for @tenureMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'Tenure (months)'**
+  String get tenureMonths;
+
+  /// No description provided for @autoCalcEmi.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-calculate EMI'**
+  String get autoCalcEmi;
+
+  /// No description provided for @autoCalcEmiSub.
+  ///
+  /// In en, this message translates to:
+  /// **'From principal, rate & tenure'**
+  String get autoCalcEmiSub;
+
+  /// No description provided for @monthlyEmiAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly EMI Amount'**
+  String get monthlyEmiAmount;
+
+  /// No description provided for @loanStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan started:'**
+  String get loanStarted;
+
+  /// No description provided for @emiDueDay.
+  ///
+  /// In en, this message translates to:
+  /// **'EMI Due Day'**
+  String get emiDueDay;
+
+  /// No description provided for @day.
+  ///
+  /// In en, this message translates to:
+  /// **'day'**
+  String get day;
+
+  /// No description provided for @notesOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes (optional)'**
+  String get notesOptional;
+
+  /// No description provided for @updateLoan.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Loan'**
+  String get updateLoan;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -1643,7 +1881,7 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['en', 'hi', 'ne'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'hi', 'ne', 'pt', 'zh'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -1657,6 +1895,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
     case 'en': return AppLocalizationsEn();
     case 'hi': return AppLocalizationsHi();
     case 'ne': return AppLocalizationsNe();
+    case 'pt': return AppLocalizationsPt();
+    case 'zh': return AppLocalizationsZh();
   }
 
   throw FlutterError(
