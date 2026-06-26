@@ -303,5 +303,14 @@
   "notesOptional":          "Notas (opcional)",
   "saving":                 "Salvando…",
   "updateLoan":             "Atualizar Empréstimo",
-  "addLoan":                "Adicionar Empréstimo"
+  "addLoan":                "Adicionar Empréstimo",
+  "addHomeWidget": "Adicionar Widget à Tela Inicial",
+"addHomeWidgetSubtitle": "Veja seu orçamento de relance",
+"addWidgetTitle": "Adicionar Widget de Orçamento",
+"addWidgetDesc": "Siga estes passos para adicionar o widget à tela inicial",
+"addWidgetStep1": "Pressione e segure uma área vazia da tela inicial",
+"addWidgetStep2": "Toque em \"Widgets\" no menu que aparecer",
+"addWidgetStep3": "Pesquise por \"Budget Buddy\" na lista de widgets",
+"addWidgetStep4": "Pressione e segure o widget e arraste para a tela inicial",
+"gotIt": "Entendido!"
 }

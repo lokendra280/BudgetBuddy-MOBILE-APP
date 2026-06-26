@@ -83,7 +83,7 @@ class _DashboardWidgetState extends State<DashboardWidget>
           context: context,
           builder: (context) => AlertDialog(
             alignment: Alignment.center,
-            title: const Text('Exit App'),
+            title: Text('Exit App'),
             content: const Text('Do you want to exit an App?'),
             actions: [
               PrimaryButton(

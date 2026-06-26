@@ -303,5 +303,14 @@
   "notesOptional":          "备注（可选）",
   "saving":                 "保存中…",
   "updateLoan":             "更新贷款",
-  "addLoan":                "添加贷款"
+  "addLoan":                "添加贷款",
+  "addHomeWidget": "添加主屏幕小组件",
+"addHomeWidgetSubtitle": "一眼查看您的预算",
+"addWidgetTitle": "添加预算小组件",
+"addWidgetDesc": "按照以下步骤将小组件添加到主屏幕",
+"addWidgetStep1": "长按主屏幕的空白区域",
+"addWidgetStep2": "在弹出的菜单中点击小组件",
+"addWidgetStep3": "在小组件列表中搜索Budget Buddy",
+"addWidgetStep4": "长按小组件并拖动到主屏幕",
+"gotIt": "知道了"
 }

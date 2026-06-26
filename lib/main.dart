@@ -21,9 +21,24 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 int _lastRestartMs = 0;
+
+// ── HomeWidget interactivity callback (must be top-level) ──────────────────
+@pragma('vm:entry-point')
+Future<void> _homeWidgetInteractivityCallback(Uri? uri) async {
+  // This runs in a background isolate — must initialize dependencies manually
+  WidgetsFlutterBinding.ensureInitialized();
+  await HiveStorage.init(); // reinitialize Hive in this isolate
+
+  // Navigate to app via NavigationService
+  NavigationService.navigationKey.currentState?.pushAndRemoveUntil(
+    MaterialPageRoute(builder: (_) => const DashboardPage()),
+    (_) => false,
+  );
+}
 
 Future<void> _init() async {
   final binding = WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +46,7 @@ Future<void> _init() async {
   FlutterNativeSplash.remove();
 
   await Future.delayed(const Duration(milliseconds: 500));
-  await loadPrefsBeforeRunApp(); // loads theme + locale + currency from SharedPreferences
+  await loadPrefsBeforeRunApp();
 
   await dotenv.load(fileName: '.env');
   await Supabase.initialize(
@@ -43,7 +58,6 @@ Future<void> _init() async {
   await HiveStorage.init();
 
   // Sync currency from SharedPreferences into Hive BEFORE runApp
-  // so the very first frame reads the correct currency — same pattern as theme/locale
   final savedCurrency = await ExpenseNotifier.loadCurrency();
   final budgetBox = Hive.box<Budget>('budget');
   if (budgetBox.isNotEmpty) {
@@ -61,9 +75,57 @@ Future<void> _init() async {
       await budgetBox.add(updated);
     }
   }
+
   await NotificationService.init();
   await NotificationService.scheduleDailyReminder();
   await CategoryService.init();
+
+  // ── HomeWidget setup ────────────────────────────────────────────────────
+  // registerInteractivityCallback replaces the deprecated registerBackgroundCallback
+  await HomeWidget.registerInteractivityCallback(
+    _homeWidgetInteractivityCallback,
+  );
+
+  // Push current budget data to widget on every app launch
+  await _syncWidgetData();
+}
+
+/// Reads current month's expenses + budget from Hive and pushes to widget
+Future<void> _syncWidgetData() async {
+  try {
+    final budgetBox = Hive.box<Budget>('budget');
+    if (budgetBox.isEmpty) return;
+
+    final budget = budgetBox.getAt(0)!;
+    final expenseBox = Hive.box<Expense>('expenses');
+    final now = DateTime.now();
+
+    final monthlySpent = expenseBox.values
+        .where(
+          (e) =>
+              e.date.month == now.month &&
+              e.date.year == now.year &&
+              e.isIncome, // adjust to your Expense model
+        )
+        .fold(0.0, (sum, e) => sum + e.amount);
+
+    final remaining = budget.monthlyLimit - monthlySpent;
+
+    await HomeWidget.saveWidgetData<String>('currency', budget.currency);
+    await HomeWidget.saveWidgetData<double>('total_spent', monthlySpent);
+    await HomeWidget.saveWidgetData<double>(
+      'monthly_limit',
+      budget.monthlyLimit,
+    );
+    await HomeWidget.saveWidgetData<double>('remaining', remaining);
+    await HomeWidget.saveWidgetData<String>(
+      'last_updated',
+      '${now.day}/${now.month}/${now.year}',
+    );
+    await HomeWidget.updateWidget(androidName: 'HomeWidgetProvider');
+  } catch (e) {
+    debugPrint('[Widget] Failed to sync widget data: $e');
+  }
 }
 
 void _scheduleRestart() {
@@ -112,7 +174,7 @@ class SpendSenseApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
-    final locale = ref.watch(localeProvider); // ← reactive locale
+    final locale = ref.watch(localeProvider);
 
     return MaterialApp(
       navigatorKey: NavigationService.navigationKey,
@@ -121,11 +183,6 @@ class SpendSenseApp extends ConsumerWidget {
       themeMode: themeMode,
       theme: buildTheme(false),
       darkTheme: buildTheme(true),
-
-      // ── Locale ────────────────────────────────────────────────────────────
-      // locale: is set explicitly from the provider — do NOT add
-      // localeResolutionCallback, it fires on every rebuild and overrides
-      // the user's chosen language with the device locale.
       locale: locale,
       supportedLocales: LocaleNotifier.supported,
       localizationsDelegates: const [
@@ -134,10 +191,6 @@ class SpendSenseApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-
-      // ── Removed localeResolutionCallback ─────────────────────────────────
-      // It was overriding locale: with the device locale on every rebuild,
-      // causing the user's language choice to be ignored until restart.
       routes: {
         '/home': (_) => const DashboardPage(),
         '/bills': (_) => const BillReminderScreen(),

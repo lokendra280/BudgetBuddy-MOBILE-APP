@@ -896,4 +896,31 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get updateLoan => 'Atualizar Empréstimo';
+
+  @override
+  String get addHomeWidget => 'Adicionar Widget à Tela Inicial';
+
+  @override
+  String get addHomeWidgetSubtitle => 'Veja seu orçamento de relance';
+
+  @override
+  String get addWidgetTitle => 'Adicionar Widget de Orçamento';
+
+  @override
+  String get addWidgetDesc => 'Siga estes passos para adicionar o widget à tela inicial';
+
+  @override
+  String get addWidgetStep1 => 'Pressione e segure uma área vazia da tela inicial';
+
+  @override
+  String get addWidgetStep2 => 'Toque em \"Widgets\" no menu que aparecer';
+
+  @override
+  String get addWidgetStep3 => 'Pesquise por \"Budget Buddy\" na lista de widgets';
+
+  @override
+  String get addWidgetStep4 => 'Pressione e segure o widget e arraste para a tela inicial';
+
+  @override
+  String get gotIt => 'Entendido!';
 }

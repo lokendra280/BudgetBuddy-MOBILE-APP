@@ -896,4 +896,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updateLoan => 'Update Loan';
+
+  @override
+  String get addHomeWidget => 'Add Home Screen Widget';
+
+  @override
+  String get addHomeWidgetSubtitle => 'See your budget at a glance';
+
+  @override
+  String get addWidgetTitle => 'Add Budget Widget';
+
+  @override
+  String get addWidgetDesc => 'Follow these steps to add the widget to your home screen';
+
+  @override
+  String get addWidgetStep1 => 'Long press on an empty area of your home screen';
+
+  @override
+  String get addWidgetStep2 => 'Tap \"Widgets\" from the menu that appears';
+
+  @override
+  String get addWidgetStep3 => 'Search for \"Budget Buddy\" in the widget list';
+
+  @override
+  String get addWidgetStep4 => 'Long press the widget and drag it to your home screen';
+
+  @override
+  String get gotIt => 'Got it!';
 }

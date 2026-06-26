@@ -1870,6 +1870,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Update Loan'**
   String get updateLoan;
+
+  /// No description provided for @addHomeWidget.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Home Screen Widget'**
+  String get addHomeWidget;
+
+  /// No description provided for @addHomeWidgetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'See your budget at a glance'**
+  String get addHomeWidgetSubtitle;
+
+  /// No description provided for @addWidgetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Budget Widget'**
+  String get addWidgetTitle;
+
+  /// No description provided for @addWidgetDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow these steps to add the widget to your home screen'**
+  String get addWidgetDesc;
+
+  /// No description provided for @addWidgetStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'Long press on an empty area of your home screen'**
+  String get addWidgetStep1;
+
+  /// No description provided for @addWidgetStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap \"Widgets\" from the menu that appears'**
+  String get addWidgetStep2;
+
+  /// No description provided for @addWidgetStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for \"Budget Buddy\" in the widget list'**
+  String get addWidgetStep3;
+
+  /// No description provided for @addWidgetStep4.
+  ///
+  /// In en, this message translates to:
+  /// **'Long press the widget and drag it to your home screen'**
+  String get addWidgetStep4;
+
+  /// No description provided for @gotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it!'**
+  String get gotIt;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

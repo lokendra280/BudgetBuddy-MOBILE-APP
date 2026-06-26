@@ -896,4 +896,31 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get updateLoan => 'ऋण अपडेट करें';
+
+  @override
+  String get addHomeWidget => 'होम स्क्रीन विजेट जोड़ें';
+
+  @override
+  String get addHomeWidgetSubtitle => 'अपना बजट एक नज़र में देखें';
+
+  @override
+  String get addWidgetTitle => 'बजट विजेट जोड़ें';
+
+  @override
+  String get addWidgetDesc => 'होम स्क्रीन पर विजेट जोड़ने के लिए इन चरणों का पालन करें';
+
+  @override
+  String get addWidgetStep1 => 'होम स्क्रीन के किसी खाली क्षेत्र को देर तक दबाएं';
+
+  @override
+  String get addWidgetStep2 => 'दिखाई देने वाले मेनू से \"विजेट\" पर टैप करें';
+
+  @override
+  String get addWidgetStep3 => 'विजेट सूची में \"Budget Buddy\" खोजें';
+
+  @override
+  String get addWidgetStep4 => 'विजेट को देर तक दबाएं और होम स्क्रीन पर खींचें';
+
+  @override
+  String get gotIt => 'समझ गया!';
 }

@@ -323,6 +323,15 @@
   "notesOptional":          "Notes (optional)",
   "saving":                 "Saving…",
   "updateLoan":             "Update Loan",
-  "addLoan":                "Add Loan"
+  "addLoan": "Add Loan",
+  "addHomeWidget": "Add Home Screen Widget",
+"addHomeWidgetSubtitle": "See your budget at a glance",
+"addWidgetTitle": "Add Budget Widget",
+"addWidgetDesc": "Follow these steps to add the widget to your home screen",
+"addWidgetStep1": "Long press on an empty area of your home screen",
+"addWidgetStep2": "Tap \"Widgets\" from the menu that appears",
+"addWidgetStep3": "Search for \"Budget Buddy\" in the widget list",
+"addWidgetStep4": "Long press the widget and drag it to your home screen",
+"gotIt": "Got it!"
 
 }

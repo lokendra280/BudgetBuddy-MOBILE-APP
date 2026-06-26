@@ -1,3 +1,4 @@
+import 'package:budgetBuddy/common/services/home_service.dart';
 import 'package:budgetBuddy/features/auth/providers/auth_provider.dart';
 import 'package:budgetBuddy/features/auth/ui/login_screen.dart';
 import 'package:budgetBuddy/common/app_theme.dart';
@@ -124,11 +125,23 @@ class AppDrawer extends ConsumerWidget {
                       onPush(const InsightsFeedScreen());
                     },
                   ),
-
-                  // _DrawerItem(Assets.insights, 'Forecast', null, () {
-                  //   Navigator.pop(context);
-                  //   onPush(const ForecastScreen());
-                  // }),
+                  // _DrawerItem(
+                  //   Assets.insights,
+                  //   AppLocalizations.of(context)!.addHomeWidget,
+                  //   null,
+                  //   () {
+                  //     // wait for drawer close animation to finish, then show sheet
+                  //     Future.delayed(const Duration(milliseconds: 300), () {
+                  //       if (context.mounted) {
+                  //         showModalBottomSheet(
+                  //           context: context,
+                  //           backgroundColor: Colors.transparent,
+                  //           builder: (_) => const AddWidgetGuideSheet(),
+                  //         );
+                  //       }
+                  //     });
+                  //   },
+                  // ),
                   // const Padding(
                   //   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   //   child: Divider(),

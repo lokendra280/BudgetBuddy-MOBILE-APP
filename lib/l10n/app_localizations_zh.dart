@@ -896,4 +896,31 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get updateLoan => '更新贷款';
+
+  @override
+  String get addHomeWidget => '添加主屏幕小组件';
+
+  @override
+  String get addHomeWidgetSubtitle => '一眼查看您的预算';
+
+  @override
+  String get addWidgetTitle => '添加预算小组件';
+
+  @override
+  String get addWidgetDesc => '按照以下步骤将小组件添加到主屏幕';
+
+  @override
+  String get addWidgetStep1 => '长按主屏幕的空白区域';
+
+  @override
+  String get addWidgetStep2 => '在弹出的菜单中点击小组件';
+
+  @override
+  String get addWidgetStep3 => '在小组件列表中搜索Budget Buddy';
+
+  @override
+  String get addWidgetStep4 => '长按小组件并拖动到主屏幕';
+
+  @override
+  String get gotIt => '知道了';
 }
