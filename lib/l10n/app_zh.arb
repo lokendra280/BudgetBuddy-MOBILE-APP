@@ -312,5 +312,7 @@
 "addWidgetStep2": "在弹出的菜单中点击小组件",
 "addWidgetStep3": "在小组件列表中搜索Budget Buddy",
 "addWidgetStep4": "长按小组件并拖动到主屏幕",
-"gotIt": "知道了"
+"gotIt": "知道了",
+  "chatWithBuddy": "与 Buddy 聊天"
+
 }

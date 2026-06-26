@@ -312,5 +312,7 @@
 "addWidgetStep2": "Toque em \"Widgets\" no menu que aparecer",
 "addWidgetStep3": "Pesquise por \"Budget Buddy\" na lista de widgets",
 "addWidgetStep4": "Pressione e segure o widget e arraste para a tela inicial",
-"gotIt": "Entendido!"
+"gotIt": "Entendido!",
+  "chatWithBuddy": "Converse com o Buddy"
+
 }

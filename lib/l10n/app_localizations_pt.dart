@@ -923,4 +923,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get gotIt => 'Entendido!';
+
+  @override
+  String get chatWithBuddy => 'Converse com o Buddy';
 }

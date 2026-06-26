@@ -332,6 +332,7 @@
 "addWidgetStep2": "Tap \"Widgets\" from the menu that appears",
 "addWidgetStep3": "Search for \"Budget Buddy\" in the widget list",
 "addWidgetStep4": "Long press the widget and drag it to your home screen",
-"gotIt": "Got it!"
+"gotIt": "Got it!",
+  "chatWithBuddy": "Chat with Buddy"
 
 }

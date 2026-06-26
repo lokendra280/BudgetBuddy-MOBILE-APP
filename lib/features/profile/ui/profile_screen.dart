@@ -362,6 +362,12 @@ class _SyncStatus extends StatelessWidget {
         'Sync failed. Try again.',
         kAccent,
       ),
+      SyncResult.skipped => (
+        // ← added
+        Icons.check_circle_outline_rounded,
+        'Already up to date',
+        context.c.textMuted,
+      ),
     };
     return Container(
       padding: const EdgeInsets.all(10),

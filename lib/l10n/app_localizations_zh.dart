@@ -923,4 +923,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get gotIt => '知道了';
+
+  @override
+  String get chatWithBuddy => '与 Buddy 聊天';
 }

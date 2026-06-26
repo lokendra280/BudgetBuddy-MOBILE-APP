@@ -1924,6 +1924,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Got it!'**
   String get gotIt;
+
+  /// No description provided for @chatWithBuddy.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with Buddy'**
+  String get chatWithBuddy;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

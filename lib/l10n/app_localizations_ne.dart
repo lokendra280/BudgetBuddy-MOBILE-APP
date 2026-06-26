@@ -923,4 +923,7 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get gotIt => 'बुझेँ!';
+
+  @override
+  String get chatWithBuddy => 'बडीसँग च्याट गर्नुहोस्';
 }

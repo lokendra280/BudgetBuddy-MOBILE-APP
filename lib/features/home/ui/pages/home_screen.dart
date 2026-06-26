@@ -1,4 +1,5 @@
 import 'package:budgetBuddy/common/common_svg_widget.dart';
+import 'package:budgetBuddy/common/navigation_service.dart';
 import 'package:budgetBuddy/features/auth/providers/auth_provider.dart';
 import 'package:budgetBuddy/features/auth/ui/login_screen.dart';
 import 'package:budgetBuddy/common/app_theme.dart';
@@ -10,6 +11,7 @@ import 'package:budgetBuddy/common/widgets/shimmer_widget.dart';
 import 'package:budgetBuddy/features/bill_reminder/providers/bill_reminder_provider.dart';
 import 'package:budgetBuddy/features/bill_reminder/ui/pages/bill_reminder_screen.dart';
 import 'package:budgetBuddy/features/bill_reminder/ui/widgets/bill_strip_alert.dart';
+import 'package:budgetBuddy/features/buddy_chat/pages/buddy_chat_page.dart';
 import 'package:budgetBuddy/features/expense/models/expense.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetBuddy/features/expense/services/category_services.dart';
@@ -150,6 +152,43 @@ class _H extends ConsumerState<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 14),
+                      AppCard(
+                        onTap: () {
+                          NavigationService.push(target: BuddyChatPage());
+                        },
+                        padding: const EdgeInsets.all(14),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 38,
+                              height: 38,
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryColor.withOpacity(0.10),
+                                borderRadius: BorderRadius.circular(11),
+                              ),
+                              child: const Center(
+                                child: CommonSvgWidget(
+                                  svgName: Assets.chat,
+                                  height: 20,
+                                  width: 20,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                AppLocalizations.of(context)!.chatWithBuddy,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 14),
 
                       // ── 7-day dual bar chart ──────────────────────────
                       AppCard(
@@ -223,6 +262,7 @@ class _H extends ConsumerState<HomeScreen> {
                           ],
                         ),
                       ),
+
                       const SizedBox(height: 14),
 
                       // ── Week comparison bar ───────────────────────────
