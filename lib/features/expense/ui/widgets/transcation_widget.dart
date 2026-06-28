@@ -75,27 +75,27 @@ class TransactionWidget extends StatelessWidget {
                       ),
                       // Show currency code badge if it differs from global setting
                       // so the user knows this expense was in a different currency
-                      if (e.currency.isNotEmpty) ...[
-                        const SizedBox(width: 5),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 1,
-                          ),
-                          decoration: BoxDecoration(
-                            color: context.c.border,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            e.currency,
-                            style: TextStyle(
-                              fontSize: 8,
-                              fontWeight: FontWeight.w700,
-                              color: context.c.textMuted,
-                            ),
-                          ),
-                        ),
-                      ],
+                      // if (e.currency.isNotEmpty) ...[
+                      //   const SizedBox(width: 5),
+                      //   Container(
+                      //     padding: const EdgeInsets.symmetric(
+                      //       horizontal: 4,
+                      //       vertical: 1,
+                      //     ),
+                      //     decoration: BoxDecoration(
+                      //       color: context.c.border,
+                      //       borderRadius: BorderRadius.circular(4),
+                      //     ),
+                      //     child: Text(
+                      //       e.currency,
+                      //       style: TextStyle(
+                      //         fontSize: 8,
+                      //         fontWeight: FontWeight.w700,
+                      //         color: context.c.textMuted,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ],
                     ],
                   ),
                 ],

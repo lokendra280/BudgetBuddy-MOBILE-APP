@@ -4,8 +4,7 @@ import 'package:budgetBuddy/common/services/app_version_service.dart';
 import 'package:budgetBuddy/features/auth/services/biometric_service.dart';
 import 'package:budgetBuddy/features/auth/ui/lock_screen.dart';
 import 'package:budgetBuddy/features/dashboard/pages/dashboard_page.dart';
-import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
-import 'package:budgetBuddy/features/sms_service/services/sms_auto_sync_service.dart';
+
 import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -58,27 +57,6 @@ class _State extends ConsumerState<SplashScreen>
         transitionDuration: const Duration(milliseconds: 400),
       ),
     );
-
-    // ── Silent SMS auto-sync after navigation (non-blocking) ─────────────────
-    // Runs in background — user already granted permission from SmsImportScreen.
-    // Imports only NEW SMS since last sync. Does not show any UI.
-    if (onboarded) {
-      Future.microtask(() async {
-        try {
-          final notifier = ref.read(expenseProvider.notifier);
-          final existing = ref.read(expenseProvider).all;
-          final count = await SmsAutoSyncService.sync(
-            addExpense: notifier.addExpense,
-            existingExpenses: existing,
-          );
-          if (count > 0) {
-            debugPrint('[Splash] Auto-imported $count new SMS transactions');
-          }
-        } catch (e) {
-          debugPrint('[Splash] SMS auto-sync error: $e');
-        }
-      });
-    }
   }
 
   @override

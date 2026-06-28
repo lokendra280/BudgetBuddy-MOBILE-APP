@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/button.dart';
 import 'package:budgetBuddy/common/common_svg_widget.dart';
@@ -7,15 +5,12 @@ import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:budgetBuddy/common/navigation_service.dart';
 import 'package:budgetBuddy/common/services/ads_service.dart';
 import 'package:budgetBuddy/common/widgets/emoji_image.dart';
-import 'package:budgetBuddy/features/bill_reminder/ui/pages/bill_reminder_screen.dart';
 import 'package:budgetBuddy/features/bill_reminder/ui/pages/commitments_screen.dart';
-import 'package:budgetBuddy/features/bill_reminder/ui/pages/emi_loan_screen.dart';
 import 'package:budgetBuddy/features/expense/models/expense.dart';
+import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetBuddy/features/expense/services/category_services.dart';
-import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
 import 'package:budgetBuddy/features/expense/ui/widgets/item_row.dart';
 import 'package:budgetBuddy/features/expense/ui/widgets/row.dart';
-import 'package:budgetBuddy/features/sms_service/ui/pages/sms_import_screen.dart';
 import 'package:budgetBuddy/features/voice_expense/view/voice_expense_screen.dart';
 import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -27,13 +22,13 @@ import 'package:uuid/uuid.dart';
 
 class AddExpenseScreen extends ConsumerStatefulWidget {
   const AddExpenseScreen({super.key});
+
   @override
-  ConsumerState<AddExpenseScreen> createState() => _S();
+  ConsumerState<AddExpenseScreen> createState() => _AddExpenseScreenState();
 }
 
-class _S extends ConsumerState<AddExpenseScreen> {
+class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   bool _isIncome = false;
-  bool _scanning = false;
   List<AppCategory> _cats = [];
   AppCategory? _selCat;
   final List<RowData> _rows = [];
@@ -42,9 +37,10 @@ class _S extends ConsumerState<AddExpenseScreen> {
   @override
   void initState() {
     super.initState();
-    _reload();
+    _reloadCategories();
     _addRow();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Use adServiceProvider — consistent with rest of app
       _banner = ref.read(adServiceProvider).createBanner();
       setState(() {});
     });
@@ -53,19 +49,20 @@ class _S extends ConsumerState<AddExpenseScreen> {
   @override
   void dispose() {
     _banner?.dispose();
-
     for (final r in _rows) r.dispose();
     super.dispose();
   }
 
-  void _reload() {
+  void _reloadCategories() {
     final cats = _isIncome
         ? CategoryService.incomeCategories
         : CategoryService.expenseCategories;
     setState(() {
       _cats = cats;
       _selCat = cats.isNotEmpty ? cats.first : null;
-      for (final r in _rows) r.catName = cats.isNotEmpty ? cats.first.name : '';
+      for (final r in _rows) {
+        r.catName = cats.isNotEmpty ? cats.first.name : '';
+      }
     });
   }
 
@@ -77,11 +74,11 @@ class _S extends ConsumerState<AddExpenseScreen> {
     setState(() => _rows.removeAt(i));
   }
 
-  Color get _col => _isIncome ? kGreen : AppColors.primaryColor;
+  Color get _accentColor => _isIncome ? kGreen : AppColors.primaryColor;
 
-  Color _fromHex(String h) {
+  Color _colorFromHex(String hex) {
     try {
-      return Color(int.parse('FF${h.replaceAll('#', '')}', radix: 16));
+      return Color(int.parse('FF${hex.replaceAll('#', '')}', radix: 16));
     } catch (_) {
       return AppColors.primaryColor;
     }
@@ -90,40 +87,46 @@ class _S extends ConsumerState<AddExpenseScreen> {
   void _saveAll() {
     final valid = _rows.where((r) => r.valid).toList();
     if (valid.isEmpty) {
-      _snack('Fill in at least one item', kAccent);
+      _showSnack('Fill in at least one item', kAccent);
       return;
     }
+
     HapticFeedback.mediumImpact();
-    final box = Hive.box<Expense>('expenses');
+
+    // Use Riverpod notifier — reactive, uses correct currency
+    final notifier = ref.read(expenseProvider.notifier);
     for (final r in valid) {
-      box.add(
-        Expense(
-          id: const Uuid().v4(),
-          title: r.tc.text.trim(),
-          amount: r.parsedAmount,
-          category: r.catName,
-          date: DateTime.now(),
-          isIncome: _isIncome,
-          currency: ExpenseService.currency,
-        ),
+      notifier.addExpense(
+        title: r.tc.text.trim(),
+        amount: r.parsedAmount,
+        category: r.catName,
+        isIncome: _isIncome,
+        date: DateTime.now(),
       );
     }
+
     Navigator.pop(context);
   }
 
-  void _snack(String m, Color c) => ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(m),
-      backgroundColor: c,
-      behavior: SnackBarBehavior.floating,
-    ),
-  );
+  void _showSnack(String msg, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    // ── Reactive currency from Riverpod — not stale Hive reads ──────────────
+    final sym = ref.watch(symbolProvider);
     final c = context.c;
     final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
-    final valid = _rows.where((r) => r.valid).length;
+    final validCount = _rows.where((r) => r.valid).length;
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: c.bg,
       resizeToAvoidBottomInset: true,
@@ -134,28 +137,18 @@ class _S extends ConsumerState<AddExpenseScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          AppLocalizations.of(context)!.addEntry,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+          l10n.addEntry,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: IconButton(
-              icon: _scanning
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: AppColors.primaryColor,
-                      ),
-                    )
-                  : const Icon(Icons.mic, color: AppColors.primaryColor),
-              tooltip: 'Scan bill',
-              onPressed: () {
-                NavigationService.push(target: VoiceExpenseScreen());
-              },
+              icon: const Icon(Icons.mic, color: AppColors.primaryColor),
+              tooltip: 'Voice entry',
+              onPressed: () =>
+                  NavigationService.push(target: VoiceExpenseScreen()),
             ),
           ),
         ],
@@ -163,7 +156,7 @@ class _S extends ConsumerState<AddExpenseScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(18, 16, 18, 120),
         children: [
-          // Income/Expense toggle
+          // ── Income / Expense / EMI toggle ──────────────────────────────
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
@@ -173,39 +166,42 @@ class _S extends ConsumerState<AddExpenseScreen> {
             ),
             child: Row(
               children: [
-                _Tog(
-                  '↑  ${AppLocalizations.of(context)!.expense}',
-                  !_isIncome,
-                  kAccent,
-                  () => setState(() {
+                _Toggle(
+                  label: '↑  ${l10n.expense}',
+                  active: !_isIncome,
+                  color: kAccent,
+                  onTap: () => setState(() {
                     _isIncome = false;
-                    _reload();
+                    _reloadCategories();
                   }),
                 ),
-                _Tog(
-                  '↓  ${AppLocalizations.of(context)!.income}',
-                  _isIncome,
-                  kGreen,
-                  () => setState(() {
+                _Toggle(
+                  label: '↓  ${l10n.income}',
+                  active: _isIncome,
+                  color: kGreen,
+                  onTap: () => setState(() {
                     _isIncome = true;
-                    _reload();
+                    _reloadCategories();
                   }),
                 ),
-                _Tog(AppLocalizations.of(context)!.emi, false, c.border, () {
-                  NavigationService.push(target: CommitmentsScreen());
-                }),
+                _Toggle(
+                  label: l10n.emi,
+                  active: false,
+                  color: c.border,
+                  onTap: () =>
+                      NavigationService.push(target: CommitmentsScreen()),
+                ),
               ],
             ),
           ),
-
           const SizedBox(height: 18),
 
-          // Category horizontal scroll (from Supabase)
+          // ── Category label ─────────────────────────────────────────────
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                AppLocalizations.of(context)!.category,
+                l10n.category,
                 style: TextStyle(
                   fontSize: 10,
                   color: c.textMuted,
@@ -217,13 +213,15 @@ class _S extends ConsumerState<AddExpenseScreen> {
                 _selCat?.name ?? '',
                 style: TextStyle(
                   fontSize: 10,
-                  color: _col,
+                  color: _accentColor,
                   fontWeight: FontWeight.w700,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 10),
+
+          // ── Category horizontal scroll ─────────────────────────────────
           SizedBox(
             height: 88,
             child: ListView.separated(
@@ -233,7 +231,7 @@ class _S extends ConsumerState<AddExpenseScreen> {
               itemBuilder: (_, i) {
                 final cat = _cats[i];
                 final isSel = _selCat?.id == cat.id;
-                final col = _fromHex(cat.color);
+                final col = _colorFromHex(cat.color);
                 return GestureDetector(
                   onTap: () {
                     HapticFeedback.selectionClick();
@@ -276,15 +274,14 @@ class _S extends ConsumerState<AddExpenseScreen> {
               },
             ),
           ),
-
           const SizedBox(height: 20),
 
-          // Items header
+          // ── Items header ───────────────────────────────────────────────
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                AppLocalizations.of(context)!.items,
+                l10n.items,
                 style: TextStyle(
                   fontSize: 10,
                   color: c.textMuted,
@@ -293,32 +290,35 @@ class _S extends ConsumerState<AddExpenseScreen> {
                 ),
               ),
               Text(
-                '${_rows.length} ${AppLocalizations.of(context)!.row}${_rows.length == 1 ? '' : 's'} · $valid ${AppLocalizations.of(context)!.ready}',
+                '${_rows.length} ${l10n.row}${_rows.length == 1 ? '' : 's'}'
+                ' · $validCount ${l10n.ready}',
                 style: TextStyle(fontSize: 10, color: c.textMuted),
               ),
             ],
           ),
           const SizedBox(height: 10),
 
-          // Dynamic rows
+          // ── Dynamic rows ───────────────────────────────────────────────
           ..._rows.asMap().entries.map(
             (e) => ItemRow(
               key: ValueKey(e.key),
               row: e.value,
               idx: e.key,
               total: _rows.length,
-              col: _col,
-              sym: ExpenseService.symbol,
+              col: _accentColor,
+              sym: sym, // ← Riverpod, always current
               cats: _cats,
-              fromHex: _fromHex,
+              fromHex: _colorFromHex,
               onRemove: () => _removeRow(e.key),
               onCatChange: (name) => setState(() => e.value.catName = name),
               onChanged: () => setState(() {}),
             ),
           ),
+
+          // ── Add row button ─────────────────────────────────────────────
           PrimaryButton(
             onPressed: _addRow,
-            title: AppLocalizations.of(context)!.addAnotherItems,
+            title: l10n.addAnotherItems,
             radius: 8,
             height: 50,
             textSize: 18,
@@ -330,32 +330,15 @@ class _S extends ConsumerState<AddExpenseScreen> {
               color: AppColors.white,
             ),
           ),
-          // SizedBox(height: 20),
-          // if (!Platform.isIOS)
-          //   PrimaryButton(
-          //     onPressed: () {
-          //       NavigationService.push(target: SmsImportScreen());
-          //     },
-          //     title: AppLocalizations.of(context)!.importSms,
-          //     radius: 8,
-          //     height: 50,
-          //     textSize: 18,
-          //     color: AppColors.darkGrey,
-          //     icon: CommonSvgWidget(
-          //       svgName: Assets.sms,
-          //       height: 20,
-          //       width: 20,
-          //       color: AppColors.primaryColor,
-          //     ),
-          //   ),
         ],
       ),
+
+      // ── Save FAB + banner ad ───────────────────────────────────────────
       floatingActionButton: isKeyboardOpen
           ? null
           : Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Banner ad above save button
                 if (_banner != null)
                   Container(
                     width: _banner!.size.width.toDouble(),
@@ -368,14 +351,12 @@ class _S extends ConsumerState<AddExpenseScreen> {
                   child: PrimaryButton(
                     onPressed: _saveAll,
                     title: _rows.length == 1
-                        ? (_isIncome
-                              ? AppLocalizations.of(context)!.saveIncome
-                              : AppLocalizations.of(context)!.saveExpense)
-                        : 'Save $valid Item${valid == 1 ? '' : 's'}',
+                        ? (_isIncome ? l10n.saveIncome : l10n.saveExpense)
+                        : 'Save $validCount Item${validCount == 1 ? '' : 's'}',
                     radius: 8,
                     height: 50,
                     textSize: 18,
-                    color: _col,
+                    color: _accentColor,
                     icon: const Icon(
                       Icons.check_rounded,
                       color: Colors.white,
@@ -385,40 +366,47 @@ class _S extends ConsumerState<AddExpenseScreen> {
                 ),
               ],
             ),
-
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
 
-class _Tog extends StatelessWidget {
-  final String l;
-  final bool a;
-  final Color c;
-  final VoidCallback t;
-  const _Tog(this.l, this.a, this.c, this.t);
+// ── Toggle button ─────────────────────────────────────────────────────────────
+class _Toggle extends StatelessWidget {
+  final String label;
+  final bool active;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _Toggle({
+    required this.label,
+    required this.active,
+    required this.color,
+    required this.onTap,
+  });
+
   @override
-  Widget build(BuildContext ctx) => Expanded(
+  Widget build(BuildContext context) => Expanded(
     child: GestureDetector(
       onTap: () {
         HapticFeedback.selectionClick();
-        t();
+        onTap();
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         margin: const EdgeInsets.all(4),
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: a ? c : Colors.transparent,
+          color: active ? color : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Text(
-          l,
+          label,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            color: a ? Colors.white : ctx.c.textMuted,
+            color: active ? Colors.white : context.c.textMuted,
           ),
         ),
       ),

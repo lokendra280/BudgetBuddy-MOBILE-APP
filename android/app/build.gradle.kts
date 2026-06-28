@@ -1,9 +1,12 @@
 import java.util.Properties
 
 plugins {
-    id("com.android.application")
+   id("com.android.application")
     id("kotlin-android")
+    id("com.google.gms.google-services")        // ← add this
+    id("com.google.firebase.crashlytics")       // ← add this
     id("dev.flutter.flutter-gradle-plugin")
+
 }
 
 // 🔐 Load keystore properties
@@ -65,10 +68,12 @@ flutter {
 dependencies {
     // ✅ Required for modern Java APIs on older devices
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    implementation(platform("com.google.firebase:firebase-bom:34.15.0"))
 
     // Multidex
     implementation("androidx.multidex:multidex:2.0.1")
-
+ implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-analytics")
 }
 kotlin {
     jvmToolchain(17)

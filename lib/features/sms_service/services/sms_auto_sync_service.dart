@@ -7,83 +7,147 @@ import 'package:another_telephony/telephony.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 // SMS AUTO SYNC SERVICE
 //
-// Once the user grants SMS permission (via SmsImportScreen), this service
-// runs silently in the background:
-//   • On every app open (splash screen)
-//   • Reads only NEW SMS since the last sync timestamp
-//   • Parses + deduplicates + imports — no UI required
-//   • Stores last sync timestamp in SharedPreferences
-//
-// The user never has to open the SMS import screen again after the first time.
+// Flow:
+//   1. User grants permission → onPermissionGranted() → immediate sync
+//      of last 30 days so first-time users see existing transactions
+//   2. Every app open → sync() is called from HomeScreen._init()
+//      reads only NEW SMS since last sync timestamp (throttled)
+//   3. Permission revoked → auto-sync disables itself silently
 // ─────────────────────────────────────────────────────────────────────────────
-class SmsAutoSyncService {
-  static const _lastSyncKey = 'sms_last_sync_ms';
-  static const _permGrantedKey = 'sms_permission_granted';
-  static const _autoSyncKey = 'sms_auto_sync_enabled';
 
-  // ── Check if auto-sync should run ─────────────────────────────────────────
-  static Future<bool> get isEnabled async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_autoSyncKey) ?? false;
-  }
-
-  // ── Called once when user grants SMS permission in SmsImportScreen ─────────
-  static Future<void> onPermissionGranted() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_permGrantedKey, true);
-    await prefs.setBool(_autoSyncKey, true);
-    // Set last sync to 6 months ago so first manual import still works
-    // On subsequent runs we only fetch NEW messages
-    debugPrint('[SmsAutoSync] Permission granted — auto-sync enabled');
-  }
-
-  // ── Disable auto-sync (user can turn off from settings) ───────────────────
-  static Future<void> disable() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_autoSyncKey, false);
-    debugPrint('[SmsAutoSync] Auto-sync disabled by user');
-  }
-
-  // ── Main sync method — call from splash boot or home screen ───────────────
-  // Returns number of new transactions imported (0 = nothing new)
-  static Future<int> sync({
-    required Future<void> Function({
+// ── Callback type alias — cleaner than repeating the full signature ──────────
+typedef AddExpenseFn =
+    Future<void> Function({
       required String title,
       required double amount,
       required String category,
       required bool isIncome,
       required DateTime date,
-    })
-    addExpense,
+    });
+
+class SmsAutoSyncService {
+  SmsAutoSyncService._();
+
+  // ── SharedPreferences keys ────────────────────────────────────────────────
+  static const _kLastSync = 'sms_last_sync_ms';
+  static const _kPermGranted = 'sms_permission_granted';
+  static const _kAutoSync = 'sms_auto_sync_enabled';
+
+  // ── Throttle — skip if synced within last 30 minutes ─────────────────────
+  static const _kThrottleMinutes = 30;
+
+  // ── On first grant, pull last 30 days so user sees existing transactions ──
+  static const _kFirstSyncDays = 30;
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Public state checks
+  // ─────────────────────────────────────────────────────────────────────────
+
+  static Future<bool> get isEnabled async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_kAutoSync) ?? false;
+  }
+
+  static Future<DateTime?> get lastSyncTime async {
+    final prefs = await SharedPreferences.getInstance();
+    final ms = prefs.getInt(_kLastSync);
+    return ms != null ? DateTime.fromMillisecondsSinceEpoch(ms) : null;
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // onPermissionGranted
+  //
+  // Call this immediately after the user taps "Allow" in the permission dialog.
+  // Enables auto-sync AND triggers the first sync immediately so the user
+  // sees their bank transactions right away — no second app open needed.
+  // ─────────────────────────────────────────────────────────────────────────
+  static Future<int> onPermissionGranted({
+    required AddExpenseFn addExpense,
     required List<dynamic> existingExpenses,
   }) async {
-    // Skip if not enabled
-    final enabled = await isEnabled;
-    if (!enabled) return 0;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_kPermGranted, true);
+    await prefs.setBool(_kAutoSync, true);
 
-    // Skip if no SMS permission
+    // Set last sync to 30 days ago so first sync picks up recent history
+    final firstSyncFrom = DateTime.now()
+        .subtract(const Duration(days: _kFirstSyncDays))
+        .millisecondsSinceEpoch;
+    await prefs.setInt(_kLastSync, firstSyncFrom);
+
+    debugPrint(
+      '[SmsAutoSync] Permission granted — starting first sync (last $_kFirstSyncDays days)',
+    );
+
+    // Immediate sync — user sees results right away
+    return sync(
+      addExpense: addExpense,
+      existingExpenses: existingExpenses,
+      ignoreThrottle: true, // first sync always runs regardless of throttle
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // disable
+  // ─────────────────────────────────────────────────────────────────────────
+  static Future<void> disable() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_kAutoSync, false);
+    debugPrint('[SmsAutoSync] Auto-sync disabled');
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // sync — main entry point
+  //
+  // Called:
+  //   • Immediately after permission granted (ignoreThrottle: true)
+  //   • On every app open from HomeScreen._init() (throttled)
+  //
+  // Returns number of new transactions imported.
+  // ─────────────────────────────────────────────────────────────────────────
+  static Future<int> sync({
+    required AddExpenseFn addExpense,
+    required List<dynamic> existingExpenses,
+    bool ignoreThrottle = false,
+  }) async {
+    // ── Guard: not enabled ────────────────────────────────────────────────
+    if (!await isEnabled) return 0;
+
+    // ── Guard: permission revoked ─────────────────────────────────────────
     final status = await Permission.sms.status;
     if (!status.isGranted) {
-      // Permission was revoked — disable auto-sync
       await disable();
+      debugPrint('[SmsAutoSync] Permission revoked — auto-sync disabled');
       return 0;
     }
 
     final prefs = await SharedPreferences.getInstance();
+
+    // ── Guard: throttle ───────────────────────────────────────────────────
+    if (!ignoreThrottle) {
+      final lastMs = prefs.getInt(_kLastSync) ?? 0;
+      final elapsed = DateTime.now().millisecondsSinceEpoch - lastMs;
+      final throttleMs = const Duration(
+        minutes: _kThrottleMinutes,
+      ).inMilliseconds;
+      if (elapsed < throttleMs) {
+        debugPrint('[SmsAutoSync] Skipped — synced ${elapsed ~/ 60000}m ago');
+        return 0;
+      }
+    }
+
+    // ── Fetch SMS since last sync ─────────────────────────────────────────
     final lastSyncMs =
-        prefs.getInt(_lastSyncKey) ??
+        prefs.getInt(_kLastSync) ??
         DateTime.now().subtract(const Duration(days: 7)).millisecondsSinceEpoch;
 
+    final now = DateTime.now();
     debugPrint(
       '[SmsAutoSync] Syncing since ${DateTime.fromMillisecondsSinceEpoch(lastSyncMs)}',
     );
 
     try {
-      final telephony = Telephony.instance;
-      final now = DateTime.now();
-
-      // Only fetch SMS newer than last sync
-      final messages = await telephony.getInboxSms(
+      final messages = await Telephony.instance.getInboxSms(
         columns: [SmsColumn.ADDRESS, SmsColumn.BODY, SmsColumn.DATE],
         filter: SmsFilter.where(
           SmsColumn.DATE,
@@ -91,14 +155,17 @@ class SmsAutoSyncService {
         sortOrder: [OrderBy(SmsColumn.DATE, sort: Sort.ASC)],
       );
 
+      // Update timestamp immediately — even if 0 results, avoids re-scanning
+      await prefs.setInt(_kLastSync, now.millisecondsSinceEpoch);
+
       if (messages == null || messages.isEmpty) {
         debugPrint('[SmsAutoSync] No new SMS since last sync');
-        await prefs.setInt(_lastSyncKey, now.millisecondsSinceEpoch);
         return 0;
       }
 
-      debugPrint('[SmsAutoSync] Found ${messages.length} new SMS to check');
+      debugPrint('[SmsAutoSync] ${messages.length} new SMS to scan');
 
+      // ── Parse ─────────────────────────────────────────────────────────
       final rawList = messages
           .where((m) => (m.body ?? '').isNotEmpty)
           .map(
@@ -111,74 +178,76 @@ class SmsAutoSyncService {
           .toList();
 
       final parsed = SmsParserService.parseAll(rawList);
-      debugPrint('[SmsAutoSync] Parsed ${parsed.length} bank transactions');
+      debugPrint('[SmsAutoSync] ${parsed.length} bank transactions found');
 
-      if (parsed.isEmpty) {
-        await prefs.setInt(_lastSyncKey, now.millisecondsSinceEpoch);
-        return 0;
-      }
+      if (parsed.isEmpty) return 0;
 
-      // Build fingerprint set from existing expenses
-      final existingFps = <String>{};
-      for (final e in existingExpenses) {
-        existingFps.add(
-          _fp(
+      // ── Deduplicate against existing expenses ─────────────────────────
+      final existingFps = <String>{
+        for (final e in existingExpenses)
+          _fingerprint(
             amount: e.amount as double,
             isIncome: e.isIncome as bool,
             date: e.date as DateTime,
           ),
-        );
-      }
+      };
 
+      // ── Import new transactions ────────────────────────────────────────
       int imported = 0;
       for (final tx in parsed) {
-        final fp = _fp(amount: tx.amount, isIncome: tx.isIncome, date: tx.date);
+        final fp = _fingerprint(
+          amount: tx.amount,
+          isIncome: tx.isIncome,
+          date: tx.date,
+        );
         if (existingFps.contains(fp)) continue;
 
         await addExpense(
           title: tx.title,
           amount: tx.amount,
-          category: tx.category,
+          category: tx.category, // always 'Bank' from parser
           isIncome: tx.isIncome,
           date: tx.date,
         );
 
-        existingFps.add(fp); // prevent double-import within this batch
+        existingFps.add(fp); // block duplicates within this batch
         imported++;
       }
 
-      // Update last sync timestamp
-      await prefs.setInt(_lastSyncKey, now.millisecondsSinceEpoch);
       debugPrint('[SmsAutoSync] Imported $imported new transactions');
       return imported;
-    } catch (e) {
-      debugPrint('[SmsAutoSync] Error: $e');
+    } catch (e, stack) {
+      debugPrint('[SmsAutoSync] Error: $e\n$stack');
       return 0;
     }
   }
 
-  // ── Fingerprint: amount + type + date minute ───────────────────────────────
-  static String _fp({
+  // ─────────────────────────────────────────────────────────────────────────
+  // reset — for testing / logout
+  // ─────────────────────────────────────────────────────────────────────────
+  static Future<void> reset() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_kLastSync);
+    await prefs.remove(_kPermGranted);
+    await prefs.remove(_kAutoSync);
+    debugPrint('[SmsAutoSync] Reset complete');
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // _fingerprint — dedup key: amount + type + truncated to minute
+  // ─────────────────────────────────────────────────────────────────────────
+  static String _fingerprint({
     required double amount,
     required bool isIncome,
     required DateTime date,
   }) {
-    final r = DateTime(date.year, date.month, date.day, date.hour, date.minute);
-    return '${amount.toStringAsFixed(2)}_${isIncome}_${r.millisecondsSinceEpoch}';
-  }
-
-  // ── Get last sync time (for display in settings) ──────────────────────────
-  static Future<DateTime?> get lastSyncTime async {
-    final prefs = await SharedPreferences.getInstance();
-    final ms = prefs.getInt(_lastSyncKey);
-    return ms != null ? DateTime.fromMillisecondsSinceEpoch(ms) : null;
-  }
-
-  // ── Reset (for testing) ───────────────────────────────────────────────────
-  static Future<void> reset() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_lastSyncKey);
-    await prefs.remove(_permGrantedKey);
-    await prefs.remove(_autoSyncKey);
+    final truncated = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      date.hour,
+      date.minute,
+    );
+    return '${amount.toStringAsFixed(2)}_${isIncome}_${truncated.millisecondsSinceEpoch}';
   }
 }

@@ -10,22 +10,24 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 enum SyncResult { success, offline, notLoggedIn, error, skipped }
 
+// ── Pagination config ─────────────────────────────────────────────────────────
+const _kSyncPageSize = 100;
+const _kSyncThrottleMinutes = 15;
+
 class SyncService {
   SyncService._();
 
   static SupabaseClient get _sb => Supabase.instance.client;
   static String? get _uid => AuthService.currentUser?.id;
 
-  // ── Last sync timestamp key (per user) ───────────────────────────────────
+  // ── Throttle key ──────────────────────────────────────────────────────────
   static String _lastSyncKey(String uid) => 'last_sync_$uid';
 
-  // ── Check if sync is needed (throttle: 15 min) ───────────────────────────
   static Future<bool> _shouldSync(String uid) async {
     final prefs = await SharedPreferences.getInstance();
     final lastSync = prefs.getInt(_lastSyncKey(uid)) ?? 0;
-    final now = DateTime.now().millisecondsSinceEpoch;
-    final diff = now - lastSync;
-    return diff > const Duration(minutes: 15).inMilliseconds;
+    final diff = DateTime.now().millisecondsSinceEpoch - lastSync;
+    return diff > const Duration(minutes: _kSyncThrottleMinutes).inMilliseconds;
   }
 
   static Future<void> _markSynced(String uid) async {
@@ -36,7 +38,6 @@ class SyncService {
     );
   }
 
-  // ── Force reset sync timer (e.g. after logout) ────────────────────────────
   static Future<void> resetSyncTimer() async {
     final uid = _uid;
     if (uid == null) return;
@@ -62,6 +63,7 @@ class SyncService {
     'date': e.date.toIso8601String(),
     'is_income': e.isIncome,
     'currency': e.currency,
+    'deleted_at': null, // ensure not marked deleted on push
   };
 
   static Map<String, dynamic> _budgetRow(Budget b, String uid) => {
@@ -92,40 +94,38 @@ class SyncService {
     'updated_at': DateTime.now().toIso8601String(),
   };
 
-  // ── Full sync (throttled — skips if synced recently) ─────────────────────
+  // ── Full sync (throttled) ─────────────────────────────────────────────────
   static Future<SyncResult> sync() async {
     if (!AuthService.isLoggedIn) return SyncResult.notLoggedIn;
     if (!await isOnline) return SyncResult.offline;
 
     final uid = _uid!;
-
-    // Skip if synced within last 15 minutes
     if (!await _shouldSync(uid)) {
       debugPrint('[SyncService] Skipped — synced recently');
       return SyncResult.skipped;
     }
 
     try {
+      // Push first, then pull — ensures local writes win
       await Future.wait([_pushExpenses(), _pushBudget(), _pushGoals()]);
       await Future.wait([_pullExpenses(), _pullGoals()]);
       await _markSynced(uid);
       debugPrint('[SyncService] Sync complete');
       return SyncResult.success;
-    } catch (e) {
-      debugPrint('[SyncService] sync error: $e');
+    } catch (e, stack) {
+      debugPrint('[SyncService] sync error: $e\n$stack');
       return SyncResult.error;
     }
   }
 
-  // ── First login migration (always runs once) ──────────────────────────────
+  // ── First login migration ─────────────────────────────────────────────────
   static Future<void> migrateOnFirstLogin() async {
     if (!await isOnline) return;
     await Future.wait([_pushExpenses(), _pushBudget(), _pushGoals()]);
-    // Mark as synced so app open doesn't immediately re-sync
     if (_uid != null) await _markSynced(_uid!);
   }
 
-  // ── Fire-and-forget individual pushes (called after local writes) ─────────
+  // ── Fire-and-forget individual writes ────────────────────────────────────
   static void pushExpense(Expense e) async {
     try {
       final uid = _uid;
@@ -136,11 +136,18 @@ class SyncService {
     }
   }
 
+  /// Soft delete — marks row as deleted in Supabase, pull will skip it
   static void deleteExpenseRemote(String id) async {
     try {
       if (_uid == null || !await isOnline) return;
-      await _sb.from('expenses').delete().eq('id', id);
-    } catch (_) {}
+      await _sb
+          .from('expenses')
+          .update({'deleted_at': DateTime.now().toIso8601String()})
+          .eq('id', id)
+          .eq('user_id', _uid!);
+    } catch (err) {
+      debugPrint('[SyncService] deleteExpenseRemote: $err');
+    }
   }
 
   static void pushBudget(Budget b) async {
@@ -174,83 +181,104 @@ class SyncService {
     } catch (_) {}
   }
 
-  // ── Push all expenses ─────────────────────────────────────────────────────
+  // ── Push expenses in batches of 100 ──────────────────────────────────────
   static Future<void> _pushExpenses() async {
-    if (_uid == null) return;
+    final uid = _uid;
+    if (uid == null) return;
+
     final rows = HiveStorage.expenses.values
-        .map((e) => _expenseRow(e, _uid!))
+        .map((e) => _expenseRow(e, uid))
         .toList();
     if (rows.isEmpty) return;
-    // Upsert in batches of 100 to avoid payload limits
-    for (var i = 0; i < rows.length; i += 100) {
-      final batch = rows.sublist(i, (i + 100).clamp(0, rows.length));
+
+    for (var i = 0; i < rows.length; i += _kSyncPageSize) {
+      final batch = rows.sublist(i, (i + _kSyncPageSize).clamp(0, rows.length));
       await _sb.from('expenses').upsert(batch, onConflict: 'id');
     }
+    debugPrint('[SyncService] Pushed ${rows.length} expenses');
   }
 
-  // ── Pull expenses — only fetch what's NOT already local ───────────────────
+  // ── Pull expenses with pagination — skip soft-deleted, skip existing ──────
   static Future<void> _pullExpenses() async {
-    if (_uid == null) return;
+    final uid = _uid;
+    if (uid == null) return;
 
-    // Build set of local IDs for fast lookup
+    // Build local ID set for dedup
     final localIds = HiveStorage.expenses.values.map((e) => e.id).toSet();
 
-    final rows =
-        await _sb
-                .from('expenses')
-                .select()
-                .eq('user_id', _uid!)
-                .order('date', ascending: false)
-            as List<dynamic>;
+    int page = 0;
+    int totalAdded = 0;
 
-    final toAdd = <Expense>[];
-    for (final r in rows) {
-      final id = r['id'] as String? ?? '';
-      if (id.isEmpty || localIds.contains(id)) continue; // skip duplicates
+    while (true) {
+      final rows =
+          await _sb
+                  .from('expenses')
+                  .select()
+                  .eq('user_id', uid)
+                  .filter('deleted_at', 'is', null) // exclude soft-deleted
+                  .order('date', ascending: false)
+                  .range(page * _kSyncPageSize, (page + 1) * _kSyncPageSize - 1)
+              as List<dynamic>;
 
-      toAdd.add(
-        Expense(
-          id: id,
-          title: r['title'] as String? ?? '',
-          amount: (r['amount'] as num?)?.toDouble() ?? 0,
-          category: r['category'] as String? ?? 'Other',
-          date: DateTime.tryParse(r['date'] as String? ?? '') ?? DateTime.now(),
-          isIncome: r['is_income'] as bool? ?? false,
-          currency: r['currency'] as String? ?? 'NPR',
-        ),
-      );
+      if (rows.isEmpty) break;
+
+      final toAdd = <Expense>[];
+      for (final r in rows) {
+        final id = r['id'] as String? ?? '';
+        if (id.isEmpty || localIds.contains(id)) continue;
+
+        toAdd.add(
+          Expense(
+            id: id,
+            title: r['title'] as String? ?? '',
+            amount: (r['amount'] as num?)?.toDouble() ?? 0,
+            category: r['category'] as String? ?? 'Other',
+            date:
+                DateTime.tryParse(r['date'] as String? ?? '') ?? DateTime.now(),
+            isIncome: r['is_income'] as bool? ?? false,
+            currency: r['currency'] as String? ?? 'NPR',
+          ),
+        );
+        localIds.add(id); // prevent re-adding across pages
+      }
+
+      // Batch add to Hive
+      if (toAdd.isNotEmpty) {
+        for (final e in toAdd) {
+          await HiveStorage.expenses.add(e);
+        }
+        totalAdded += toAdd.length;
+      }
+
+      // Stop if last page returned fewer rows than page size
+      if (rows.length < _kSyncPageSize) break;
+      page++;
     }
 
-    // Batch add — avoid adding one by one
-    for (final e in toAdd) {
-      await HiveStorage.expenses.add(e);
-    }
-
-    if (toAdd.isNotEmpty) {
-      debugPrint('[SyncService] Pulled ${toAdd.length} new expenses');
+    if (totalAdded > 0) {
+      debugPrint('[SyncService] Pulled $totalAdded new expenses');
     }
   }
 
-  // ── Push all goals ────────────────────────────────────────────────────────
+  // ── Goals ─────────────────────────────────────────────────────────────────
   static Future<void> _pushGoals() async {
-    if (_uid == null) return;
-    final rows = HiveStorage.goals.values
-        .map((g) => _goalRow(g, _uid!))
-        .toList();
+    final uid = _uid;
+    if (uid == null) return;
+
+    final rows = HiveStorage.goals.values.map((g) => _goalRow(g, uid)).toList();
     if (rows.isEmpty) return;
     await _sb.from('savings_goals').upsert(rows, onConflict: 'id');
   }
 
-  // ── Pull goals — only update if cloud version is newer ───────────────────
   static Future<void> _pullGoals() async {
-    if (_uid == null) return;
+    final uid = _uid;
+    if (uid == null) return;
 
     final rows =
-        await _sb.from('savings_goals').select().eq('user_id', _uid!)
+        await _sb.from('savings_goals').select().eq('user_id', uid)
             as List<dynamic>;
 
-    final localGoals = HiveStorage.goals.values.toList();
-    final localIds = {for (final g in localGoals) g.id: g};
+    final localById = {for (final g in HiveStorage.goals.values) g.id: g};
 
     for (final r in rows) {
       final id = r['id'] as String? ?? '';
@@ -258,16 +286,13 @@ class SyncService {
 
       final cloudSaved = (r['saved'] as num?)?.toDouble() ?? 0;
 
-      if (localIds.containsKey(id)) {
-        // Only update if cloud has higher saved amount
-        final local = localIds[id]!;
+      if (localById.containsKey(id)) {
+        final local = localById[id]!;
         if (cloudSaved > local.saved) {
           local.saved = cloudSaved;
           await local.save();
-          debugPrint('[SyncService] Updated goal $id from cloud');
         }
       } else {
-        // New goal from cloud — add locally
         await HiveStorage.goals.add(
           GoalEntry(
             id: id,
@@ -281,18 +306,18 @@ class SyncService {
             ],
           ),
         );
-        debugPrint('[SyncService] Added new goal $id from cloud');
       }
     }
   }
 
   // ── Push budget ───────────────────────────────────────────────────────────
   static Future<void> _pushBudget() async {
-    if (_uid == null || HiveStorage.budget.isEmpty) return;
+    final uid = _uid;
+    if (uid == null || HiveStorage.budget.isEmpty) return;
     await _sb
         .from('user_profiles')
         .upsert(
-          _budgetRow(HiveStorage.budget.getAt(0)!, _uid!),
+          _budgetRow(HiveStorage.budget.getAt(0)!, uid),
           onConflict: 'id',
         );
   }

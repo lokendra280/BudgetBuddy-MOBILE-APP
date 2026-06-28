@@ -456,10 +456,13 @@ class SmartBudgetBar extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              description,
-              style: TextStyle(fontSize: 10, color: c.textMuted),
+            Flexible(
+              child: Text(
+                description,
+                style: TextStyle(fontSize: 10, color: c.textMuted),
+              ),
             ),
+            const SizedBox(width: 8),
             Text(
               overBudget
                   ? '⚠️ Over by $symbol${(spent - budget).toStringAsFixed(0)}'
@@ -468,6 +471,8 @@ class SmartBudgetBar extends StatelessWidget {
                 fontSize: 10,
                 color: overBudget ? kAccent : c.textMuted,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -557,6 +562,8 @@ class ExpenseTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sym = currencyOf(e.currency).symbol;
+    final l10n = AppLocalizations.of(context)!;
+
     return Dismissible(
       key: Key(e.id),
       direction: DismissDirection.endToStart,
@@ -579,6 +586,7 @@ class ExpenseTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
         child: Row(
           children: [
+            // ── Category icon ────────────────────────────────────────────
             Container(
               width: 40,
               height: 40,
@@ -595,6 +603,8 @@ class ExpenseTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
+
+            // ── Title + subtitle — takes all remaining space ──────────────
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -605,20 +615,26 @@ class ExpenseTile extends StatelessWidget {
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1, // ← uncommented
+                    overflow: TextOverflow.ellipsis, // ← uncommented
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${CategoryLocalization.getName(AppLocalizations.of(context)!, e.category)} · ${DateFormat('MMM d').format(e.date)}',
+                    '${CategoryLocalization.getName(l10n, e.category)}'
+                    ' · ${DateFormat('MMM d').format(e.date)}',
                     style: TextStyle(fontSize: 11, color: context.c.textMuted),
+                    maxLines: 1, // ← added
+                    overflow: TextOverflow.ellipsis, // ← added
                   ),
                 ],
               ),
             ),
             const SizedBox(width: 8),
+
+            // ── Amount + badge — never grows, never overflows ─────────────
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   '${e.isIncome ? '+' : '-'}$sym${e.amount.toStringAsFixed(0)}',
@@ -627,9 +643,11 @@ class ExpenseTile extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                     color: color,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
+                const SizedBox(height: 2),
                 Container(
-                  margin: const EdgeInsets.only(top: 2),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 5,
                     vertical: 1,
@@ -639,9 +657,7 @@ class ExpenseTile extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    e.isIncome
-                        ? '${AppLocalizations.of(context)!.income}'
-                        : '${AppLocalizations.of(context)!.expense}',
+                    e.isIncome ? l10n.income : l10n.expense,
                     style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.w600,
@@ -657,7 +673,6 @@ class ExpenseTile extends StatelessWidget {
     );
   }
 }
-
 // ── BannerAdWidget ────────────────────────────────────────────────────────────
 // class BannerAdWidget extends StatefulWidget {
 //   const BannerAdWidget({super.key});

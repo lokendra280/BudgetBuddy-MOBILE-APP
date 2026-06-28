@@ -1,16 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import '../models/expense.dart';
 
-// ── Currency persistence key ──────────────────────────────────────────────────
+// ── Constants ─────────────────────────────────────────────────────────────────
 const _kCurrency = 'selected_currency';
 const _kDefaultCurrency = 'NPR';
+const kPageSize = 20;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// State
+// ExpenseState
 // ─────────────────────────────────────────────────────────────────────────────
 class ExpenseState {
   final List<Expense> all;
@@ -32,21 +32,51 @@ class ExpenseState {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is ExpenseState && other.version == version);
+      (other is ExpenseState &&
+          other.version == version &&
+          other.all.length == all.length);
 
   @override
   int get hashCode => version.hashCode;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Notifier
+// PaginatedExpenseState
+// ─────────────────────────────────────────────────────────────────────────────
+class PaginatedExpenseState {
+  final List<Expense> items;
+  final bool hasMore;
+  final bool isLoading;
+  final int page;
+
+  const PaginatedExpenseState({
+    this.items = const [],
+    this.hasMore = true,
+    this.isLoading = false,
+    this.page = 0,
+  });
+
+  PaginatedExpenseState copyWith({
+    List<Expense>? items,
+    bool? hasMore,
+    bool? isLoading,
+    int? page,
+  }) => PaginatedExpenseState(
+    items: items ?? this.items,
+    hasMore: hasMore ?? this.hasMore,
+    isLoading: isLoading ?? this.isLoading,
+    page: page ?? this.page,
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ExpenseNotifier
 // ─────────────────────────────────────────────────────────────────────────────
 class ExpenseNotifier extends Notifier<ExpenseState> {
   Box<Expense> get _box => Hive.box<Expense>('expenses');
   Box<Budget> get _budBox => Hive.box<Budget>('budget');
 
-  // ── Currency — SharedPreferences as source of truth ───────────────────────
-  // static: called from main.dart before ProviderScope exists
+  // ── Currency ──────────────────────────────────────────────────────────────
   static Future<String> loadCurrency() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_kCurrency) ?? _kDefaultCurrency;
@@ -57,7 +87,7 @@ class ExpenseNotifier extends Notifier<ExpenseState> {
     await prefs.setString(_kCurrency, code);
   }
 
-  // ── Budget ─────────────────────────────────────────────────────────────────
+  // ── Budget ────────────────────────────────────────────────────────────────
   Budget _ensureBudget() {
     if (_budBox.isEmpty) _budBox.add(Budget());
     return _budBox.getAt(0)!;
@@ -112,22 +142,16 @@ class ExpenseNotifier extends Notifier<ExpenseState> {
     );
   }
 
-  Future<void> deleteExpense(Expense e) async {
-    await e.delete();
-  }
+  Future<void> deleteExpense(Expense e) async => await e.delete();
 
   Future<void> deleteById(String id) async {
     final idx = _box.values.toList().indexWhere((e) => e.id == id);
     if (idx >= 0) await _box.deleteAt(idx);
   }
 
-  // ── Budget updates ─────────────────────────────────────────────────────────
+  // ── Budget ────────────────────────────────────────────────────────────────
   Future<void> updateBudget({double? limit, String? currency}) async {
     final old = _ensureBudget();
-
-    // Always create a NEW Budget instance — never mutate the existing HiveObject.
-    // Mutating the same object means budgetProvider gets the same reference
-    // and Riverpod skips the rebuild even though the field value changed.
     final updated = Budget(
       monthlyLimit: limit ?? old.monthlyLimit,
       streakDays: old.streakDays,
@@ -137,28 +161,21 @@ class ExpenseNotifier extends Notifier<ExpenseState> {
       currency: currency ?? old.currency,
     );
 
-    if (currency != null) {
-      // Save to SharedPreferences FIRST — guaranteed to persist across restarts
-      await ExpenseNotifier.saveCurrency(currency);
-    }
+    if (currency != null) await ExpenseNotifier.saveCurrency(currency);
 
-    // clear() + add() guarantees a brand-new HiveObject reference in the box
     await _budBox.clear();
     await _budBox.add(updated);
-
-    // _refresh() reads the new object from box → new reference → version++
-    // → Riverpod sees different state → all watchers rebuild instantly
     _refresh();
   }
 
   Future<void> updateStreak() async {
     final old = _ensureBudget();
-    final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final today = _dateStr(DateTime.now());
     if (old.lastActiveDate == today) return;
-    final yesterday = DateFormat(
-      'yyyy-MM-dd',
-    ).format(DateTime.now().subtract(const Duration(days: 1)));
 
+    final yesterday = _dateStr(
+      DateTime.now().subtract(const Duration(days: 1)),
+    );
     final updated = Budget(
       monthlyLimit: old.monthlyLimit,
       streakDays: old.lastActiveDate == yesterday ? old.streakDays + 1 : 1,
@@ -172,10 +189,76 @@ class ExpenseNotifier extends Notifier<ExpenseState> {
     await _budBox.add(updated);
     _refresh();
   }
+
+  String _dateStr(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Providers
+// PaginatedExpenseNotifier
+// ─────────────────────────────────────────────────────────────────────────────
+class PaginatedExpenseNotifier
+    extends FamilyNotifier<PaginatedExpenseState, DateTime> {
+  DateTime get _month => arg;
+
+  @override
+  PaginatedExpenseState build(DateTime arg) {
+    // Listen to expense changes and reset pagination
+    ref.watch(expenseProvider);
+    return const PaginatedExpenseState();
+  }
+
+  List<Expense> get _monthExpenses {
+    final all = ref.read(expenseProvider).all;
+    return all
+        .where(
+          (e) => e.date.month == _month.month && e.date.year == _month.year,
+        )
+        .toList();
+  }
+
+  /// Load initial page — call once on screen init
+  void loadInitial() {
+    final all = _monthExpenses;
+    final items = all.take(kPageSize).toList();
+    state = PaginatedExpenseState(
+      items: items,
+      hasMore: all.length > kPageSize,
+      isLoading: false,
+      page: 1,
+    );
+  }
+
+  /// Load next page — call when user scrolls to bottom
+  Future<void> loadMore() async {
+    if (state.isLoading || !state.hasMore) return;
+
+    state = state.copyWith(isLoading: true);
+
+    // Simulate async fetch delay (replace with real Supabase paginated fetch)
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    final all = _monthExpenses;
+    final nextPage = state.page + 1;
+    final end = nextPage * kPageSize;
+    final newItems = all.take(end).toList();
+
+    state = state.copyWith(
+      items: newItems,
+      hasMore: end < all.length,
+      isLoading: false,
+      page: nextPage,
+    );
+  }
+
+  void reset() {
+    state = const PaginatedExpenseState();
+    loadInitial();
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Core Providers
 // ─────────────────────────────────────────────────────────────────────────────
 
 final expenseProvider = NotifierProvider<ExpenseNotifier, ExpenseState>(
@@ -185,6 +268,18 @@ final expenseProvider = NotifierProvider<ExpenseNotifier, ExpenseState>(
 final selectedMonthProvider = StateProvider<DateTime>(
   (ref) => DateTime(DateTime.now().year, DateTime.now().month),
 );
+
+// ── Paginated provider — family keyed by month ────────────────────────────
+final paginatedExpenseProvider =
+    NotifierProviderFamily<
+      PaginatedExpenseNotifier,
+      PaginatedExpenseState,
+      DateTime
+    >(PaginatedExpenseNotifier.new);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Derived Providers — all scoped to selected month
+// ─────────────────────────────────────────────────────────────────────────────
 
 final monthExpensesProvider = Provider<List<Expense>>((ref) {
   final all = ref.watch(expenseProvider).all;
@@ -228,23 +323,17 @@ final budgetProvider = Provider<Budget>(
   (ref) => ref.watch(expenseProvider).budget,
 );
 
-// currencyProvider watches expenseProvider directly for version changes
-// AND budgetProvider for the actual value — dual watch guarantees rebuild
 final currencyProvider = Provider<String>((ref) {
-  ref.watch(expenseProvider); // version++ triggers this rebuild
+  ref.watch(expenseProvider);
   return ref.watch(budgetProvider).currency;
 });
 
-// Explicitly watches currencyProvider — no indirect chain dependency
 final symbolProvider = Provider<String>((ref) {
-  final currency = ref.watch(currencyProvider);
-  return currencyOf(currency).symbol;
+  return currencyOf(ref.watch(currencyProvider)).symbol;
 });
 
-// Explicitly watches currencyProvider — rebuilds whenever currency changes
 final fmtProvider = Provider<String Function(double)>((ref) {
-  final currency = ref.watch(currencyProvider);
-  final sym = currencyOf(currency).symbol;
+  final sym = currencyOf(ref.watch(currencyProvider)).symbol;
   return (double amount) => _fmt(sym, amount);
 });
 
@@ -261,6 +350,7 @@ final weekComparisonProvider = Provider<(double, double)>((ref) {
   final lastStart = thisStart.subtract(const Duration(days: 7));
   final thisEnd = thisStart.add(const Duration(days: 7));
   final lastEnd = lastStart.add(const Duration(days: 7));
+
   double thisW = 0, lastW = 0;
   for (final e in all.where((e) => !e.isIncome)) {
     if (e.date.isAfter(thisStart) && e.date.isBefore(thisEnd))
@@ -291,7 +381,7 @@ final daily7Provider = Provider<List<({double income, double expense})>>((ref) {
   });
 });
 
-// Per-expense formatter — uses currency stored ON the expense, not current setting
+// ── Helpers ───────────────────────────────────────────────────────────────────
 String fmtExpense(Expense e) => _fmt(currencyOf(e.currency).symbol, e.amount);
 
 String _fmt(String sym, double amount) {

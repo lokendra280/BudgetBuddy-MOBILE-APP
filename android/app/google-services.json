@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "991610487268",
+    "project_id": "budgetbuddy-6a24f",
+    "storage_bucket": "budgetbuddy-6a24f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:991610487268:android:00980549a60c8bf70307f1",
+        "android_client_info": {
+          "package_name": "com.hamrobudget"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpmA9ga9RfHSsQyUYYuyJ1sg2cuTD7pSk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
