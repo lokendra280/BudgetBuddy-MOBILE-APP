@@ -6,7 +6,6 @@ import 'package:budgetBuddy/common/navigation_service.dart';
 import 'package:budgetBuddy/common/services/ads_service.dart';
 import 'package:budgetBuddy/common/widgets/emoji_image.dart';
 import 'package:budgetBuddy/features/bill_reminder/ui/pages/commitments_screen.dart';
-import 'package:budgetBuddy/features/expense/models/expense.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetBuddy/features/expense/services/category_services.dart';
 import 'package:budgetBuddy/features/expense/ui/widgets/item_row.dart';
@@ -17,8 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:uuid/uuid.dart';
 
 class AddExpenseScreen extends ConsumerStatefulWidget {
   const AddExpenseScreen({super.key});

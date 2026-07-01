@@ -18,7 +18,7 @@ class AppCategory {
   factory AppCategory.fromJson(Map<String, dynamic> j) => AppCategory(
     id: j['id']?.toString() ?? '',
     name: j['name']?.toString() ?? 'Other',
-    emoji: j['emoji']?.toString() ?? '📦',
+    emoji: j['emoji']?.toString() ?? '',
     color: j['color']?.toString() ?? '#6366F1',
     isIncome: j['is_income'] as bool? ?? false,
   );
@@ -42,10 +42,44 @@ class CategoryService {
   static List<AppCategory> _expense = [];
   static List<AppCategory> _income = [];
 
+  /// Bumped every time a background refresh completes successfully.
+  /// UI screens can listen to this to know when to re-pull categories,
+  /// instead of freezing whatever was available at initState() time.
+  static final ValueNotifier<int> version = ValueNotifier(0);
+
   static List<AppCategory> get expenseCategories =>
       _expense.isNotEmpty ? _expense : _fallbackExpense;
   static List<AppCategory> get incomeCategories =>
       _income.isNotEmpty ? _income : _fallbackIncome;
+
+  /// Maps known default category ids -> bundled local asset icon.
+  /// These always resolve to a local asset regardless of what `emoji`
+  /// came back as from Supabase (which is usually a remote URL and
+  /// therefore not guaranteed to be available offline).
+  /// Unrecognized ids (custom user categories) fall back to c.emoji
+  /// (typically a remote URL) — cache that with cached_network_image
+  /// in the UI layer so it still works offline after first load.
+  static const Map<String, String> _localIconOverride = {
+    'food': Assets.food,
+    'trans': Assets.transport,
+    'shop': Assets.shopping,
+    'hlth': Assets.health,
+    'bill': Assets.bills,
+    'ent': Assets.entertainment,
+    'edu': Assets.education,
+    'trav': Assets.travel,
+    'groc': Assets.groceries,
+    'oth': Assets.other,
+    'sal': Assets.salary,
+    'frl': Assets.freelance,
+    'biz': Assets.business,
+    'inv': Assets.investment,
+    'gft': Assets.gift,
+    'oi': Assets.other,
+  };
+
+  /// Use this in the UI instead of reading `category.emoji` directly.
+  static String iconFor(AppCategory c) => _localIconOverride[c.id] ?? c.emoji;
 
   static Future<void> init() async {
     await _loadCache();
@@ -81,6 +115,9 @@ class CategoryService {
       _income = list.where((c) => c.isIncome).toList();
       await p.setString(_key, jsonEncode(list.map((c) => c.toJson()).toList()));
       await p.setInt(_tsKey, DateTime.now().millisecondsSinceEpoch);
+
+      // Notify any listening screens that fresh data is available.
+      version.value++;
     } catch (e) {
       debugPrint('[CategoryService] fetch error: $e');
     }
@@ -172,7 +209,7 @@ class CategoryService {
       name: 'Salary',
       emoji: Assets.salary,
       color: '#10B981',
-      isIncome: false,
+      isIncome: true, // ✅ fixed — was `false`, but this list is income-only
     ),
     AppCategory(
       id: 'frl',
@@ -205,7 +242,7 @@ class CategoryService {
     AppCategory(
       id: 'oi',
       name: 'Other',
-      emoji: '📦',
+      emoji: Assets.other,
       color: '#64748B',
       isIncome: true,
     ),

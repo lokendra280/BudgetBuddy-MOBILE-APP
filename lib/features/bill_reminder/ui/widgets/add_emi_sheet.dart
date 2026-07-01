@@ -391,32 +391,35 @@ class _AddEmiSheetState extends ConsumerState<AddEmiSheet> {
             // ── Remind days ───────────────────────────────────────────────
             Text(l10n.remindMeBefore, style: context.t.labelMuted),
             const SizedBox(height: 8),
-            Row(
-              children: [1, 2, 3, 5, 7].map((d) {
-                final sel = _remindDays == d;
-                return GestureDetector(
-                  onTap: () => setState(() => _remindDays = d),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 160),
-                    margin: const EdgeInsets.only(right: 8),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 7,
-                    ),
-                    decoration: BoxDecoration(
-                      color: sel ? kGreen : c.card,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: sel ? kGreen : c.border),
-                    ),
-                    child: Text(
-                      dayLabel(d),
-                      style: AppTypography.caption.colored(
-                        sel ? Colors.white : c.textMuted,
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [1, 2, 3, 5, 7].map((d) {
+                  final sel = _remindDays == d;
+                  return GestureDetector(
+                    onTap: () => setState(() => _remindDays = d),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 160),
+                      margin: const EdgeInsets.only(right: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 7,
+                      ),
+                      decoration: BoxDecoration(
+                        color: sel ? kGreen : c.card,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: sel ? kGreen : c.border),
+                      ),
+                      child: Text(
+                        dayLabel(d),
+                        style: AppTypography.caption.colored(
+                          sel ? Colors.white : c.textMuted,
+                        ),
                       ),
                     ),
-                  ),
-                );
-              }).toList(),
+                  );
+                }).toList(),
+              ),
             ),
             const SizedBox(height: 14),
 

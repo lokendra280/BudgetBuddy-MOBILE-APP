@@ -345,39 +345,42 @@ class _AddState extends ConsumerState<AddBillSheet> {
               ),
             ),
             const SizedBox(height: 8),
-            Row(
-              children: [1, 2, 3, 5, 7]
-                  .map(
-                    (d) => GestureDetector(
-                      onTap: () => setState(() => _remindDays = d),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 160),
-                        margin: const EdgeInsets.only(right: 8),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 7,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _remindDays == d ? kGreen : c.card,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: _remindDays == d ? kGreen : c.border,
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [1, 2, 3, 5, 7]
+                    .map(
+                      (d) => GestureDetector(
+                        onTap: () => setState(() => _remindDays = d),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 160),
+                          margin: const EdgeInsets.only(right: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 7,
                           ),
-                        ),
-                        child: Text(
-                          '$d day${d == 1 ? '' : 's'}',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: _remindDays == d
-                                ? Colors.white
-                                : c.textMuted,
+                          decoration: BoxDecoration(
+                            color: _remindDays == d ? kGreen : c.card,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: _remindDays == d ? kGreen : c.border,
+                            ),
+                          ),
+                          child: Text(
+                            '$d day${d == 1 ? '' : 's'}',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: _remindDays == d
+                                  ? Colors.white
+                                  : c.textMuted,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  )
-                  .toList(),
+                    )
+                    .toList(),
+              ),
             ),
             const SizedBox(height: 24),
 

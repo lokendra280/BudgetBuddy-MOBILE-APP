@@ -220,11 +220,7 @@ class _ErrorView extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 error,
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: Color(0xFF9090B0),
-                  fontFamily: 'monospace',
-                ),
+                style: const TextStyle(fontSize: 10, color: Color(0xFF9090B0)),
                 maxLines: 6,
                 overflow: TextOverflow.ellipsis,
               ),

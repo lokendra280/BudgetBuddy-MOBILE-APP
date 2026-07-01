@@ -54,40 +54,40 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     CategoryService.init();
 
     // ── SMS auto-sync — Android only, throttled internally ──────────────
-    if (!Platform.isIOS) {
-      await _runSmsSync(ignoreThrottle: false); // ← throttled
-    }
+    // if (!Platform.isIOS) {
+    //   await _runSmsSync(ignoreThrottle: false); // ← throttled
+    // }
   }
 
   /// Runs SMS sync using the current Riverpod expense list.
   /// Called both from _init() on every app open AND from the permission
   /// guard's onSyncRequested callback when user first grants permission.
   // In home_screen.dart
-  Future<void> _runSmsSync({bool ignoreThrottle = false}) async {
-    final expenses = ref.read(expenseProvider).all;
-    await SmsAutoSyncService.sync(
-      addExpense:
-          ({
-            required String title,
-            required double amount,
-            required String category,
-            required bool isIncome,
-            required DateTime date,
-          }) async {
-            await ref
-                .read(expenseProvider.notifier)
-                .addExpense(
-                  title: title,
-                  amount: amount,
-                  category: category,
-                  isIncome: isIncome,
-                  date: date,
-                );
-          },
-      existingExpenses: expenses,
-      ignoreThrottle: ignoreThrottle, // ← pass through
-    );
-  }
+  // Future<void> _runSmsSync({bool ignoreThrottle = false}) async {
+  //   final expenses = ref.read(expenseProvider).all;
+  //   await SmsAutoSyncService.sync(
+  //     addExpense:
+  //         ({
+  //           required String title,
+  //           required double amount,
+  //           required String category,
+  //           required bool isIncome,
+  //           required DateTime date,
+  //         }) async {
+  //           await ref
+  //               .read(expenseProvider.notifier)
+  //               .addExpense(
+  //                 title: title,
+  //                 amount: amount,
+  //                 category: category,
+  //                 isIncome: isIncome,
+  //                 date: date,
+  //               );
+  //         },
+  //     existingExpenses: expenses,
+  //     ignoreThrottle: ignoreThrottle, // ← pass through
+  //   );
+  // }
 
   void _push(Widget s) =>
       Navigator.push(context, MaterialPageRoute(builder: (_) => s));
@@ -114,14 +114,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           // Shows if user skipped the splash dialog.
           // onSyncRequested triggers immediate sync when they enable here.
           // In HomeScreen.build() — banner passes ignoreThrottle: true for first grant
-          if (!Platform.isIOS)
-            SmsPermissionGuard(
-              modal: false,
-              onSyncRequested: () =>
-                  _runSmsSync(ignoreThrottle: true), // ← true
-              child: const SizedBox.shrink(),
-            ),
-
+          // if (!Platform.isIOS)
+          //   SmsPermissionGuard(
+          //     modal: false,
+          //     onSyncRequested: () =>
+          //         _runSmsSync(ignoreThrottle: true), // ← true
+          //     child: const SizedBox.shrink(),
+          //   ),
           Expanded(
             child: CustomScrollView(
               slivers: [
@@ -421,25 +420,27 @@ class _RecentTransactions extends ConsumerWidget {
         ),
         const SizedBox(height: 10),
         if (all.isEmpty)
-          AppCard(
-            padding: const EdgeInsets.symmetric(vertical: 32),
-            child: Column(
-              children: [
-                Image.asset(Assets.salary, width: 64, height: 64),
-                const SizedBox(height: 10),
-                Text(
-                  l10n.noEntryYet,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
+          Center(
+            child: AppCard(
+              // padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+              child: Column(
+                children: [
+                  Image.asset(Assets.salary, width: 64, height: 64),
+                  const SizedBox(height: 10),
+                  Text(
+                    l10n.noEntryYet,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  l10n.tapToAddIncome,
-                  style: TextStyle(fontSize: 12, color: context.c.textMuted),
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    l10n.tapToAddIncome,
+                    style: TextStyle(fontSize: 12, color: context.c.textMuted),
+                  ),
+                ],
+              ),
             ),
           )
         else
