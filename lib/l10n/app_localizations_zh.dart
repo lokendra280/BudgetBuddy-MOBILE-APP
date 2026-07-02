@@ -871,7 +871,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ratePerAnnum => '年利率 %';
 
   @override
-  String get tenureMonths => '还款期限（月）';
+  String get tenureMonths => '期限（按年）';
 
   @override
   String get autoCalcEmi => '自动计算月供';
@@ -883,7 +883,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get monthlyEmiAmount => '每月还款金额';
 
   @override
-  String get loanStarted => '贷款开始日期：';
+  String loanStarted(String date) {
+    return '贷款开始于 $date';
+  }
 
   @override
   String get emiDueDay => '还款日';

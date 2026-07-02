@@ -291,11 +291,18 @@
   "category":               "Categoria",
   "principalAmount":        "Valor Principal",
   "ratePerAnnum":           "Taxa % a.a.",
-  "tenureMonths":           "Prazo (meses)",
+  "tenureMonths":           "Prazo (Anual)",
   "autoCalcEmi":            "Calcular parcela automaticamente",
   "autoCalcEmiSub":         "Com base no valor, taxa e prazo",
   "monthlyEmiAmount":       "Valor da Parcela Mensal",
-  "loanStarted":            "Empréstimo iniciado em:",
+   "loanStarted": "Empréstimo iniciado em {date}",
+    "@loanStarted": {
+      "placeholders": {
+        "date": {
+          "type": "String"
+        }
+      }
+    },
   "emiDueDay":              "Dia de Vencimento da Parcela",
   "remindMeBefore":         "Lembrar-me antes",
   "day":                    "dia",

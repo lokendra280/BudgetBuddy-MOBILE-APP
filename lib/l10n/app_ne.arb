@@ -309,11 +309,18 @@
   "lenderUnknown": "अज्ञात",
   "principalAmount": "मूलधन रकम",
   "ratePerAnnum": "दर % प्रति वर्ष",
-  "tenureMonths": "अवधि (महिना)",
+  "tenureMonths": "अवधि (वर्षमा)",
   "autoCalcEmi": "EMI स्वतः गणना गर्नुहोस्",
   "autoCalcEmiSub": "मूलधन, दर र अवधिबाट",
   "monthlyEmiAmount": "मासिक EMI रकम",
-  "loanStarted": "ऋण सुरु भएको:",
+ "loanStarted": "ऋण {date} मा सुरु भयो",
+    "@loanStarted": {
+      "placeholders": {
+        "date": {
+          "type": "String"
+        }
+      }
+    },
   "emiDueDay": "EMI देय दिवस",
   "day": "दिन",
   "notesOptional": "नोटहरू (वैकल्पिक)",

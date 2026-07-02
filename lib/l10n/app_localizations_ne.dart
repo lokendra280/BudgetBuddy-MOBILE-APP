@@ -871,7 +871,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get ratePerAnnum => 'दर % प्रति वर्ष';
 
   @override
-  String get tenureMonths => 'अवधि (महिना)';
+  String get tenureMonths => 'अवधि (वर्षमा)';
 
   @override
   String get autoCalcEmi => 'EMI स्वतः गणना गर्नुहोस्';
@@ -883,7 +883,9 @@ class AppLocalizationsNe extends AppLocalizations {
   String get monthlyEmiAmount => 'मासिक EMI रकम';
 
   @override
-  String get loanStarted => 'ऋण सुरु भएको:';
+  String loanStarted(String date) {
+    return 'ऋण $date मा सुरु भयो';
+  }
 
   @override
   String get emiDueDay => 'EMI देय दिवस';

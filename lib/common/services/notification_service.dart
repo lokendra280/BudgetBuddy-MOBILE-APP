@@ -277,8 +277,8 @@ class NotificationService {
             '${loan.lenderName} · ${loan.currency} $amtFmt due ${DateFormat('MMM d').format(due)}',
         scheduledDate: scheduled,
         notificationDetails: _emiDetails,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        // Recurring monthly — fires on the same day each month automatically
+        androidScheduleMode: AndroidScheduleMode
+            .inexactAllowWhileIdle, // Recurring monthly — fires on the same day each month automatically
         matchDateTimeComponents: DateTimeComponents.dayOfMonthAndTime,
         payload: emiPayload,
       );

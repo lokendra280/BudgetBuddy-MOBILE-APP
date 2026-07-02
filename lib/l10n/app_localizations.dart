@@ -1820,7 +1820,7 @@ abstract class AppLocalizations {
   /// No description provided for @tenureMonths.
   ///
   /// In en, this message translates to:
-  /// **'Tenure (months)'**
+  /// **'Tenure (Yearly)'**
   String get tenureMonths;
 
   /// No description provided for @autoCalcEmi.
@@ -1844,8 +1844,8 @@ abstract class AppLocalizations {
   /// No description provided for @loanStarted.
   ///
   /// In en, this message translates to:
-  /// **'Loan started:'**
-  String get loanStarted;
+  /// **'Loan started {date}'**
+  String loanStarted(String date);
 
   /// No description provided for @emiDueDay.
   ///

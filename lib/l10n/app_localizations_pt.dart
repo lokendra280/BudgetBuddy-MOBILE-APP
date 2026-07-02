@@ -871,7 +871,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get ratePerAnnum => 'Taxa % a.a.';
 
   @override
-  String get tenureMonths => 'Prazo (meses)';
+  String get tenureMonths => 'Prazo (Anual)';
 
   @override
   String get autoCalcEmi => 'Calcular parcela automaticamente';
@@ -883,7 +883,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get monthlyEmiAmount => 'Valor da Parcela Mensal';
 
   @override
-  String get loanStarted => 'Empréstimo iniciado em:';
+  String loanStarted(String date) {
+    return 'Empréstimo iniciado em $date';
+  }
 
   @override
   String get emiDueDay => 'Dia de Vencimento da Parcela';

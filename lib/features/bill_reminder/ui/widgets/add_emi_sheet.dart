@@ -45,7 +45,7 @@ class _AddEmiSheetState extends ConsumerState<AddEmiSheet> {
       _principalCtrl.text = e.principalAmount.toStringAsFixed(0);
       _emiCtrl.text = e.emiAmount.toStringAsFixed(0);
       _rateCtrl.text = e.interestRate.toString();
-      _tenureCtrl.text = e.tenureMonths.toString();
+      _tenureCtrl.text = (e.tenureMonths / 12).toString();
       _notesCtrl.text = e.notes;
       _category = e.category;
       _dayOfMonth = e.dayOfMonth;
@@ -62,7 +62,8 @@ class _AddEmiSheetState extends ConsumerState<AddEmiSheet> {
     if (!_autoCalcEmi) return;
     final p = double.tryParse(_principalCtrl.text) ?? 0;
     final r = double.tryParse(_rateCtrl.text) ?? 0;
-    final n = int.tryParse(_tenureCtrl.text) ?? 0;
+    final years = double.tryParse(_tenureCtrl.text) ?? 0;
+    final n = (years * 12).round(); // convert years -> months
     if (p <= 0 || n <= 0) {
       _emiCtrl.clear();
       return;
@@ -98,9 +99,10 @@ class _AddEmiSheetState extends ConsumerState<AddEmiSheet> {
     final principal = double.tryParse(_principalCtrl.text.replaceAll(',', ''));
     final emi = double.tryParse(_emiCtrl.text.replaceAll(',', ''));
     final rate = double.tryParse(_rateCtrl.text) ?? 0;
-    final tenure = int.tryParse(_tenureCtrl.text) ?? 0;
-
-    if (title.isEmpty || principal == null || emi == null || tenure <= 0)
+    final years = double.tryParse(_tenureCtrl.text) ?? 0;
+    final tenureMonths = (years * 12)
+        .round(); // ✅ convert years -> months, once
+    if (title.isEmpty || principal == null || emi == null || tenureMonths <= 0)
       return;
 
     setState(() => _saving = true);
@@ -113,7 +115,7 @@ class _AddEmiSheetState extends ConsumerState<AddEmiSheet> {
       principalAmount: principal,
       emiAmount: emi,
       interestRate: rate,
-      tenureMonths: tenure,
+      tenureMonths: tenureMonths,
       startDate: _startDate,
       dayOfMonth: _dayOfMonth,
       currency: currency,
@@ -339,8 +341,7 @@ class _AddEmiSheetState extends ConsumerState<AddEmiSheet> {
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      l10n.loanStarted.replaceAll(
-                        '{date}',
+                      l10n.loanStarted(
                         DateFormat('MMM d, yyyy').format(_startDate),
                       ),
                       style: context.t.labelLarge,

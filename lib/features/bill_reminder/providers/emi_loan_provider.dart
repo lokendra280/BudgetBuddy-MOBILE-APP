@@ -1,6 +1,7 @@
 import 'package:budgetBuddy/common/hive_storages/hive_storage.dart';
 import 'package:budgetBuddy/common/services/notification_service.dart';
 import 'package:budgetBuddy/features/bill_reminder/models/emi_loan.dart';
+import 'package:budgetBuddy/features/bill_reminder/services/emi_cycle_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -106,15 +107,21 @@ class EmiLoanNotifier extends Notifier<EmiLoanState> {
   }
 
   // ── Payments ──────────────────────────────────────────────────────────────
-  Future<void> recordPayment(String loanId, EmiPayment payment) async {
+  Future<bool> recordPayment(String loanId, EmiPayment payment) async {
     final loan = HiveStorage.getEmiLoan(loanId);
-    if (loan == null) return;
+    if (loan == null) return false;
+
+    if (!payment.isExtraPayment && EmiCycleService.paidForCurrentCycle(loan)) {
+      return false; // already paid this cycle
+    }
+
     final updated = List<EmiPayment>.from(loan.payments)..add(payment);
     loan.payments = updated;
     loan.updatedAt = DateTime.now();
     loan.synced = false;
     await loan.save();
     _reload();
+    return true;
   }
 
   Future<void> recordExtraPayment(

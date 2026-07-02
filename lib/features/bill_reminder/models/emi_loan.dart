@@ -168,8 +168,6 @@ class EmiLoan extends HiveObject {
     );
   }
 
-  double _calcRemainingInterest() => calcRemainingInterest();
-
   double calcRemainingInterest() {
     final r = interestRate / 12 / 100;
     var balance = remainingBalance;

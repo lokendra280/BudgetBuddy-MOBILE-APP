@@ -311,12 +311,19 @@
   "category":               "Category",
   "principalAmount":        "Principal Amount",
   "ratePerAnnum":           "Rate % p.a.",
-  "tenureMonths":           "Tenure (months)",
+  "tenureMonths":           "Tenure (Yearly)",
   "autoCalcEmi":            "Auto-calculate EMI",
   "autoCalcEmiSub":         "From principal, rate & tenure",
   "monthlyEmiAmount":       "Monthly EMI Amount",
-  "loanStarted":            "Loan started:",
-  "emiDueDay":              "EMI Due Day",
+"loanStarted": "Loan started {date}",
+"@loanStarted": {
+  "placeholders": {
+    "date": {
+      "type": "String"
+    }
+  }
+},  
+"emiDueDay":              "EMI Due Day",
   "remindMeBefore":         "Remind me before",
   "day":                    "day",
   "days":                   "days",

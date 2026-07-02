@@ -291,11 +291,18 @@
   "category":               "类别",
   "principalAmount":        "贷款本金",
   "ratePerAnnum":           "年利率 %",
-  "tenureMonths":           "还款期限（月）",
+    "tenureMonths": "期限（按年）",
   "autoCalcEmi":            "自动计算月供",
   "autoCalcEmiSub":         "根据本金、利率和期限计算",
   "monthlyEmiAmount":       "每月还款金额",
-  "loanStarted":            "贷款开始日期：",
+    "loanStarted": "贷款开始于 {date}",
+    "@loanStarted": {
+      "placeholders": {
+        "date": {
+          "type": "String"
+        }
+      }
+    },
   "emiDueDay":              "还款日",
   "remindMeBefore":         "提前提醒",
   "day":                    "天",

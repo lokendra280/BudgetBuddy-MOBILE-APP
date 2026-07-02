@@ -871,7 +871,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ratePerAnnum => 'Rate % p.a.';
 
   @override
-  String get tenureMonths => 'Tenure (months)';
+  String get tenureMonths => 'Tenure (Yearly)';
 
   @override
   String get autoCalcEmi => 'Auto-calculate EMI';
@@ -883,7 +883,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get monthlyEmiAmount => 'Monthly EMI Amount';
 
   @override
-  String get loanStarted => 'Loan started:';
+  String loanStarted(String date) {
+    return 'Loan started $date';
+  }
 
   @override
   String get emiDueDay => 'EMI Due Day';

@@ -6,6 +6,7 @@ import 'package:budgetBuddy/features/bill_reminder/models/bill_reminder.dart';
 import 'package:budgetBuddy/features/bill_reminder/models/emi_loan.dart';
 import 'package:budgetBuddy/features/bill_reminder/providers/bill_reminder_provider.dart';
 import 'package:budgetBuddy/features/bill_reminder/providers/emi_loan_provider.dart';
+import 'package:budgetBuddy/features/bill_reminder/ui/pages/emi_payment_sheet.dart';
 import 'package:budgetBuddy/features/bill_reminder/ui/widgets/add_biill_sheet.dart';
 import 'package:budgetBuddy/features/bill_reminder/ui/widgets/add_emi_sheet.dart';
 import 'package:budgetBuddy/features/bill_reminder/ui/widgets/bill_strip_alert.dart';
@@ -477,7 +478,7 @@ class _EmiTab extends ConsumerWidget {
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
-    builder: (_) => _RecordPaymentSheet(loan: loan, fmt: fmt),
+    builder: (_) => RecordPaymentSheet(loanId: loan.id, fmt: fmt),
   );
 
   Future<void> _confirmDelete(
@@ -500,11 +501,17 @@ class _EmiTab extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(AppLocalizations.of(context)!.cancel, style: AppTypography.body),
+            child: Text(
+              AppLocalizations.of(context)!.cancel,
+              style: AppTypography.body,
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(AppLocalizations.of(context)!.delete, style: AppTypography.body.colored(kAccent)),
+            child: Text(
+              AppLocalizations.of(context)!.delete,
+              style: AppTypography.body.colored(kAccent),
+            ),
           ),
         ],
       ),
@@ -580,7 +587,7 @@ class _EmiSummaryCard extends StatelessWidget {
         Row(
           children: [
             _DashTile(
-             AppLocalizations.of(context)!.outstanding,
+              AppLocalizations.of(context)!.outstanding,
               fmt(state.totalOutstanding),
               kAccent,
               Icons.account_balance_rounded,
@@ -602,11 +609,19 @@ class _EmiSummaryCard extends StatelessWidget {
           children: [
             _StatPill(
               '${state.activeLoans.length}',
-             AppLocalizations.of(context)!.active,
+              AppLocalizations.of(context)!.active,
               AppColors.primaryColor,
             ),
-            _StatPill('${state.overdueLoans.length}', AppLocalizations.of(context)!.overdue, kAccent),
-            _StatPill('${state.totalMissedPayments}', AppLocalizations.of(context)!.missed, kAmber),
+            _StatPill(
+              '${state.overdueLoans.length}',
+              AppLocalizations.of(context)!.overdue,
+              kAccent,
+            ),
+            _StatPill(
+              '${state.totalMissedPayments}',
+              AppLocalizations.of(context)!.missed,
+              kAmber,
+            ),
           ],
         ),
       ],
@@ -838,144 +853,4 @@ class _PageBtn extends StatelessWidget {
       ),
     ),
   );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Record Payment sheet (inline — avoids extra file import)
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _RecordPaymentSheet extends ConsumerStatefulWidget {
-  final EmiLoan loan;
-  final String Function(double) fmt;
-  const _RecordPaymentSheet({required this.loan, required this.fmt});
-
-  @override
-  ConsumerState<_RecordPaymentSheet> createState() =>
-      _RecordPaymentSheetState();
-}
-
-class _RecordPaymentSheetState extends ConsumerState<_RecordPaymentSheet> {
-  final _amountCtrl = TextEditingController();
-  final _noteCtrl = TextEditingController();
-  bool _isExtra = false;
-  bool _saving = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _amountCtrl.text = widget.loan.emiAmount.toStringAsFixed(0);
-  }
-
-  @override
-  void dispose() {
-    _amountCtrl.dispose();
-    _noteCtrl.dispose();
-    super.dispose();
-  }
-
-  Future<void> _save() async {
-    final amount = double.tryParse(_amountCtrl.text.replaceAll(',', ''));
-    if (amount == null || amount <= 0) return;
-    setState(() => _saving = true);
-
-    final payment = EmiPayment(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      date: DateTime.now(),
-      amount: amount,
-      isExtraPayment: _isExtra,
-      note: _noteCtrl.text.trim(),
-    );
-
-    if (_isExtra) {
-      await ref
-          .read(emiLoanProvider.notifier)
-          .recordExtraPayment(widget.loan.id, amount, _noteCtrl.text.trim());
-    } else {
-      await ref
-          .read(emiLoanProvider.notifier)
-          .recordPayment(widget.loan.id, payment);
-    }
-    if (mounted) Navigator.pop(context);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.c;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        20,
-        20,
-        20,
-        MediaQuery.of(context).viewInsets.bottom + 24,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-              width: 36,
-              height: 4,
-              decoration: BoxDecoration(
-                color: c.border,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          const SizedBox(height: 18),
-          Text('Record Payment', style: context.t.h3),
-          const SizedBox(height: 4),
-          Text(
-            '${widget.loan.title} · EMI ${widget.fmt(widget.loan.emiAmount)}',
-            style: context.t.bodySub,
-          ),
-          const SizedBox(height: 18),
-          InputField(
-            hint: 'Amount',
-            controller: _amountCtrl,
-            keyboard: const TextInputType.numberWithOptions(decimal: true),
-            prefix: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Text(
-                widget.loan.currency,
-                style: AppTypography.body.colored(AppColors.primaryColor),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          InputField(hint: 'Note (optional)', controller: _noteCtrl),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Extra / Part Payment', style: context.t.labelLarge),
-                    Text(
-                      AppLocalizations.of(context)!.reducesPrincipal,
-                      style: context.t.labelMuted,
-                    ),
-                  ],
-                ),
-              ),
-              Switch(
-                value: _isExtra,
-                onChanged: (v) => setState(() => _isExtra = v),
-                activeColor: AppColors.primaryColor,
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          AppButton(
-            label: _saving
-                ? 'Saving…'
-                : (_isExtra ? 'Record Extra Payment' : 'Mark as Paid'),
-            onTap: _saving ? () {} : _save,
-            icon: Icons.check_circle_rounded,
-          ),
-        ],
-      ),
-    );
-  }
 }

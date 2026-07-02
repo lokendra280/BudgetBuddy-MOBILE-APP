@@ -54,10 +54,9 @@ class HiveStorage {
     if (!Hive.isAdapterRegistered(4))
       Hive.registerAdapter(GoalTransactionAdapter());
     if (!Hive.isAdapterRegistered(5))
-      Hive.registerAdapter(EmiLoanAdapter()); // ← new
-
-    if (!Hive.isAdapterRegistered(6))
       Hive.registerAdapter(EmiPaymentAdapter()); // ← new
+    if (!Hive.isAdapterRegistered(6))
+      Hive.registerAdapter(EmiLoanAdapter()); // ← new
   }
 
   static Future<void> _openWithRecovery() async {
