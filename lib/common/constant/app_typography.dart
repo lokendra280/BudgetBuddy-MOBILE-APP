@@ -214,6 +214,16 @@ class _ContextualTypography {
   TextStyle get labelMuted => AppTypography.labelSmall.copyWith(color: _muted);
   TextStyle get bodySub => AppTypography.bodySmall.copyWith(color: _sub);
   TextStyle get captionMuted => AppTypography.caption.copyWith(color: _muted);
+
+  static TextStyle chip(
+    BuildContext c, {
+    required bool selected,
+    required Color color,
+  }) => GoogleFonts.inter(
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+    color: selected ? color : c.t._muted,
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

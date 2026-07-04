@@ -59,6 +59,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     // }
   }
 
+  // Future<bool> _isOnline() async {
+  //   final result = await Connectivity().checkConnectivity();
+  //   // On newer connectivity_plus versions checkConnectivity() returns a
+  //   // List<ConnectivityResult> — adjust this line to match your version.
+  //   return result != ConnectivityResult.none;
+  // }
+
+  // Future<void> _maybeShowFeedback() async {
+  //   if (!FeedbackPromptService.shouldShowToday) return;
+  //   if (!mounted) return;
+  //   if (!await _isOnline()) return;
+  //   if (!mounted) return;
+  //   showFeedbackSheet(context, isDailyPrompt: true);
+  // }
+
   /// Runs SMS sync using the current Riverpod expense list.
   /// Called both from _init() on every app open AND from the permission
   /// guard's onSyncRequested callback when user first grants permission.
