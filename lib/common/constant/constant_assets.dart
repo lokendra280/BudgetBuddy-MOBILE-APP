@@ -8,7 +8,7 @@ class Assets {
 
   static const String statements = "$_basePathSvg/statements$_svg";
 
-  static const String profile = "$_basePathSvg/profile$_svg";
+  static const String profile = "$_basePathSvg/profile-circle$_svg";
 
   static const String settings = "$_basePathSvg/settings$_svg";
   static const String ai = "$_basePathSvg/ai$_svg";
@@ -68,4 +68,5 @@ class Assets {
   static const String business = "$_basePath/business$_png";
   static const String appIcons = "$_basePath/app_icon$_png";
   static const String noDataFound = "$_basePath/no-data$_png";
+  static const String car = "$_basePath/car$_png";
 }

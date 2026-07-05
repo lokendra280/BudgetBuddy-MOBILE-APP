@@ -5,6 +5,7 @@ import 'package:budgetBuddy/features/bill_reminder/models/emi_loan.dart';
 import 'package:budgetBuddy/features/expense/models/expense.dart';
 import 'package:budgetBuddy/features/home/services/sync_services.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -22,7 +23,6 @@ class HiveStorage {
   static Box<GoalTransaction> get goalsTransaction =>
       Hive.box<GoalTransaction>('goals_transaction');
   static Box<EmiLoan> get emiLoans => Hive.box<EmiLoan>('emi_loans');
-
   // ── Init ──────────────────────────────────────────────────────
   static const int _schemaVersion = 6;
   static const String _versionKey = 'hive_schema_v';
@@ -68,6 +68,8 @@ class HiveStorage {
         Hive.openBox<BillReminder>('bill_reminders'),
         Hive.openBox<GoalTransaction>('goals_transaction'),
         Hive.openBox<EmiLoan>('emi_loans'), // ← new
+        //  await Hive.openBox('feedback_box');
+        Hive.openBox('feedback_box'), // ← new
       ]);
     } catch (e) {
       debugPrint('[HiveStorage] Open failed: $e — wiping');

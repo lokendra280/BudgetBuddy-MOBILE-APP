@@ -1,4 +1,5 @@
 import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/common/common_svg_widget.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
 import 'package:budgetBuddy/common/constant/app_typography.dart';
 import 'package:budgetBuddy/features/bill_reminder/models/emi_loan.dart';
@@ -188,13 +189,14 @@ class _AddEmiSheetState extends ConsumerState<AddEmiSheet> {
             InputField(
               hint: l10n.loanNameHint,
               controller: _titleCtrl,
-              prefix: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text(
-                  kLoanEmojis[_category] ?? '🏦',
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ),
+              // prefix: Padding(     padding: const EdgeInsets.all(12),
+              //   child: CommonSvgWidget(
+              //     svgName: kLoanEmojis[_category] ?? '',
+              //     width: 16,
+              //     height: 16,
+              //   ),
+
+              // ),
             ),
             const SizedBox(height: 10),
 
@@ -232,10 +234,12 @@ class _AddEmiSheetState extends ConsumerState<AddEmiSheet> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            kLoanEmojis[cat] ?? '🏦',
-                            style: const TextStyle(fontSize: 14),
+                          CommonSvgWidget(
+                            svgName: kLoanEmojis[cat] ?? '',
+                            width: 14,
+                            height: 14,
                           ),
+
                           const SizedBox(width: 4),
                           Text(
                             cat,

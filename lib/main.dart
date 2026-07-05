@@ -73,6 +73,7 @@ Future<void> _init() async {
 
   await NotificationService.init();
   await NotificationService.scheduleDailyReminder();
+  await NotificationService.requestPermission();
   await CategoryService.init();
 }
 

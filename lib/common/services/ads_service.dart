@@ -38,16 +38,29 @@ class AdService {
 
   // ── Banner ────────────────────────────────────────────────────────────────
   /// Returns a loaded [BannerAd] or null if ads are disabled.
-  BannerAd? createBanner() {
+  // ── Banner ────────────────────────────────────────────────────────────────
+  /// Creates a banner ad. Ads-disabled → returns null immediately.
+  /// [onLoaded] fires when the ad has actually finished loading — only then
+  /// is it safe to pass this ad into an AdWidget.
+  /// [onFailed] fires if loading fails; the ad is already disposed by then.
+  BannerAd? createBanner({
+    VoidCallback? onLoaded,
+    void Function(LoadAdError error)? onFailed,
+  }) {
     if (!_adsEnabled) return null;
     return BannerAd(
       adUnitId: AdIds.banner,
       size: AdSize.banner,
       request: const AdRequest(),
       listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          if (kDebugMode) debugPrint('[AdService] Banner loaded');
+          onLoaded?.call();
+        },
         onAdFailedToLoad: (ad, error) {
           if (kDebugMode) debugPrint('[AdService] Banner failed: $error');
           ad.dispose();
+          onFailed?.call(error);
         },
       ),
     )..load();

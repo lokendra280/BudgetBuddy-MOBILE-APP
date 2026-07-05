@@ -16,6 +16,8 @@ import 'package:budgetBuddy/features/expense/models/expense.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetBuddy/features/expense/services/category_services.dart';
 import 'package:budgetBuddy/features/expense/ui/statemet_screen.dart';
+import 'package:budgetBuddy/features/feedback/services/feedback_promt_services.dart';
+import 'package:budgetBuddy/features/feedback/ui/feedback_sheet.dart';
 import 'package:budgetBuddy/features/home/providers/sync_provider.dart';
 import 'package:budgetBuddy/features/home/ui/widgets/app_drawer.dart';
 import 'package:budgetBuddy/features/home/ui/widgets/header_widget.dart';
@@ -42,7 +44,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _init());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _init();
+      Future.delayed(const Duration(seconds: 2), () {
+        if (!mounted) return;
+        if (FeedbackPromptService.shouldShowToday) {
+          showFeedbackSheet(context, isDailyPrompt: true);
+        }
+      });
+    });
   }
 
   Future<void> _init() async {

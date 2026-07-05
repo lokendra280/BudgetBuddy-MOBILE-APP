@@ -12,9 +12,6 @@ import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// EmiLoanScreen — main screen
-// ─────────────────────────────────────────────────────────────────────────────
 
 class EmiLoanScreen extends ConsumerWidget {
   const EmiLoanScreen({super.key});

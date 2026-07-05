@@ -66,6 +66,16 @@ class EmiLoanNotifier extends Notifier<EmiLoanState> {
     final items = HiveStorage.allEmiLoans()
       ..sort((a, b) => a.daysUntilDue.compareTo(b.daysUntilDue));
     state = state.copyWith(loans: items);
+
+    for (final loan in items.where((l) => l.isActive && l.remindersEnabled)) {
+      if (loan.isOverdue) {
+        NotificationService.startOverdueReminder(loan);
+      } else {
+        NotificationService.stopOverdueReminder(
+          loan.id,
+        ); // safe no-op if not running
+      }
+    }
   }
 
   // ── CRUD ──────────────────────────────────────────────────────────────────
@@ -112,7 +122,7 @@ class EmiLoanNotifier extends Notifier<EmiLoanState> {
     if (loan == null) return false;
 
     if (!payment.isExtraPayment && EmiCycleService.paidForCurrentCycle(loan)) {
-      return false; // already paid this cycle
+      return false;
     }
 
     final updated = List<EmiPayment>.from(loan.payments)..add(payment);
@@ -120,6 +130,11 @@ class EmiLoanNotifier extends Notifier<EmiLoanState> {
     loan.updatedAt = DateTime.now();
     loan.synced = false;
     await loan.save();
+
+    if (!payment.isExtraPayment) {
+      await NotificationService.stopOverdueReminder(loanId);
+    }
+
     _reload();
     return true;
   }

@@ -399,7 +399,6 @@ class _EmiTab extends ConsumerWidget {
               onTap: () {},
             ),
           ),
-
         // ── Summary card ───────────────────────────────────────────────
         SliverToBoxAdapter(
           child: Padding(

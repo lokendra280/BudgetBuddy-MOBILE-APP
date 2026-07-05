@@ -37,7 +37,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     _reloadCategories();
     _addRow();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Use adServiceProvider — consistent with rest of app
+    
       _banner = ref.read(adServiceProvider).createBanner();
       setState(() {});
     });

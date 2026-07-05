@@ -97,7 +97,7 @@ class NotificationService {
     try {
       tz_data.initializeTimeZones();
       final timezoneInfo = await FlutterTimezone.getLocalTimezone();
-      tz.setLocalLocation(tz.getLocation(timezoneInfo.localizedName!.name));
+      tz.setLocalLocation(tz.getLocation(timezoneInfo.identifier));
 
       await _plugin.initialize(
         settings: const InitializationSettings(
@@ -253,9 +253,22 @@ class NotificationService {
       final notifAt = due.subtract(Duration(days: loan.remindDaysBefore));
       var scheduled = _toTZ(notifAt, hour: 9);
       final now = tz.TZDateTime.now(tz.local);
+      final endOfDueDay = _toTZ(due, hour: 23);
 
       if (scheduled.isBefore(now)) {
-        // Roll to next month
+        // Reminder hour already passed today, but the EMI isn't due yet —
+        // fire a catch-up notification instead of skipping to next month.
+        if (now.isBefore(endOfDueDay)) {
+          final amtFmt = NumberFormat('#,##0', 'en_US').format(loan.emiAmount);
+          await _plugin.show(
+            id: _emiNotifId(loan.id),
+            title: ' EMI Due Soon — ${loan.title}',
+            body:
+                '${loan.lenderName} · ${loan.currency} $amtFmt due ${DateFormat('MMM d').format(due)}',
+            notificationDetails: _emiDetails,
+            payload: emiPayload,
+          );
+        }
         final nextDue = DateTime(
           due.year,
           due.month + 1,
@@ -269,22 +282,73 @@ class NotificationService {
       }
 
       final amtFmt = NumberFormat('#,##0', 'en_US').format(loan.emiAmount);
-
       await _plugin.zonedSchedule(
         id: _emiNotifId(loan.id),
-        title: '${loan.emoji} EMI Due Soon — ${loan.title}',
+        title: ' EMI Due Soon — ${loan.title}',
         body:
             '${loan.lenderName} · ${loan.currency} $amtFmt due ${DateFormat('MMM d').format(due)}',
         scheduledDate: scheduled,
         notificationDetails: _emiDetails,
-        androidScheduleMode: AndroidScheduleMode
-            .inexactAllowWhileIdle, // Recurring monthly — fires on the same day each month automatically
+        androidScheduleMode:
+            AndroidScheduleMode.exactAllowWhileIdle, // see note below
         matchDateTimeComponents: DateTimeComponents.dayOfMonthAndTime,
         payload: emiPayload,
       );
-      debugPrint('[NotificationService] EMI "${loan.title}" → $scheduled');
     } catch (e) {
       debugPrint('[NotificationService] scheduleEmiReminder error: $e');
+    }
+  }
+
+  static const _emiOverdueChannel = AndroidNotificationDetails(
+    'emi_overdue',
+    'Overdue EMI Reminders',
+    channelDescription: 'Daily reminders for unpaid, overdue EMIs',
+    importance: Importance.max,
+    priority: Priority.high,
+    icon: '@mipmap/launcher_icon',
+    color: Color(0xFFEF4444),
+  );
+
+  static const _emiOverdueDetails = NotificationDetails(
+    android: _emiOverdueChannel,
+    iOS: _ios,
+  );
+
+  /// Stable int notification ID for overdue EMI daily nag (300_000 – 399_999).
+  static int _emiOverdueNotifId(String id) =>
+      id.hashCode.abs() % 100000 + 300000;
+
+  /// Starts a daily repeating "EMI overdue" notification.
+  /// Call this once the loan is confirmed overdue; safe to call repeatedly
+  /// (it just re-registers the same periodic notification).
+  static Future<void> startOverdueReminder(EmiLoan loan) async {
+    try {
+      final amtFmt = NumberFormat('#,##0', 'en_US').format(loan.emiAmount);
+
+      await _plugin.periodicallyShow(
+        id: _emiOverdueNotifId(loan.id),
+        title: ' EMI Overdue — ${loan.title}',
+        body:
+            '${loan.lenderName} · ${loan.currency} $amtFmt is overdue. Pay now to avoid penalties.',
+        repeatInterval: RepeatInterval.daily,
+        notificationDetails: _emiOverdueDetails,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        payload: emiPayload,
+      );
+      debugPrint(
+        '[NotificationService] Overdue daily reminder started for "${loan.title}"',
+      );
+    } catch (e) {
+      debugPrint('[NotificationService] startOverdueReminder error: $e');
+    }
+  }
+
+  /// Stops the daily overdue nag — call this the moment a payment is recorded.
+  static Future<void> stopOverdueReminder(String loanId) async {
+    try {
+      await _plugin.cancel(id: _emiOverdueNotifId(loanId));
+    } catch (e) {
+      debugPrint('[NotificationService] stopOverdueReminder error: $e');
     }
   }
 

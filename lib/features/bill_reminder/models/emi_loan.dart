@@ -1,3 +1,4 @@
+import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 part 'emi_loan.g.dart';
 
@@ -120,17 +121,22 @@ class EmiLoan extends HiveObject {
   int get daysUntilDue =>
       nextDueDate.difference(DateTime.now()).inDays.clamp(0, 999);
 
+  /// True if a regular EMI payment has already been recorded for the
+  /// current billing cycle (i.e. the cycle ending on `nextDueDate`).
+  bool get _paidThisCycle {
+    final emiPayments = payments.where((p) => !p.isExtraPayment);
+    if (emiPayments.isEmpty) return false;
+    final last = emiPayments.last.date;
+    return last.month == nextDueDate.month && last.year == nextDueDate.year;
+  }
+
   bool get isOverdue {
-    if (payments.isNotEmpty) {
-      final last = payments.last.date;
-      if (last.month == DateTime.now().month &&
-          last.year == DateTime.now().year)
-        return false;
-    }
+    if (_paidThisCycle) return false;
     return DateTime.now().isAfter(nextDueDate);
   }
 
-  bool get isDueSoon => daysUntilDue <= remindDaysBefore && !isOverdue;
+  bool get isDueSoon =>
+      !_paidThisCycle && daysUntilDue <= remindDaysBefore && !isOverdue;
 
   // ── Missed payments ────────────────────────────────────────────────────────
   int get missedPayments {
@@ -275,11 +281,11 @@ const kLoanCategories = [
   'Business',
   'Other',
 ];
-const kLoanEmojis = {
-  'Home': '🏠',
-  'Car': '🚗',
-  'Personal': '👤',
-  'Education': '🎓',
-  'Business': '💼',
-  'Other': '🏦',
+final kLoanEmojis = {
+  'Home': Assets.home,
+  'Car': Assets.car,
+  'Personal': Assets.profile,
+  'Education': Assets.education,
+  'Business': Assets.business,
+  'Other': Assets.other,
 };

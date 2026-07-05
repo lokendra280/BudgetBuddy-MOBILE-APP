@@ -1,4 +1,5 @@
 import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/common/common_svg_widget.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
 import 'package:budgetBuddy/common/constant/app_typography.dart';
 import 'package:budgetBuddy/features/bill_reminder/models/emi_loan.dart';
@@ -43,7 +44,12 @@ class EmiTile extends StatelessWidget {
             // ── Row 1: icon + title + amount ──────────────────────────────
             Row(
               children: [
-                _EmojiAvatar(emoji: loan.emoji, color: color),
+                CommonSvgWidget(
+                  svgName: kLoanEmojis[loan.category] ?? '',
+                  width: 22,
+                  height: 22,
+                  color: color,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -129,23 +135,6 @@ class EmiTile extends StatelessWidget {
 }
 
 // ── Sub-widgets ───────────────────────────────────────────────────────────────
-
-class _EmojiAvatar extends StatelessWidget {
-  final String emoji;
-  final Color color;
-  const _EmojiAvatar({required this.emoji, required this.color});
-
-  @override
-  Widget build(BuildContext context) => Container(
-    width: 44,
-    height: 44,
-    decoration: BoxDecoration(
-      color: color.withOpacity(0.1),
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: Center(child: Text(emoji, style: const TextStyle(fontSize: 22))),
-  );
-}
 
 class _ProgressBar extends StatelessWidget {
   final double ratio;
