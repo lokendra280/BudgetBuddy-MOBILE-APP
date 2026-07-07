@@ -94,7 +94,11 @@ void main() {
       runApp(const ProviderScope(child: SpendSenseApp()));
     },
     (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      if (Firebase.apps.isNotEmpty) {
+        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      } else {
+        debugPrint('Startup error before Firebase init: $error\n$stack');
+      }
     },
   );
 }
@@ -131,7 +135,6 @@ class SpendSenseApp extends ConsumerWidget {
       builder: (ctx, child) {
         ErrorWidget.builder = (details) {
           // Log to Crashlytics instead of crashing silently
-          FirebaseCrashlytics.instance.recordFlutterFatalError(details);
           return _ErrorView(
             error: details.exceptionAsString(),
             onRestart: () {
