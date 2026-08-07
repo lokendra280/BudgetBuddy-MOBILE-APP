@@ -928,4 +928,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get chatWithBuddy => 'बडी से चैट करें';
+
+  @override
+  String get powerByAi => 'एआई द्वारा संचालित';
 }

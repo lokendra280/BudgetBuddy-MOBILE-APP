@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/common_svg_widget.dart';
 import 'package:budgetBuddy/common/common_widget.dart';
+import 'package:budgetBuddy/common/constant/app_typography.dart';
 import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:budgetBuddy/common/navigation_service.dart';
 import 'package:budgetBuddy/common/services/ads_service.dart';
@@ -20,6 +21,7 @@ import 'package:budgetBuddy/features/feedback/services/feedback_promt_services.d
 import 'package:budgetBuddy/features/feedback/ui/feedback_sheet.dart';
 import 'package:budgetBuddy/features/home/providers/sync_provider.dart';
 import 'package:budgetBuddy/features/home/ui/widgets/app_drawer.dart';
+import 'package:budgetBuddy/features/home/ui/widgets/chat_card.dart';
 import 'package:budgetBuddy/features/home/ui/widgets/header_widget.dart';
 import 'package:budgetBuddy/features/home/ui/widgets/home_bar_graph.dart';
 import 'package:budgetBuddy/features/profile/ui/profile_screen.dart';
@@ -164,7 +166,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       const SizedBox(height: 16),
                       const _MetricRow(),
                       const SizedBox(height: 14),
-                      _ChatCard(
+                      ChatCard(
                         onTap: () =>
                             NavigationService.push(target: BuddyChatPage()),
                       ),
@@ -265,43 +267,6 @@ class _MetricRow extends ConsumerWidget {
   }
 }
 
-class _ChatCard extends StatelessWidget {
-  final VoidCallback onTap;
-  const _ChatCard({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) => AppCard(
-    onTap: onTap,
-    padding: const EdgeInsets.all(14),
-    child: Row(
-      children: [
-        Container(
-          width: 38,
-          height: 38,
-          decoration: BoxDecoration(
-            color: AppColors.primaryColor.withOpacity(0.10),
-            borderRadius: BorderRadius.circular(11),
-          ),
-          child: const Center(
-            child: CommonSvgWidget(svgName: Assets.chat, height: 20, width: 20),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            AppLocalizations.of(context)!.chatWithBuddy,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              height: 1.4,
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
 class _BarChartCard extends ConsumerWidget {
   const _BarChartCard();
 
@@ -317,13 +282,7 @@ class _BarChartCard extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                l10n.last7Days,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              Text(l10n.last7Days, style: context.t.h4),
               Row(
                 children: [
                   _Leg(kGreen, l10n.income),
@@ -333,7 +292,7 @@ class _BarChartCard extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           HomeBarGraph(data: dailyData),
         ],
       ),
@@ -421,6 +380,7 @@ class _WeekCompareCard extends ConsumerWidget {
 
 class _RecentTransactions extends ConsumerWidget {
   final VoidCallback onSeeAll;
+
   const _RecentTransactions({required this.onSeeAll});
 
   @override
@@ -435,35 +395,44 @@ class _RecentTransactions extends ConsumerWidget {
           l10n.recent,
           trailing: TextButton(
             onPressed: onSeeAll,
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
             child: Text(
               l10n.all,
-              style: const TextStyle(
-                fontSize: 12,
+              style: context.t.buttonSmall.copyWith(
                 color: AppColors.primaryColor,
               ),
             ),
           ),
         ),
-        const SizedBox(height: 10),
+
+        const SizedBox(height: 12),
+
         if (all.isEmpty)
           Center(
             child: AppCard(
-              // padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               child: Column(
                 children: [
                   Image.asset(Assets.salary, width: 64, height: 64),
-                  const SizedBox(height: 10),
+
+                  const SizedBox(height: 12),
+
                   Text(
                     l10n.noEntryYet,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: context.t.h4,
+                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 4),
+
+                  const SizedBox(height: 6),
+
                   Text(
                     l10n.tapToAddIncome,
-                    style: TextStyle(fontSize: 12, color: context.c.textMuted),
+                    style: context.t.bodySub,
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
@@ -472,11 +441,15 @@ class _RecentTransactions extends ConsumerWidget {
         else
           ...all.take(6).map((e) {
             final isInc = e.isIncome;
+
             final cats = isInc ? kIncomeCategories : kCategories;
+
             final idx = cats.indexOf(e.category);
+
             final col = isInc
                 ? kGreen
                 : kCatColors[idx < 0 ? 0 : idx % kCatColors.length];
+
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: _DeletableTile(e: e, color: col),
@@ -507,24 +480,26 @@ class _DeletableTile extends ConsumerWidget {
 }
 
 class _Leg extends StatelessWidget {
-  final Color c;
-  final String l;
-  const _Leg(this.c, this.l);
+  final Color color;
+  final String title;
+
+  const _Leg(this.color, this.title);
 
   @override
-  Widget build(BuildContext ctx) => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Container(
-        width: 10,
-        height: 10,
-        decoration: BoxDecoration(
-          color: c,
-          borderRadius: BorderRadius.circular(3),
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(3),
+          ),
         ),
-      ),
-      const SizedBox(width: 5),
-      Text(l, style: TextStyle(fontSize: 11, color: ctx.c.textSub)),
-    ],
-  );
+        const SizedBox(width: 6),
+        Text(title, style: context.t.labelMuted),
+      ],
+    );
+  }
 }

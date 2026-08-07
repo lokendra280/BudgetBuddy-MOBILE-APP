@@ -1,3 +1,4 @@
+import 'package:budgetBuddy/common/constant/app_typography.dart';
 import 'package:budgetBuddy/features/auth/providers/auth_provider.dart';
 import 'package:budgetBuddy/common/app_theme.dart';
 import 'package:budgetBuddy/common/common_svg_widget.dart';
@@ -11,10 +12,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HeaderWidget extends ConsumerWidget {
-  final double net, totalExp, totalInc;
+  final double net;
+  final double totalExp;
+  final double totalInc;
   final Budget budget;
   final SyncStatus? syncResult;
-  final VoidCallback onMenuTap, onProfileTap;
+  final VoidCallback onMenuTap;
+  final VoidCallback onProfileTap;
 
   const HeaderWidget({
     super.key,
@@ -31,11 +35,15 @@ class HeaderWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
     final nc = net >= 0 ? kGreen : kAccent;
+
     final fmt = ref.watch(fmtProvider);
     final initials = ref.watch(userInitialsProvider);
     final isLogged = ref.watch(isLoggedInProvider);
     final budgPct = ref.watch(budgetUsedPctProvider);
     final name = ref.watch(userNameProvider);
+
+    final l10n = AppLocalizations.of(context)!;
+
     return SliverToBoxAdapter(
       child: Container(
         decoration: BoxDecoration(
@@ -51,11 +59,9 @@ class HeaderWidget extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Top row: menu + greeting + avatar ────────────────────────────
+            // Header row
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Hamburger
                 GestureDetector(
                   onTap: onMenuTap,
                   child: Container(
@@ -73,7 +79,9 @@ class HeaderWidget extends ConsumerWidget {
                     ),
                   ),
                 ),
+
                 const SizedBox(width: 12),
+
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,34 +92,33 @@ class HeaderWidget extends ConsumerWidget {
                             : DateTime.now().hour < 17
                             ? 'Good afternoon 👋'
                             : 'Good evening 🌙',
-                        style: TextStyle(fontSize: 11, color: c.textMuted),
+                        style: context.t.captionMuted,
                       ),
-                      const SizedBox(height: 2),
+
+                      const SizedBox(height: 3),
+
                       Text(
-                        isLogged ? ' $name' : 'BudgetBuddy',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                        ),
+                        isLogged ? name : "BudgetBuddy",
+                        style: context.t.h3,
                       ),
                     ],
                   ),
                 ),
-                // Profile avatar + sync badge
+
                 GestureDetector(
                   onTap: onProfileTap,
                   child: Column(
                     children: [
                       Container(
-                        width: 40,
-                        height: 40,
+                        width: 42,
+                        height: 42,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: const LinearGradient(
                             colors: [AppColors.primaryColor, Color(0xFF818CF8)],
                           ),
                           border: Border.all(
-                            color: AppColors.primaryColor.withOpacity(0.35),
+                            color: AppColors.primaryColor.withOpacity(.35),
                             width: 2,
                           ),
                         ),
@@ -119,9 +126,7 @@ class HeaderWidget extends ConsumerWidget {
                           child: isLogged
                               ? Text(
                                   initials,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w800,
+                                  style: context.t.labelLarge.copyWith(
                                     color: Colors.white,
                                   ),
                                 )
@@ -129,32 +134,25 @@ class HeaderWidget extends ConsumerWidget {
                                   svgName: Assets.profile_circle,
                                   height: 20,
                                   width: 20,
-                                  color: AppColors.white,
+                                  color: Colors.white,
                                 ),
                         ),
                       ),
+
                       if (syncResult == SyncStatus.success)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 3),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.cloud_done_rounded,
-                                size: 10,
-                                color: kGreen,
-                              ),
-                              const SizedBox(width: 2),
-                              Text(
-                                'Synced',
-                                style: TextStyle(
-                                  fontSize: 8,
-                                  color: kGreen,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.cloud_done_rounded,
+                              size: 11,
+                              color: kGreen,
+                            ),
+                            const SizedBox(width: 3),
+                            Text(
+                              "Synced",
+                              style: context.t.caption.copyWith(color: kGreen),
+                            ),
+                          ],
                         ),
                     ],
                   ),
@@ -162,9 +160,9 @@ class HeaderWidget extends ConsumerWidget {
               ],
             ),
 
-            const SizedBox(height: 18),
+            const SizedBox(height: 22),
 
-            // ── Net balance + expense/income labels ──────────────────────────
+            // Balance section
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -172,58 +170,48 @@ class HeaderWidget extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      net >= 0
-                          ? AppLocalizations.of(context)!.netSaving
-                          : AppLocalizations.of(context)!.netDeficit,
-                      style: TextStyle(fontSize: 11, color: c.textMuted),
+                      net >= 0 ? l10n.netSaving : l10n.netDeficit,
+                      style: context.t.labelMuted,
                     ),
-                    const SizedBox(height: 3),
+
+                    const SizedBox(height: 4),
+
                     Text(
                       '${net >= 0 ? '+' : ''}${fmt(net.abs())}',
-                      style: TextStyle(
-                        fontSize: 34,
-                        fontWeight: FontWeight.w800,
-                        height: 1,
-                        color: nc,
-                      ),
+                      style: context.t.amountLarge.copyWith(color: nc),
                     ),
                   ],
                 ),
+
                 const Spacer(),
+
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    _MiniStat(
-                      '↑ ${AppLocalizations.of(context)!.expense}',
-                      fmt(totalExp),
-                      kAccent,
-                    ),
-                    const SizedBox(height: 4),
-                    _MiniStat(
-                      '↓ ${AppLocalizations.of(context)!.income}',
-                      fmt(totalInc),
-                      kGreen,
-                    ),
+                    _MiniStat('↑ ${l10n.expense}', fmt(totalExp), kAccent),
+
+                    const SizedBox(height: 5),
+
+                    _MiniStat('↓ ${l10n.income}', fmt(totalInc), kGreen),
                   ],
                 ),
               ],
             ),
 
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
 
-            // ── Budget progress bar ──────────────────────────────────────────
             BudgetBar(percent: budgPct),
+
             const SizedBox(height: 6),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '${fmt(totalExp)} spent',
-                  style: TextStyle(fontSize: 10, color: c.textMuted),
-                ),
+                Text('${fmt(totalExp)} spent', style: context.t.captionMuted),
+
                 Text(
                   '${fmt(budget.monthlyLimit)} limit',
-                  style: TextStyle(fontSize: 10, color: c.textMuted),
+                  style: context.t.captionMuted,
                 ),
               ],
             ),
@@ -235,24 +223,28 @@ class HeaderWidget extends ConsumerWidget {
 }
 
 class _MiniStat extends StatelessWidget {
-  final String label, value;
+  final String label;
+  final String value;
   final Color color;
+
   const _MiniStat(this.label, this.value, this.color);
 
   @override
-  Widget build(BuildContext context) => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Text(label, style: TextStyle(fontSize: 10, color: context.c.textMuted)),
-      const SizedBox(width: 6),
-      Text(
-        value,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-          color: color,
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(label, style: context.t.captionMuted),
+
+        const SizedBox(width: 6),
+
+        Text(
+          value,
+          style: context.t.amountSmall.copyWith(
+            color: color,
+            fontWeight: FontWeight.w700,
+          ),
         ),
-      ),
-    ],
-  );
+      ],
+    );
+  }
 }

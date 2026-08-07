@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetBuddy/common/constant/app_typography.dart';
 import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:budgetBuddy/common/localization/category_localization.dart';
 import 'package:budgetBuddy/common/services/ads_service.dart';
@@ -74,10 +75,12 @@ class AppCard extends StatelessWidget {
 
 // ── MetricCard ────────────────────────────────────────────────────────────────
 class MetricCard extends StatelessWidget {
-  final String label, value;
+  final String label;
+  final String value;
   final Color color;
   final IconData icon;
   final String? subtitle;
+
   const MetricCard({
     super.key,
     required this.label,
@@ -88,56 +91,58 @@ class MetricCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => Expanded(
-    child: AppCard(
-      padding: const EdgeInsets.all(14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(9),
-                ),
-                child: Icon(icon, size: 16, color: color),
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: AppCard(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, size: 17, color: color),
+            ),
+
+            const SizedBox(height: 12),
+
+            Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: context.t.amount.copyWith(
+                color: color,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+
+            const SizedBox(height: 4),
+
+            Text(
+              label,
+              style: context.t.labelMuted,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+
+            if (subtitle != null) ...[
+              const SizedBox(height: 3),
+              Text(
+                subtitle!,
+                style: context.t.captionMuted,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: color,
-              height: 1,
-            ),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 10,
-              color: context.c.textMuted,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          if (subtitle != null) ...[
-            const SizedBox(height: 2),
-            Text(
-              subtitle!,
-              style: TextStyle(fontSize: 9, color: context.c.textMuted),
-            ),
           ],
-        ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 // ── Section header ────────────────────────────────────────────────────────────

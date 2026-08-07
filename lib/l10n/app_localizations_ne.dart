@@ -928,4 +928,7 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get chatWithBuddy => 'बडीसँग च्याट गर्नुहोस्';
+
+  @override
+  String get powerByAi => 'एआईद्वारा सञ्चालित';
 }

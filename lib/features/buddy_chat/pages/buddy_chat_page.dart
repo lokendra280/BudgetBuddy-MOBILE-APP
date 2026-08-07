@@ -226,13 +226,13 @@ class _BuddyChatPageState extends ConsumerState<BuddyChatPage> {
           ],
         ),
 
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_outline_rounded),
-            tooltip: 'Clear chat',
-            onPressed: _confirmClear,
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.delete_outline_rounded),
+        //     tooltip: 'Clear chat',
+        //     onPressed: _confirmClear,
+        //   ),
+        // ],
       ),
       body: Column(
         children: [

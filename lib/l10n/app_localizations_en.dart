@@ -928,4 +928,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatWithBuddy => 'Chat with Buddy';
+
+  @override
+  String get powerByAi => 'Power By Ai';
 }

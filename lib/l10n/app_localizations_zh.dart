@@ -928,4 +928,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get chatWithBuddy => '与 Buddy 聊天';
+
+  @override
+  String get powerByAi => '由 AI 驱动';
 }

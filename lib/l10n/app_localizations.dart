@@ -1930,6 +1930,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Chat with Buddy'**
   String get chatWithBuddy;
+
+  /// No description provided for @powerByAi.
+  ///
+  /// In en, this message translates to:
+  /// **'Power By Ai'**
+  String get powerByAi;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
