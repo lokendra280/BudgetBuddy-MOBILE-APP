@@ -17,6 +17,9 @@
       android:name="${applicationName}"
       android:icon="@mipmap/launcher_icon">
 
+    <!-- MainActivity: single declaration. The budgetbuddy:// deep link
+         intent-filter is merged in here (do NOT add a second <activity>
+         tag for MainActivity anywhere else in this file). -->
     <activity
         android:name=".MainActivity"
         android:exported="true"
@@ -37,6 +40,12 @@
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="budgetbuddy"/>
       </intent-filter>
     </activity>
 
@@ -64,6 +73,19 @@
         android:exported="false"
         android:name="com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver"/>
 
+    <!-- Quick Add home screen widget: Expense / Income / Voice -->
+    <receiver
+        android:name=".QuickAddWidgetProvider"
+        android:exported="true"
+        android:label="Quick Add">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+      </intent-filter>
+      <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/quick_add_widget_info"/>
+    </receiver>
+
     <receiver
         android:exported="false"
         android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"/>
@@ -77,18 +99,6 @@
         <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
         <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
       </intent-filter>
-    </receiver>
-
-    <!-- Home Widget Provider -->
-    <receiver
-        android:name=".HomeWidgetProvider"
-        android:exported="true">
-      <intent-filter>
-        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-      </intent-filter>
-      <meta-data
-          android:name="android.appwidget.provider"
-          android:resource="@xml/home_widget_info"/>
     </receiver>
 
     <!-- SMS Receiver -->

@@ -48,6 +48,8 @@ class Assets {
   static const String clock = "$_basePathSvg/clock$_svg";
   static const String heatmap = "$_basePathSvg/heatmap$_svg";
   static const String chat = "$_basePathSvg/chat$_svg";
+  static const String qr_code = "$_basePathSvg/qrcode$_svg";
+  static const String voice = "$_basePathSvg/voice$_svg";
 
   /// Png Images
   static const String food = "$_basePath/food$_png";

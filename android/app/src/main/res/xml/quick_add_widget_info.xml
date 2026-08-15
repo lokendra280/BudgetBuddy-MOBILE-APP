@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- android/app/src/main/res/xml/quick_add_widget_info.xml
+     Replaces add_expense_widget_info.xml. Wider (3 tap zones side by
+     side), so bump min size and target cell width to 3. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="180dp"
+    android:minHeight="90dp"
+    android:targetCellWidth="3"
+    android:targetCellHeight="1"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/quick_add_widget"
+    android:previewImage="@drawable/widget_preview_add_expense"
+    android:resizeMode="none"
+    android:widgetCategory="home_screen"
+    android:description="@string/quick_add_widget_description" />

@@ -1,232 +1,254 @@
-// // lib/expense/services/bill_scaning_service.dart
-// import 'dart:io';
-// import 'package:budgetBuddy/expense/services/expenses_service.dart';
-// import 'package:flutter/foundation.dart';
-// import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-// import 'package:image_picker/image_picker.dart';
-// import 'package:receipt_recognition/receipt_recognition.dart';
+// lib/expense/services/bill_scaning_service.dart
+import 'dart:convert';
+import 'dart:io';
+import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:receipt_recognition/receipt_recognition.dart';
+import 'package:http/http.dart' as http;
 
-// class BillItem {
-//   final String name, currency;
-//   final double amount;
+import 'gemini_receipt_service.dart';
 
-//   BillItem({required this.name, required this.amount, required this.currency});
-// }
+class BillItem {
+  final String name, currency;
+  final double amount;
 
-// class BillScanResult {
-//   final List<BillItem> items;
-//   final double? totalAmount;
-//   final String? merchant, detectedCurrency;
+  BillItem({required this.name, required this.amount, required this.currency});
+}
 
-//   const BillScanResult({
-//     required this.items,
-//     this.totalAmount,
-//     this.merchant,
-//     this.detectedCurrency,
-//   });
+class BillScanResult {
+  final List<BillItem> items;
+  final double? totalAmount;
+  final String? merchant, detectedCurrency;
 
-//   bool get hasItems => items.isNotEmpty;
-// }
+  const BillScanResult({
+    required this.items,
+    this.totalAmount,
+    this.merchant,
+    this.detectedCurrency,
+  });
 
-// class BillScanException implements Exception {
-//   final String message;
-//   const BillScanException(this.message);
+  bool get hasItems => items.isNotEmpty;
+}
 
-//   @override
-//   String toString() => message;
-// }
+class BillScanException implements Exception {
+  final String message;
+  const BillScanException(this.message);
 
-// class BillScannerService {
-//   static final _picker = ImagePicker();
+  @override
+  String toString() => message;
+}
 
-//   static Future<BillScanResult?> scan({bool fromCamera = true}) async {
-//     debugPrint("🟢 [BillScanner] START scan");
+// lib/expense/services/gemini_bill_scan_service.dart
+//
+// Replaces the OCR step in bill_scaning_service.dart with a Gemini vision
+// call. Reuses BillItem / BillScanResult / BillScanException from that
+// file rather than redefining them — same shape is returned either way,
+// so anything downstream (review screen, ExpenseProvider) doesn't care
+// which scanner produced the result.
+//
+// Add to pubspec.yaml:
+//   dependencies:
+//     http: ^1.2.0   # you likely already have this; confirm version
+//
+// Uses generateContent with responseSchema (structured output) so Gemini
+// returns parseable JSON directly — no regex-scraping of prose like the
+// ML Kit path needed.
 
-//     XFile? picked;
+class GeminiBillScanService {
+  static final _picker = ImagePicker();
 
-//     try {
-//       picked = await _picker.pickImage(
-//         source: fromCamera ? ImageSource.camera : ImageSource.gallery,
-//         imageQuality: 92,
-//         maxWidth: 1920,
-//         maxHeight: 2560,
-//       );
+  // Check https://ai.google.dev/gemini-api/docs/models for the current
+  // recommended flash model — Google deprecates these on a roughly
+  // 6-month cycle (gemini-2.0-flash was shut down June 2026).
+  static const _model = 'gemini-3.5-flash';
 
-//       debugPrint("📸 [BillScanner] Image picked: ${picked?.path}");
-//     } catch (e) {
-//       debugPrint("❌ [BillScanner] Picker error: $e");
+  static String get _apiKey {
+    final key = dotenv.env['GEMINI_API_KEY'];
+    if (key == null || key.isEmpty) {
+      throw const BillScanException(
+        'Gemini API key not configured. Add GEMINI_API_KEY to .env.',
+      );
+    }
+    return key;
+  }
 
-//       throw BillScanException(
-//         'Could not open ${fromCamera ? "camera" : "gallery"}.',
-//       );
-//     }
+  /// Picks an image (camera or gallery) and returns it without scanning —
+  /// the caller uses this to show the scanning animation over the actual
+  /// captured photo before/while the Gemini call resolves.
+  static Future<File?> pickImage({bool fromCamera = true}) async {
+    XFile? picked;
+    try {
+      picked = await _picker.pickImage(
+        source: fromCamera ? ImageSource.camera : ImageSource.gallery,
+        imageQuality: 85,
+        maxWidth: 1600,
+      );
+    } catch (e) {
+      throw BillScanException(
+        'Could not open ${fromCamera ? "camera" : "gallery"}.',
+      );
+    }
 
-//     if (picked == null) {
-//       debugPrint("⚠️ [BillScanner] User cancelled");
-//       return null;
-//     }
+    if (picked == null) return null;
 
-//     final file = File(picked.path);
+    final file = File(picked.path);
+    if (!await file.exists() || await file.length() < 1000) {
+      throw const BillScanException(
+        'Image not found or too small. Please retake photo.',
+      );
+    }
+    return file;
+  }
 
-//     if (!await file.exists() || await file.length() < 1000) {
-//       debugPrint("❌ [BillScanner] Invalid image file");
-//       throw const BillScanException(
-//         'Image not found or too small. Please retake photo.',
-//       );
-//     }
+  /// Sends the already-picked image to Gemini and parses the structured
+  /// result. Split from pickImage() so the UI can start the scanning
+  /// animation immediately after the photo is taken, rather than after
+  /// the (slower) network call also completes.
+  static Future<BillScanResult> scanImage(File file) async {
+    debugPrint('🟢 [GeminiBillScanner] Encoding image...');
+    final bytes = await file.readAsBytes();
+    final base64Image = base64Encode(bytes);
 
-//     debugPrint("📂 [BillScanner] File OK: ${file.path}");
+    final uri = Uri.parse(
+      'https://generativelanguage.googleapis.com/v1beta/models/$_model:generateContent'
+      '?key=$_apiKey',
+    );
 
-//     final inputImage = InputImage.fromFilePath(file.path);
+    final body = {
+      'contents': [
+        {
+          'parts': [
+            {
+              'text':
+                  'You are reading a photo of a purchase receipt or bill. '
+                  'Extract every line item with its name and price, the '
+                  'total amount, the merchant/store name if visible, and '
+                  'the currency (ISO code like USD, EUR, GBP, INR, NPR — '
+                  'infer from symbols or context, default to NPR if '
+                  'unclear). Ignore card approval codes, subtotals, tax '
+                  'lines, and payment method text as line items — only '
+                  'real purchased items belong in "items". If a field '
+                  'genuinely cannot be read, omit it rather than guessing.',
+            },
+            {
+              'inline_data': {'mime_type': 'image/jpeg', 'data': base64Image},
+            },
+          ],
+        },
+      ],
+      'generationConfig': {
+        'responseMimeType': 'application/json',
+        'responseSchema': {
+          'type': 'OBJECT',
+          'properties': {
+            'merchant': {'type': 'STRING'},
+            'currency': {'type': 'STRING'},
+            'total': {'type': 'NUMBER'},
+            'items': {
+              'type': 'ARRAY',
+              'items': {
+                'type': 'OBJECT',
+                'properties': {
+                  'name': {'type': 'STRING'},
+                  'amount': {'type': 'NUMBER'},
+                },
+                'required': ['name', 'amount'],
+              },
+            },
+          },
+          'required': ['items'],
+        },
+      },
+    };
 
-//     final options = ReceiptOptions.fromLayeredJson({
-//       'extend': {
-//         'totalLabels': {
-//           'TOTAL': 'Total',
-//           'GRAND TOTAL': 'Total',
-//           'AMOUNT DUE': 'Total',
-//         },
-//         'ignoreKeywords': ['APPROVED', 'VISA', 'MASTERCARD', 'INVOICE'],
-//       },
-//       'override': {
-//         'stopKeywords': [
-//           'TOTAL',
-//           'SUBTOTAL',
-//           'TAX',
-//           'GST',
-//           'VAT',
-//           'CASH',
-//           'CARD',
-//         ],
-//       },
-//       'tuning': {
-//         'optimizerConfidenceThreshold': 30,
-//         'optimizerStabilityThreshold': 20,
-//       },
-//     });
+    http.Response response;
+    try {
+      response = await http
+          .post(
+            uri,
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 30));
+    } catch (e) {
+      debugPrint('❌ [GeminiBillScanner] Network error: $e');
+      throw const BillScanException(
+        'Could not reach the scanning service. Check your connection.',
+      );
+    }
 
-//     ReceiptRecognizer? recognizer;
-//     dynamic snapshot;
+    if (response.statusCode != 200) {
+      debugPrint(
+        '❌ [GeminiBillScanner] HTTP ${response.statusCode}: ${response.body}',
+      );
+      throw BillScanException(
+        'Scan failed (${response.statusCode}). Please try again.',
+      );
+    }
 
-//     try {
-//       recognizer = ReceiptRecognizer(options: options);
+    Map<String, dynamic> decoded;
+    try {
+      decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    } catch (e) {
+      throw const BillScanException('Could not read scan response.');
+    }
 
-//       debugPrint("🧠 [BillScanner] Running OCR...");
+    String? rawJsonText;
+    try {
+      rawJsonText =
+          decoded['candidates']?[0]['content']['parts'][0]['text'] as String?;
+    } catch (e) {
+      rawJsonText = null;
+    }
 
-//       snapshot = await recognizer.processImage(inputImage);
+    if (rawJsonText == null || rawJsonText.isEmpty) {
+      debugPrint('❌ [GeminiBillScanner] No candidate text in response');
+      throw const BillScanException(
+        'No readable data found. Try a clearer photo.',
+      );
+    }
 
-//       debugPrint("✅ [BillScanner] OCR completed");
-//       debugPrint("📊 Valid: ${snapshot.isValid}");
-//       debugPrint("📊 Confirmed: ${snapshot.isConfirmed}");
+    Map<String, dynamic> parsed;
+    try {
+      parsed = jsonDecode(rawJsonText) as Map<String, dynamic>;
+    } catch (e) {
+      debugPrint('❌ [GeminiBillScanner] JSON parse failed: $e');
+      throw const BillScanException('Could not parse scan result.');
+    }
 
-//       final receipt = snapshot is RecognizedReceipt
-//           ? snapshot
-//           : snapshot.receiptData ?? snapshot;
+    final currency = (parsed['currency'] as String?)?.trim().isNotEmpty == true
+        ? parsed['currency'] as String
+        : ExpenseService.currency;
 
-//       if (receipt == null) {
-//         debugPrint("❌ [BillScanner] Receipt is NULL");
-//         throw const BillScanException(
-//           "Receipt recognition failed. Try clearer image.",
-//         );
-//       }
+    final rawItems = (parsed['items'] as List?) ?? const [];
+    final items = <BillItem>[];
+    for (final raw in rawItems) {
+      if (raw is! Map) continue;
+      final name = (raw['name'] as String?)?.trim() ?? '';
+      final amount = (raw['amount'] as num?)?.toDouble();
+      if (name.isEmpty || amount == null || amount <= 0 || amount > 999999) {
+        continue;
+      }
+      items.add(BillItem(name: name, amount: amount, currency: currency));
+    }
 
-//       debugPrint("🏪 Store: ${receipt.store?.value}");
-//       debugPrint("💰 Total: ${receipt.total?.formattedValue}");
-//       debugPrint("📦 Positions: ${receipt.positions.length}");
+    final total = (parsed['total'] as num?)?.toDouble();
+    final merchant = (parsed['merchant'] as String?)?.trim();
 
-//       final currency = _detectCurrency(receipt);
-//       final items = _mapItems(receipt.positions, currency);
-//       final total = _parseTotal(receipt.total?.formattedValue);
-//       final merchant = receipt.store?.value?.toString().trim();
+    debugPrint('✅ [GeminiBillScanner] Items: ${items.length}, total: $total');
 
-//       debugPrint("💵 Parsed Items: ${items.length}");
-//       debugPrint("💰 Parsed Total: $total");
-//       debugPrint("🏪 Merchant: $merchant");
+    if (items.isEmpty && total == null) {
+      throw const BillScanException('No items detected. Try better lighting.');
+    }
 
-//       if (items.isEmpty && total == null) {
-//         throw const BillScanException(
-//           'No items detected. Try better lighting.',
-//         );
-//       }
-
-//       return BillScanResult(
-//         items: items,
-//         totalAmount: total,
-//         merchant: merchant,
-//         detectedCurrency: currency,
-//       );
-//     } catch (e) {
-//       debugPrint("❌ [BillScanner] ERROR: $e");
-
-//       throw BillScanException(
-//         'Could not read receipt. Make sure image is clear.\n'
-//         'Error: ${e.toString().split('\n').first}',
-//       );
-//     } finally {
-//       recognizer?.close();
-//       debugPrint("🧹 [BillScanner] recognizer closed");
-//     }
-//   }
-
-//   // ───────────────────────── Helpers ─────────────────────────
-
-//   static List<BillItem> _mapItems(List<dynamic> positions, String currency) {
-//     final items = <BillItem>[];
-
-//     for (final pos in positions) {
-//       final name = (pos.product?.formattedValue ?? '').toString().trim();
-
-//       final rawPrice = (pos.price?.formattedValue ?? '')
-//           .replaceAll(RegExp(r'[^\d.,\-]'), '')
-//           .replaceAll(',', '.');
-
-//       double? amount = double.tryParse(rawPrice);
-
-//       if (amount == null) continue;
-//       if (amount <= 0 || amount > 99999) continue;
-//       if (name.isEmpty) continue;
-
-//       items.add(
-//         BillItem(name: _titleCase(name), amount: amount, currency: currency),
-//       );
-//     }
-
-//     return items;
-//   }
-
-//   static double? _parseTotal(String? raw) {
-//     if (raw == null) return null;
-
-//     final cleaned = raw.replaceAll(RegExp(r'[^\d.,]'), '').replaceAll(',', '.');
-
-//     return double.tryParse(cleaned);
-//   }
-
-//   static String _detectCurrency(dynamic receipt) {
-//     final text =
-//         '''
-//       ${receipt.store?.value ?? ''}
-//       ${receipt.total?.formattedValue ?? ''}
-//     '''
-//             .toLowerCase();
-
-//     if (text.contains(r'$') || text.contains('usd')) return 'USD';
-//     if (text.contains('€') || text.contains('eur')) return 'EUR';
-//     if (text.contains('£') || text.contains('gbp')) return 'GBP';
-//     if (text.contains('₹') || text.contains('inr')) return 'INR';
-//     if (text.contains('npr') || text.contains('rs')) return 'NPR';
-
-//     return ExpenseService.currency;
-//   }
-
-//   static String _titleCase(String s) {
-//     return s
-//         .split(' ')
-//         .map(
-//           (w) => w.isEmpty
-//               ? w
-//               : '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}',
-//         )
-//         .join(' ');
-//   }
-// }
+    return BillScanResult(
+      items: items,
+      totalAmount: total,
+      merchant: (merchant?.isNotEmpty ?? false) ? merchant : null,
+      detectedCurrency: currency,
+    );
+  }
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- android/app/src/main/res/drawable/ic_widget_income.xml
+     Circle with an upward arrow — matches the "↑ Income" convention
+     from AddExpenseScreen's toggle row (money coming in). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z M13,18h-2v-6.17l-2.59,2.58L7,13l5,-5l5,5l-1.41,1.41L13,11.83V18z"/>
+</vector>

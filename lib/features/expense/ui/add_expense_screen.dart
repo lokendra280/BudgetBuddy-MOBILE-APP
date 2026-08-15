@@ -7,7 +7,9 @@ import 'package:budgetBuddy/common/services/ads_service.dart';
 import 'package:budgetBuddy/common/widgets/emoji_image.dart';
 import 'package:budgetBuddy/features/bill_reminder/ui/pages/commitments_screen.dart';
 import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetBuddy/features/expense/services/bill_scan_orchestrator.dart';
 import 'package:budgetBuddy/features/expense/services/category_services.dart';
+import 'package:budgetBuddy/features/expense/ui/bill_scan_review_screen.dart';
 import 'package:budgetBuddy/features/expense/ui/widgets/item_row.dart';
 import 'package:budgetBuddy/features/expense/ui/widgets/row.dart';
 import 'package:budgetBuddy/features/voice_expense/view/voice_expense_screen.dart';
@@ -18,7 +20,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AddExpenseScreen extends ConsumerStatefulWidget {
-  const AddExpenseScreen({super.key});
+  final bool initialIsIncome;
+  const AddExpenseScreen({super.key, this.initialIsIncome = false});
 
   @override
   ConsumerState<AddExpenseScreen> createState() => _AddExpenseScreenState();
@@ -34,10 +37,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   @override
   void initState() {
     super.initState();
+    _isIncome = widget.initialIsIncome;
     _reloadCategories();
     _addRow();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-    
       _banner = ref.read(adServiceProvider).createBanner();
       setState(() {});
     });
@@ -139,14 +142,26 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         ),
         centerTitle: true,
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: IconButton(
-              icon: const Icon(Icons.mic, color: AppColors.primaryColor),
-              tooltip: 'Voice entry',
-              onPressed: () =>
-                  NavigationService.push(target: VoiceExpenseScreen()),
+          IconButton(
+            icon: CommonSvgWidget(
+              svgName: Assets.qr_code,
+              color: AppColors.primaryColor,
+              height: 30,
+              width: 30,
             ),
+            tooltip: 'Scan bill',
+            onPressed: () => BillScanOrchestrator.start(context),
+          ),
+          IconButton(
+            icon: CommonSvgWidget(
+              svgName: Assets.voice,
+              color: AppColors.primaryColor,
+              height: 30,
+              width: 30,
+            ),
+            tooltip: 'Voice entry',
+            onPressed: () =>
+                NavigationService.push(target: VoiceExpenseScreen()),
           ),
         ],
       ),

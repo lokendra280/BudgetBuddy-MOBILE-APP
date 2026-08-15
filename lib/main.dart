@@ -11,6 +11,9 @@ import 'package:budgetBuddy/features/bill_reminder/ui/pages/bill_reminder_screen
 import 'package:budgetBuddy/features/dashboard/pages/dashboard_page.dart';
 import 'package:budgetBuddy/features/expense/services/category_services.dart';
 import 'package:budgetBuddy/features/expense/services/hive_migrate_service.dart';
+import 'package:budgetBuddy/features/expense/ui/add_expense_screen.dart';
+import 'package:budgetBuddy/features/home/ui/widgets/home_widget_screen.dart';
+import 'package:budgetBuddy/features/voice_expense/view/voice_expense_screen.dart';
 import 'package:budgetBuddy/l10n/app_localizations.dart';
 import 'package:budgetBuddy/features/splash/ui/splash_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -77,6 +80,46 @@ Future<void> _init() async {
   await CategoryService.init();
 }
 
+/// Routes a tap on any BudgetBuddy home screen widget to the right screen.
+/// Called once the first frame is up (see main()), so
+/// NavigationService.navigationKey.currentState is guaranteed non-null —
+/// calling this any earlier means a cold-start widget tap silently drops,
+/// since there's no mounted Navigator yet to push onto.
+Future<void> _initHomeWidgetLinking() async {
+  await HomeWidgetService.instance.init(
+    onWidgetLink: (uri) {
+      final link = '${uri.scheme}://${uri.host}';
+      switch (link) {
+        case WidgetDeepLinks.addExpense:
+          NavigationService.push(target: const AddExpenseScreen());
+          break;
+        case WidgetDeepLinks.addIncome:
+          // Opens the same screen pre-set to the Income toggle — see the
+          // AddExpenseScreen patch in the setup notes (adds an
+          // `initialIsIncome` constructor param).
+          NavigationService.push(
+            target: const AddExpenseScreen(initialIsIncome: true),
+          );
+          break;
+        case WidgetDeepLinks.voiceEntry:
+          NavigationService.push(target: const VoiceExpenseScreen());
+          break;
+        case WidgetDeepLinks.dashboard:
+          NavigationService.navigationKey.currentState?.pushNamedAndRemoveUntil(
+            '/home',
+            (_) => false,
+          );
+          break;
+        case WidgetDeepLinks.bills:
+          NavigationService.push(target: const BillReminderScreen());
+          break;
+        // case WidgetDeepLinks.budgets: add once the Budgets screen route
+        // is available to push directly.
+      }
+    },
+  );
+}
+
 void main() {
   runZonedGuarded(
     () async {
@@ -92,6 +135,14 @@ void main() {
       };
 
       runApp(const ProviderScope(child: SpendSenseApp()));
+
+      // Home screen widget taps (Add Expense, etc.) are handled after the
+      // first frame renders, so the Navigator is guaranteed to be mounted
+      // — this covers both cold-start (app launched by tapping the widget)
+      // and warm-start (app already running, widget tapped again) cases.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _initHomeWidgetLinking();
+      });
     },
     (error, stack) {
       if (Firebase.apps.isNotEmpty) {

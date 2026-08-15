@@ -621,6 +621,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.6.1"
+  fuzzywuzzy:
+    dependency: transitive
+    description:
+      name: fuzzywuzzy
+      sha256: "3004379ffd6e7f476a0c2091f38f16588dc45f67de7adf7c41aa85dec06b432c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0"
   glob:
     dependency: transitive
     description:
@@ -645,6 +653,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.3+1"
+  google_mlkit_commons:
+    dependency: transitive
+    description:
+      name: google_mlkit_commons
+      sha256: "3e69fea4211727732cc385104e675ad1e40b29f12edd492ee52fa108423a6124"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.11.1"
+  google_mlkit_text_recognition:
+    dependency: transitive
+    description:
+      name: google_mlkit_text_recognition
+      sha256: "10a8d1a64fa21efda89514f6df88bbb7885be3ae1bfb7a6d229132d802a20d22"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.15.1"
   google_mobile_ads:
     dependency: "direct main"
     description:
@@ -741,6 +765,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  home_widget:
+    dependency: "direct main"
+    description:
+      name: home_widget
+      sha256: fece84c7464099873c3ace38394ad7053509a4b0e36e57a1105a6aa31f47f23c
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.9.3"
   hooks:
     dependency: transitive
     description:
@@ -1365,6 +1397,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.8.0"
+  receipt_recognition:
+    dependency: "direct main"
+    description:
+      name: receipt_recognition
+      sha256: "1737698da25348a8723212061628beca65a31741af8c3ae3c708761acf8250ca"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.9"
   record_use:
     dependency: transitive
     description:

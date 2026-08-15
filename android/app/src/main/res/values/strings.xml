@@ -1,0 +1,13 @@
+<!--
+  Add this <string> to android/app/src/main/res/values/strings.xml
+  (create the file if it doesn't exist yet — it's just a plain
+  <resources>...</resources> file, separate from your Flutter l10n .arb
+  files, used only for native Android resources like widget metadata).
+
+  If strings.xml already exists, just add the <string> line inside the
+  existing <resources> block — don't create a second <resources> tag.
+-->
+<resources>
+    <string name="add_expense_widget_description">Quickly log an expense</string>
+    <string name="quick_add_widget_description">Add expense, income, or speak an entry</string>
+</resources>

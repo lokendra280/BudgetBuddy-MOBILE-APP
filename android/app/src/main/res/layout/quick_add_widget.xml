@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- android/app/src/main/res/layout/quick_add_widget.xml
+     Three equal-width tap zones: Expense / Income / Voice, each with its
+     own PendingIntent set from QuickAddWidgetProvider.kt.
+
+     IMPORTANT: RemoteViews (used by App Widgets) only supports a fixed
+     whitelist of view types — LinearLayout, FrameLayout, RelativeLayout,
+     GridLayout, TextView, ImageView, Button, ImageButton, ProgressBar,
+     and a few others. A plain <View> is NOT supported and throws
+     InflateException at runtime, which is why the widget host shows
+     "Can't load widget" instead of rendering anything. The dividers below
+     use a thin LinearLayout instead of View for this reason. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="@drawable/widget_background"
+    android:padding="8dp">
+
+    <!-- Add Expense -->
+    <LinearLayout
+        android:id="@+id/widget_expense_zone"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/ic_widget_expense"
+            android:contentDescription="Add expense" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Expense"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Divider (LinearLayout, not View — RemoteViews doesn't support View) -->
+    <LinearLayout
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="#33FFFFFF" />
+
+    <!-- Add Income -->
+    <LinearLayout
+        android:id="@+id/widget_income_zone"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/ic_widget_income"
+            android:contentDescription="Add income" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Income"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Divider -->
+    <LinearLayout
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="#33FFFFFF" />
+
+    <!-- Voice Entry -->
+    <LinearLayout
+        android:id="@+id/widget_voice_zone"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/ic_widget_mic"
+            android:contentDescription="Voice entry" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Voice"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>
