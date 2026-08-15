@@ -33,15 +33,15 @@
 	<key>NSContactsUsageDescription</key>
 	<string>BudgetBuddy accesses contacts to help you split expenses with friends and family.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>HamroBudget uses Face ID to securely unlock the app and protect your financial data.</string>
+	<string>BudgetBuddy uses Face ID to securely unlock the app and protect your financial data.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>HamroBudget uses the microphone to let you add expenses by speaking. Your voice is processed on-device and never stored.</string>
+	<string>BudgetBuddy uses the microphone to let you add expenses by speaking. Your voice is processed on-device and never stored.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>HamroBudget accesses your photo library to attach receipt images to expenses.</string>
+	<string>BudgetBuddy accesses your photo library to attach receipt images to expenses.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>HamroBudget uses speech recognition to convert your voice into expense entries, making it faster to log transactions.</string>
+	<string>BudgetBuddy uses speech recognition to convert your voice into expense entries, making it faster to log transactions.</string>
 	<key>NSUserNotificationsUsageDescription</key>
-	<string>HamroBudget sends reminders for bill due dates and budget alerts.</string>
+	<string>BudgetBuddy sends reminders for bill due dates and budget alerts.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -10,6 +10,7 @@ import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetBuddy/features/expense/services/bill_scan_orchestrator.dart';
 import 'package:budgetBuddy/features/expense/services/category_services.dart';
 import 'package:budgetBuddy/features/expense/ui/bill_scan_review_screen.dart';
+import 'package:budgetBuddy/features/expense/ui/widgets/bill_source_picker.dart';
 import 'package:budgetBuddy/features/expense/ui/widgets/item_row.dart';
 import 'package:budgetBuddy/features/expense/ui/widgets/row.dart';
 import 'package:budgetBuddy/features/voice_expense/view/voice_expense_screen.dart';
@@ -150,7 +151,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
               width: 30,
             ),
             tooltip: 'Scan bill',
-            onPressed: () => BillScanOrchestrator.start(context),
+            onPressed: () => showBillSourcePicker(context),
           ),
           IconButton(
             icon: CommonSvgWidget(

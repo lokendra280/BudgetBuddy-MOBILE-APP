@@ -1,15 +1,8 @@
-// lib/expense/ui/pages/bill_scan_review_screen.dart
-//
-// Shown after a successful scan (Gemini or ML Kit — either produces a
-// BillScanResult). Lets the user review each detected line item, flip it
-// between Expense/Income, edit the amount if OCR got it slightly wrong,
-// deselect items that shouldn't be added, then commits the selected ones
-// via ExpenseProvider — same notifier AddExpenseScreen already uses.
-
 import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetBuddy/features/expense/services/bill_scaning_service.dart';
 import 'package:budgetBuddy/features/expense/services/category_services.dart';
+import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetBuddy/common/widgets/emoji_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,6 +11,7 @@ class _ReviewItem {
   final BillItem original;
   bool included;
   bool isIncome;
+  AppCategory? selectedCategory;
   final TextEditingController amountController;
   final TextEditingController nameController;
 
@@ -27,9 +21,42 @@ class _ReviewItem {
       amountController = TextEditingController(
         text: original.amount.toStringAsFixed(2),
       ),
-      nameController = TextEditingController(text: original.name);
+      nameController = TextEditingController(text: original.name) {
+    selectedCategory = _matchCategory(
+      CategoryService.expenseCategories,
+      original.category,
+    );
+  }
 
   double get parsedAmount => double.tryParse(amountController.text) ?? 0;
+
+  /// Called when the Expense/Income toggle flips — picks a sensible
+  /// category from the *other* list, since expense and income categories
+  /// are different sets in CategoryService.
+  void resyncCategoryForType() {
+    final cats = isIncome
+        ? CategoryService.incomeCategories
+        : CategoryService.expenseCategories;
+    // Keep the current pick if (rare) a same-named category exists in the
+    // new list; otherwise fall back to Gemini's original suggestion
+    // matched against the new list, else just the first category.
+    final byName = cats.where((c) => c.name == selectedCategory?.name);
+    if (byName.isNotEmpty) {
+      selectedCategory = byName.first;
+      return;
+    }
+    selectedCategory =
+        _matchCategory(cats, original.category) ??
+        (cats.isNotEmpty ? cats.first : null);
+  }
+
+  static AppCategory? _matchCategory(List<AppCategory> cats, String? name) {
+    if (name == null) return cats.isNotEmpty ? cats.first : null;
+    final lower = name.toLowerCase();
+    final match = cats.where((c) => c.name.toLowerCase() == lower);
+    if (match.isNotEmpty) return match.first;
+    return cats.isNotEmpty ? cats.first : null;
+  }
 
   void dispose() {
     amountController.dispose();
@@ -82,10 +109,13 @@ class _BillScanReviewScreenState extends ConsumerState<BillScanReviewScreen> {
       final cats = item.isIncome
           ? CategoryService.incomeCategories
           : CategoryService.expenseCategories;
+      final categoryName =
+          item.selectedCategory?.name ??
+          (cats.isNotEmpty ? cats.first.name : '');
       notifier.addExpense(
         title: item.nameController.text.trim(),
         amount: item.parsedAmount,
-        category: cats.isNotEmpty ? cats.first.name : '',
+        category: categoryName,
         isIncome: item.isIncome,
         date: DateTime.now(),
       );
@@ -93,9 +123,8 @@ class _BillScanReviewScreenState extends ConsumerState<BillScanReviewScreen> {
 
     Navigator.of(context)
       ..pop() // review screen
-      ..pop(); // (if pushed on top of a scan trigger screen) — remove this
-    // second pop if BillScanReviewScreen is pushed directly on the
-    // dashboard rather than on top of another screen.
+      ..pop(); // remove this second pop if this screen is pushed directly
+    // on the dashboard rather than on top of another screen.
 
     ScaffoldMessenger.of(
       context,
@@ -184,10 +213,21 @@ class _ItemCard extends StatelessWidget {
 
   const _ItemCard({required this.item, required this.onChanged});
 
+  Color _colorFromHex(String hex) {
+    try {
+      return Color(int.parse('FF${hex.replaceAll('#', '')}', radix: 16));
+    } catch (_) {
+      return AppColors.primaryColor;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = context.c;
     final accent = item.isIncome ? kGreen : kAccent;
+    final cats = item.isIncome
+        ? CategoryService.incomeCategories
+        : CategoryService.expenseCategories;
 
     return Opacity(
       opacity: item.included ? 1 : 0.45,
@@ -262,12 +302,68 @@ class _ItemCard extends StatelessWidget {
                     enabled: item.included,
                     onChanged: (v) {
                       item.isIncome = v;
+                      item.resyncCategoryForType();
                       onChanged();
                     },
                   ),
                 ],
               ),
             ),
+
+            // Category picker — same chip pattern as AddExpenseScreen's
+            // category row, defaulted to Gemini's detected category.
+            if (item.included) ...[
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.only(left: 48),
+                child: SizedBox(
+                  height: 34,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: cats.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 6),
+                    itemBuilder: (context, i) {
+                      final cat = cats[i];
+                      final isSel = item.selectedCategory?.id == cat.id;
+                      final col = _colorFromHex(cat.color);
+                      return GestureDetector(
+                        onTap: () {
+                          item.selectedCategory = cat;
+                          onChanged();
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 150),
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            color: isSel ? col.withOpacity(0.14) : c.bg,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: isSel ? col : c.border,
+                              width: isSel ? 1.4 : 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              EmojiImage(value: cat.emoji, size: 14),
+                              const SizedBox(width: 4),
+                              Text(
+                                cat.name,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: isSel ? col : c.textSub,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),

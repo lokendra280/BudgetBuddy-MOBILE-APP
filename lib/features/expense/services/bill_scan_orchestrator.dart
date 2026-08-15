@@ -7,10 +7,13 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'package:budgetBuddy/common/services/ads_service.dart';
+
 import 'package:budgetBuddy/features/expense/services/bill_scaning_service.dart';
 import 'package:budgetBuddy/features/expense/ui/bill_scan_review_screen.dart';
 import 'package:budgetBuddy/features/expense/ui/widgets/bill_scanning_overlay.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BillScanOrchestrator {
   static Future<void> start(
@@ -18,6 +21,16 @@ class BillScanOrchestrator {
     bool fromCamera = true,
   }) async {
     File? image;
+    // Rewarded ads take a moment to load — start preloading as soon as the
+    // user commits to scanning, so it's ready by the time the scan
+    // finishes (rather than starting the load only after the scan, which
+    // would often mean no ad is ready yet and it silently gets skipped).
+    final adService = ProviderScope.containerOf(
+      context,
+      listen: false,
+    ).read(adServiceProvider);
+    adService.preloadRewarded();
+
     try {
       image = await GeminiBillScanService.pickImage(fromCamera: fromCamera);
     } on BillScanException catch (e) {
@@ -47,6 +60,12 @@ class BillScanOrchestrator {
       if (!context.mounted) return;
       overlayDismissed = true;
       Navigator.of(context).pop(); // close scanning overlay
+
+      // Scan succeeded — show the rewarded ad here, once, before the
+      // review screen. Fire-and-forget: doesn't block navigation, and
+      // proceeds to review regardless of whether an ad was available or
+      // the user watched it to completion.
+      adService.showRewarded(onRewarded: () {}, onNotAvailable: () {});
 
       await Navigator.of(context).push(
         MaterialPageRoute(builder: (_) => BillScanReviewScreen(result: result)),

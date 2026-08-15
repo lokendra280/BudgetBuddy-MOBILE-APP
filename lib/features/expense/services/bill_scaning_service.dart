@@ -1,21 +1,24 @@
 // lib/expense/services/bill_scaning_service.dart
 import 'dart:convert';
 import 'dart:io';
+import 'package:budgetBuddy/features/expense/services/category_services.dart';
 import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:receipt_recognition/receipt_recognition.dart';
 import 'package:http/http.dart' as http;
-
-import 'gemini_receipt_service.dart';
 
 class BillItem {
   final String name, currency;
   final double amount;
+  final String? category;
 
-  BillItem({required this.name, required this.amount, required this.currency});
+  BillItem({
+    this.category,
+    required this.name,
+    required this.amount,
+    required this.currency,
+  });
 }
 
 class BillScanResult {
@@ -40,6 +43,22 @@ class BillScanException implements Exception {
   @override
   String toString() => message;
 }
+
+// lib/expense/services/gemini_bill_scan_service.dart
+//
+// Replaces the OCR step in bill_scaning_service.dart with a Gemini vision
+// call. Reuses BillItem / BillScanResult / BillScanException from that
+// file rather than redefining them — same shape is returned either way,
+// so anything downstream (review screen, ExpenseProvider) doesn't care
+// which scanner produced the result.
+//
+// Add to pubspec.yaml:
+//   dependencies:
+//     http: ^1.2.0   # you likely already have this; confirm version
+//
+// Uses generateContent with responseSchema (structured output) so Gemini
+// returns parseable JSON directly — no regex-scraping of prose like the
+// ML Kit path needed.
 
 // lib/expense/services/gemini_bill_scan_service.dart
 //
@@ -112,6 +131,19 @@ class GeminiBillScanService {
     final bytes = await file.readAsBytes();
     final base64Image = base64Encode(bytes);
 
+    // Receipts are overwhelmingly expenses, so the category enum Gemini
+    // must pick from is your expense category list — this is also what
+    // keeps the returned value guaranteed valid (JSON schema enum), no
+    // free-text category names to fuzzy-match later. If the user flips
+    // an item to Income in review, BillScanReviewScreen falls back to
+    // the income category list at that point instead.
+    final categoryNames = CategoryService.expenseCategories
+        .map((c) => c.name)
+        .toList();
+    // Schema enums can't be empty — CategoryService always has at least
+    // the bundled fallback list, but guard anyway.
+    final categoryEnum = categoryNames.isNotEmpty ? categoryNames : ['Other'];
+
     final uri = Uri.parse(
       'https://generativelanguage.googleapis.com/v1beta/models/$_model:generateContent'
       '?key=$_apiKey',
@@ -131,7 +163,14 @@ class GeminiBillScanService {
                   'unclear). Ignore card approval codes, subtotals, tax '
                   'lines, and payment method text as line items — only '
                   'real purchased items belong in "items". If a field '
-                  'genuinely cannot be read, omit it rather than guessing.',
+                  'genuinely cannot be read, omit it rather than guessing. '
+                  'For each item, also pick the single best-matching '
+                  'category from the allowed list based on what the item '
+                  'is (e.g. a restaurant meal is "Food", a taxi fare is '
+                  '"Transport") — pick "Other" (or whichever fallback '
+                  'category is closest) if nothing fits well. The '
+                  'merchant name alone can also hint at the category '
+                  '(e.g. a pharmacy receipt is likely "Health").',
             },
             {
               'inline_data': {'mime_type': 'image/jpeg', 'data': base64Image},
@@ -154,6 +193,7 @@ class GeminiBillScanService {
                 'properties': {
                   'name': {'type': 'STRING'},
                   'amount': {'type': 'NUMBER'},
+                  'category': {'type': 'STRING', 'enum': categoryEnum},
                 },
                 'required': ['name', 'amount'],
               },
@@ -232,7 +272,15 @@ class GeminiBillScanService {
       if (name.isEmpty || amount == null || amount <= 0 || amount > 999999) {
         continue;
       }
-      items.add(BillItem(name: name, amount: amount, currency: currency));
+      final category = (raw['category'] as String?)?.trim();
+      items.add(
+        BillItem(
+          name: name,
+          amount: amount,
+          currency: currency,
+          category: (category?.isNotEmpty ?? false) ? category : null,
+        ),
+      );
     }
 
     final total = (parsed['total'] as num?)?.toDouble();
