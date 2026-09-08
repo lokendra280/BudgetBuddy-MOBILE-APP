@@ -71,4 +71,5 @@ class Assets {
   static const String appIcons = "$_basePath/app_icon$_png";
   static const String noDataFound = "$_basePath/no-data$_png";
   static const String car = "$_basePath/car$_png";
+  static const String google = "$_basePath/google$_png";
 }

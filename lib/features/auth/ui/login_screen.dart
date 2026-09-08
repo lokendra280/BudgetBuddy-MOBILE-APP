@@ -1,3 +1,5 @@
+import 'package:budgetBuddy/common/common_svg_widget.dart';
+import 'package:budgetBuddy/common/constant/constant_assets.dart';
 import 'package:budgetBuddy/common/navigation_service.dart';
 import 'package:budgetBuddy/features/auth/helper/auth_helpers.dart';
 import 'package:budgetBuddy/features/auth/ui/sign_up_screen.dart';
@@ -84,19 +86,29 @@ class _LoginState extends ConsumerState<LoginScreen> {
 
   Future<void> _google() async {
     setState(() => _error = null);
-    final err = await ref.read(authProvider.notifier).signInWithGoogle();
-    if (err != null && err != 'Cancelled') {
-      setState(() => _error = 'Google sign-in failed. Please try again.');
-      return;
-    }
-    if (!mounted) return;
-    if (ref.read(isLoggedInProvider)) {
-      await ref.read(syncProvider.notifier).sync();
+
+    try {
+      final response = await ref.read(authProvider.notifier).signInWithGoogle();
       if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const DashboardPage()),
-      );
+
+      // signInWithGoogle() returns null when the user cancels the Google
+      // picker — that's not an error, just do nothing.
+      if (response == null) return;
+
+      if (ref.read(isLoggedInProvider)) {
+        await ref.read(syncProvider.notifier).sync();
+        if (!mounted) return;
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const DashboardPage()),
+        );
+      }
+    } catch (e) {
+      // signInWithGoogle() rethrows on real failures instead of returning
+      // an error string, so this is where actual failures are caught.
+      if (!mounted) return;
+      setState(() => _error = 'Google sign-in failed. Please try again.');
     }
   }
 
@@ -208,14 +220,52 @@ class _LoginState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 20),
 
                   // _OrDivider(c: c),
-                  // const SizedBox(height: 20),
+                  const SizedBox(height: 10),
 
-                  // // Google
-                  // _GoogleButton(
-                  //   loading: loading,
-                  //   onTap: _google,
-                  //   label: l10n.continueGoogle,
-                  // ),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: OutlinedButton(
+                      onPressed: loading ? null : _google,
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: c.border),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        foregroundColor: context.isDark
+                            ? Colors.white
+                            : const Color(0xFF1A1A2E),
+                      ),
+                      child: loading
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: c.textMuted,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                // _GoogleLogo(),
+                                CommonSvgWidget(
+                                  svgName: Assets.google,
+                                  height: 30,
+                                  width: 30,
+                                ),
+                                const SizedBox(width: 10),
+                                const Text(
+                                  'Continue with Google',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ),
+                  ),
                   const SizedBox(height: 24),
 
                   // Go to sign up
@@ -276,3 +326,42 @@ class _LoginState extends ConsumerState<LoginScreen> {
     );
   }
 }
+
+// class _GoogleLogo extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) => SizedBox(
+//     width: 20,
+//     height: 20,
+//     child: CustomPaint(painter: _GoogleLogoPainter()),
+//   );
+// }
+
+// class _GoogleLogoPainter extends CustomPainter {
+//   @override
+//   void paint(Canvas canvas, Size size) {
+//     final c = size.center(Offset.zero);
+//     final r = size.width / 2;
+//     final segments = [
+//       (0.0, 1.0, const Color(0xFF4285F4)), // blue top-right
+//       (1.0, 1.75, const Color(0xFF34A853)), // green bottom-right
+//       (1.75, 2.5, const Color(0xFFFBBC05)), // yellow bottom-left
+//       (2.5, 3.2, const Color(0xFFEA4335)), // red top-left
+//     ];
+//     for (final (start, end, color) in segments) {
+//       final paint = Paint()
+//         ..color = color
+//         ..strokeWidth = 3
+//         ..style = PaintingStyle.stroke;
+//       canvas.drawArc(
+//         Rect.fromCircle(center: c, radius: r),
+//         start * 1.0,
+//         (end - start) * 1.0,
+//         false,
+//         paint,
+//       );
+//     }
+//   }
+
+//   @override
+//   bool shouldRepaint(_) => false;
+// }

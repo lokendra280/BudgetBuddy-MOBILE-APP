@@ -5,8 +5,8 @@ class AppTypography {
   AppTypography._();
 
   // ── Display ──────────────────────────────────────────────────────────────
-  /// 32 px · w800 · Poppins · tight leading — hero numbers, splash titles
-  static TextStyle get display => GoogleFonts.poppins(
+  /// 32 px · w800 · plusJakartaSans · tight leading — hero numbers, splash titles
+  static TextStyle get display => GoogleFonts.plusJakartaSans(
     fontSize: 32,
     fontWeight: FontWeight.w800,
     height: 1.15,
@@ -16,33 +16,33 @@ class AppTypography {
   static TextStyle get labelMuted => labelSmall; // 11px Inter, no colour
   static TextStyle get bodySub => bodySmall; // 13px Inter, no colour
   // ── Headings ─────────────────────────────────────────────────────────────
-  /// 26 px · w800 · Poppins — screen titles
+  /// 26 px · w800 · plusJakartaSans — screen titles
   ///
 
-  static TextStyle get h1 => GoogleFonts.poppins(
+  static TextStyle get h1 => GoogleFonts.plusJakartaSans(
     fontSize: 26,
     fontWeight: FontWeight.w800,
     height: 1.2,
     letterSpacing: -0.3,
   );
 
-  /// 20 px · w700 · Poppins — section headers
-  static TextStyle get h2 => GoogleFonts.poppins(
+  /// 20 px · w700 · plusJakartaSans — section headers
+  static TextStyle get h2 => GoogleFonts.plusJakartaSans(
     fontSize: 20,
     fontWeight: FontWeight.w700,
     height: 1.25,
     letterSpacing: -0.2,
   );
 
-  /// 17 px · w700 · Poppins — card titles, dialog headers
-  static TextStyle get h3 => GoogleFonts.poppins(
+  /// 17 px · w700 · plusJakartaSans — card titles, dialog headers
+  static TextStyle get h3 => GoogleFonts.plusJakartaSans(
     fontSize: 17,
     fontWeight: FontWeight.w700,
     height: 1.3,
   );
 
-  /// 15 px · w600 · Poppins — sub-section labels
-  static TextStyle get h4 => GoogleFonts.poppins(
+  /// 15 px · w600 · plusJakartaSans — sub-section labels
+  static TextStyle get h4 => GoogleFonts.plusJakartaSans(
     fontSize: 15,
     fontWeight: FontWeight.w600,
     height: 1.35,
@@ -86,16 +86,16 @@ class AppTypography {
   );
 
   // ── Buttons ───────────────────────────────────────────────────────────────
-  /// 15 px · w700 · Poppins — primary CTA buttons
-  static TextStyle get button => GoogleFonts.poppins(
+  /// 15 px · w700 · plusJakartaSans — primary CTA buttons
+  static TextStyle get button => GoogleFonts.plusJakartaSans(
     fontSize: 15,
     fontWeight: FontWeight.w700,
     height: 1.2,
     letterSpacing: 0.1,
   );
 
-  /// 13 px · w600 · Poppins — secondary / ghost buttons
-  static TextStyle get buttonSmall => GoogleFonts.poppins(
+  /// 13 px · w600 · plusJakartaSans — secondary / ghost buttons
+  static TextStyle get buttonSmall => GoogleFonts.plusJakartaSans(
     fontSize: 13,
     fontWeight: FontWeight.w600,
     height: 1.2,
@@ -143,8 +143,8 @@ class AppTypography {
   );
 
   // ── App-bar title ─────────────────────────────────────────────────────────
-  /// 16 px · w700 · Poppins — AppBar title
-  static TextStyle get appBarTitle => GoogleFonts.poppins(
+  /// 16 px · w700 · plusJakartaSans — AppBar title
+  static TextStyle get appBarTitle => GoogleFonts.plusJakartaSans(
     fontSize: 16,
     fontWeight: FontWeight.w700,
     height: 1.2,

@@ -44,6 +44,13 @@ post_install do |installer|
       config.build_settings['ONLY_ACTIVE_ARCH'] = 'NO'
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5'
       config.build_settings['SWIFT_VERSION'] = '5.0'
+      # Some plugin pods don't yet ship an arm64 Simulator slice (the arm64
+      # warning from the build log). Excluding arm64 only for the simulator
+      # SDK forces those pods to build for x86_64 simulator instead (runs
+      # under Rosetta on Apple Silicon Macs), avoiding a linker/architecture
+      # failure at build/run time. Real device builds are unaffected since
+      # this only applies when sdk=iphonesimulator.
+      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
     end
   end
     flutter_post_install(installer) if defined?(flutter_post_install)

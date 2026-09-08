@@ -40,14 +40,8 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 
   static const _webClientId =
-      '136061079078-4fhlilsji6v9soplthjtbavitknffkr5.apps.googleusercontent.com';
-  // ── SIGN UP ─────────────────────────────────────────────────────────────────
-  // BUG FIX: Supabase signUp() creates a session immediately, but the email is
-  // UNCONFIRMED. If we leave state as loggedIn, the app skips OTP verification.
-  // Then on logout + login, Supabase throws "Email not confirmed".
-  //
-  // Fix: always set state to loggedOut() after signUp so the login screen can
-  // send OTP and navigate to OtpScreen. Only verifyOtp() sets loggedIn().
+      '991610487268-6u78n4b2ie9inl3k411oa5cgafl6eogj.apps.googleusercontent.com';
+
   Future<String?> signUp(String email, String password) async {
     state = state.loading();
     try {

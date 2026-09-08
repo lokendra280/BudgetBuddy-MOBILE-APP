@@ -12,7 +12,20 @@
           "package_name": "com.hamrobudget"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "991610487268-0rug7pkhrerfs105umnofuis57aefev2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hamrobudget",
+            "certificate_hash": "1b5fefd7e668f1a39b881d3d152dff15256fab43"
+          }
+        },
+        {
+          "client_id": "991610487268-6u78n4b2ie9inl3k411oa5cgafl6eogj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCpmA9ga9RfHSsQyUYYuyJ1sg2cuTD7pSk"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "991610487268-6u78n4b2ie9inl3k411oa5cgafl6eogj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
