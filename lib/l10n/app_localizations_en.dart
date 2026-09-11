@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'BudgetBuddy';
+  String get appName => 'budgetbuddy';
 
   @override
   String get home => 'Home';
@@ -252,7 +252,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareInvite => 'Share Invite';
 
   @override
-  String get signIntoApply => 'Sing in to apply a referral code and earn streak days';
+  String get signIntoApply =>
+      'Sing in to apply a referral code and earn streak days';
 
   @override
   String get shareReport => 'Share Report';
@@ -276,10 +277,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareYourCode => 'Share your code or spending report with friends';
 
   @override
-  String get friendDownloads => 'Friend downloads BudgetBuddy and signs up';
+  String get friendDownloads => 'Friend downloads budgetbuddy and signs up';
 
   @override
-  String get theyGoToCommunity => 'They go to Community -> Invite and enter your code';
+  String get theyGoToCommunity =>
+      'They go to Community -> Invite and enter your code';
 
   @override
   String get bothGet => 'Both get +3 bonus streak days';
@@ -330,7 +332,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get haveAnFriendsCode => 'Have a friend\'s Code?';
 
   @override
-  String get enterItToGiveThemCredit => 'Enter it to give them credit and earn +3 streak days for yourSelf';
+  String get enterItToGiveThemCredit =>
+      'Enter it to give them credit and earn +3 streak days for yourSelf';
 
   @override
   String get burnRateAndRunWay => 'Burn Rate & RunWay';
@@ -351,7 +354,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addMoreExpenses => 'Add More Expenses';
 
   @override
-  String get wellAnalysisPatternOnce => 'We Will analyses pattern once you have more data';
+  String get wellAnalysisPatternOnce =>
+      'We Will analyses pattern once you have more data';
 
   @override
   String get subscriptions => 'Subscriptions & Recurring';
@@ -372,7 +376,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get autoCategorization => 'Auto-Categorization';
 
   @override
-  String get budgetBuddyDetects => 'BudgetBuddy detect categories automatically from your entry title';
+  String get budgetbuddyDetects =>
+      'budgetbuddy detect categories automatically from your entry title';
 
   @override
   String get nextMonthForecast => 'Next Month Forecast';
@@ -390,7 +395,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categoryForecast => 'Category Forecast';
 
   @override
-  String get addMoreExpenseAcross => 'Add More expenses across months to see predictions';
+  String get addMoreExpenseAcross =>
+      'Add More expenses across months to see predictions';
 
   @override
   String get incomeGrowth => 'Income Growth';
@@ -465,7 +471,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noBillsAdded => 'No bills added yet';
 
   @override
-  String get addBills => 'Add bills, EMIs and subscriptions to get reminded before they\'re due';
+  String get addBills =>
+      'Add bills, EMIs and subscriptions to get reminded before they\'re due';
 
   @override
   String get addFirstBill => 'Add First Bill';
@@ -603,7 +610,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get keepTracking => 'Keep tracking!';
 
   @override
-  String get addMoreDataUnlock => 'Add more data to unlock personalised coaching.';
+  String get addMoreDataUnlock =>
+      'Add more data to unlock personalised coaching.';
 
   @override
   String get disposableIncome => 'disposable income after bills';
@@ -636,7 +644,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get target20 => 'Target: 20%';
 
   @override
-  String get billCommitmentSubtitle => 'Fixed monthly outflows before discretionary spend';
+  String get billCommitmentSubtitle =>
+      'Fixed monthly outflows before discretionary spend';
 
   @override
   String get selectCurrency => 'Select Currency';
@@ -678,7 +687,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get keepLoggingDaily => 'Keep logging daily to maintain it';
 
   @override
-  String get aboutBudgetBuddy => 'About BudgetBuddy';
+  String get aboutbudgetbuddy => 'About budgetbuddy';
 
   @override
   String get versionMarketsLegal => 'Version, markets, legal';
@@ -690,7 +699,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteAccountPermanently => 'To Delete Your Account Permanently';
 
   @override
-  String get deleteAccountConfirm => 'Are you sure? This action cannot be undone.';
+  String get deleteAccountConfirm =>
+      'Are you sure? This action cannot be undone.';
 
   @override
   String get cancel => 'Cancel';
@@ -812,7 +822,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noLoansYet => 'No Loans Yet';
 
   @override
-  String get noLoansDesc => 'Track EMIs, monitor progress\nand get reminded before due dates.';
+  String get noLoansDesc =>
+      'Track EMIs, monitor progress\nand get reminded before due dates.';
 
   @override
   String get addFirstLoan => 'Add First Loan';
@@ -909,10 +920,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addWidgetTitle => 'Add Budget Widget';
 
   @override
-  String get addWidgetDesc => 'Follow these steps to add the widget to your home screen';
+  String get addWidgetDesc =>
+      'Follow these steps to add the widget to your home screen';
 
   @override
-  String get addWidgetStep1 => 'Long press on an empty area of your home screen';
+  String get addWidgetStep1 =>
+      'Long press on an empty area of your home screen';
 
   @override
   String get addWidgetStep2 => 'Tap \"Widgets\" from the menu that appears';
@@ -921,7 +934,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addWidgetStep3 => 'Search for \"Budget Buddy\" in the widget list';
 
   @override
-  String get addWidgetStep4 => 'Long press the widget and drag it to your home screen';
+  String get addWidgetStep4 =>
+      'Long press the widget and drag it to your home screen';
 
   @override
   String get gotIt => 'Got it!';

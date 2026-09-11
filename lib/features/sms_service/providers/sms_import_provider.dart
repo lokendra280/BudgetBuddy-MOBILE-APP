@@ -1,6 +1,6 @@
 // import 'package:another_telephony/telephony.dart';
-// import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
-// import 'package:budgetBuddy/features/sms_service/services/sms_parser_service.dart';
+// import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
+// import 'package:budgetbuddy/features/sms_service/services/sms_parser_service.dart';
 // import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:permission_handler/permission_handler.dart';
 

@@ -1,5 +1,5 @@
-import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
-import 'package:budgetBuddy/features/profile/services/refers_service.dart';
+import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetbuddy/features/profile/services/refers_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

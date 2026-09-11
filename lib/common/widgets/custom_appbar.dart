@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/widgets/custom_icon_button.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/widgets/custom_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

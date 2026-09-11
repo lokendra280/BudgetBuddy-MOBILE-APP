@@ -1,12 +1,12 @@
-import 'package:budgetBuddy/features/buddy_chat/pages/widgets/chat_bubble.dart';
-import 'package:budgetBuddy/features/buddy_chat/pages/widgets/chat_input.dart';
-import 'package:budgetBuddy/features/buddy_chat/pages/widgets/suggestion_chips.dart';
-import 'package:budgetBuddy/features/buddy_chat/pages/widgets/typing_indicator.dart';
-import 'package:budgetBuddy/common/services/ads_service.dart';
+import 'package:budgetbuddy/features/buddy_chat/pages/widgets/chat_bubble.dart';
+import 'package:budgetbuddy/features/buddy_chat/pages/widgets/chat_input.dart';
+import 'package:budgetbuddy/features/buddy_chat/pages/widgets/suggestion_chips.dart';
+import 'package:budgetbuddy/features/buddy_chat/pages/widgets/typing_indicator.dart';
+import 'package:budgetbuddy/common/services/ads_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/features/buddy_chat/providers/chat_provider.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/features/buddy_chat/providers/chat_provider.dart';
 
 class BuddyChatPage extends ConsumerStatefulWidget {
   const BuddyChatPage({super.key});
@@ -159,7 +159,7 @@ class _BuddyChatPageState extends ConsumerState<BuddyChatPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'BudgetBuddy AI',
+                    'budgetbuddy AI',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                   ),
                   Text(

@@ -1,7 +1,7 @@
-import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
-import 'package:budgetBuddy/features/voice_expense/models/voice_l10n.dart';
-import 'package:budgetBuddy/features/voice_expense/models/voice_result.dart';
-import 'package:budgetBuddy/features/voice_expense/providers/%20providers.dart';
+import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetbuddy/features/voice_expense/models/voice_l10n.dart';
+import 'package:budgetbuddy/features/voice_expense/models/voice_result.dart';
+import 'package:budgetbuddy/features/voice_expense/providers/%20providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:speech_to_text/speech_to_text.dart';

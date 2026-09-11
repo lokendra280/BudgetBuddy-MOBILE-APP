@@ -1,12 +1,12 @@
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/common_widget.dart';
-import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
-import 'package:budgetBuddy/features/voice_expense/models/voice_l10n.dart';
-import 'package:budgetBuddy/features/voice_expense/providers/%20providers.dart';
-import 'package:budgetBuddy/features/voice_expense/view/widgets/examples_box.dart';
-import 'package:budgetBuddy/features/voice_expense/view/widgets/mic_button.dart';
-import 'package:budgetBuddy/features/voice_expense/view/widgets/result_card.dart';
-import 'package:budgetBuddy/features/voice_expense/view/widgets/transcript_box.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/common_widget.dart';
+import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetbuddy/features/voice_expense/models/voice_l10n.dart';
+import 'package:budgetbuddy/features/voice_expense/providers/%20providers.dart';
+import 'package:budgetbuddy/features/voice_expense/view/widgets/examples_box.dart';
+import 'package:budgetbuddy/features/voice_expense/view/widgets/mic_button.dart';
+import 'package:budgetbuddy/features/voice_expense/view/widgets/result_card.dart';
+import 'package:budgetbuddy/features/voice_expense/view/widgets/transcript_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,7 +22,7 @@ class VoiceExpenseScreen extends ConsumerWidget {
     final p = ref.watch(voicePresenterProvider.notifier);
     final state = ref.watch(voicePresenterProvider);
     final result = ref.watch(voiceResultProvider);
-      
+
     return Scaffold(
       backgroundColor: c.bg,
       appBar: AppBar(

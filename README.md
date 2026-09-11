@@ -1,4 +1,4 @@
-# budgetBuddy
+# budgetbuddy
 
 A new Flutter project.
 

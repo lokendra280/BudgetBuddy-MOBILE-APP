@@ -9,7 +9,7 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get appName => 'BudgetBuddy';
+  String get appName => 'budgetbuddy';
 
   @override
   String get home => '首页';
@@ -276,7 +276,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shareYourCode => '与好友分享您的邀请码或支出报告';
 
   @override
-  String get friendDownloads => '好友下载 BudgetBuddy 并注册';
+  String get friendDownloads => '好友下载 budgetbuddy 并注册';
 
   @override
   String get theyGoToCommunity => '他们前往 社区 → 邀请 并输入您的邀请码';
@@ -372,7 +372,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get autoCategorization => '自动分类';
 
   @override
-  String get budgetBuddyDetects => 'BudgetBuddy 根据条目标题自动检测类别';
+  String get budgetbuddyDetects => 'budgetbuddy 根据条目标题自动检测类别';
 
   @override
   String get nextMonthForecast => '下月预测';
@@ -678,7 +678,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get keepLoggingDaily => '坚持每天记录以维持连续天数';
 
   @override
-  String get aboutBudgetBuddy => '关于 BudgetBuddy';
+  String get aboutbudgetbuddy => '关于 budgetbuddy';
 
   @override
   String get versionMarketsLegal => '版本、市场、法律';

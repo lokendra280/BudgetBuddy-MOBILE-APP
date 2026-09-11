@@ -1,8 +1,8 @@
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/common_widget.dart';
-import 'package:budgetBuddy/features/expense/models/expense.dart';
-import 'package:budgetBuddy/features/voice_expense/models/voice_l10n.dart';
-import 'package:budgetBuddy/features/voice_expense/models/voice_result.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/common_widget.dart';
+import 'package:budgetbuddy/features/expense/models/expense.dart';
+import 'package:budgetbuddy/features/voice_expense/models/voice_l10n.dart';
+import 'package:budgetbuddy/features/voice_expense/models/voice_result.dart';
 import 'package:flutter/material.dart';
 
 class ResultCard extends StatelessWidget {

@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'package:budgetBuddy/features/auth/providers/auth_provider.dart';
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/features/dashboard/pages/dashboard_page.dart';
-import 'package:budgetBuddy/features/home/providers/sync_provider.dart';
+import 'package:budgetbuddy/features/auth/providers/auth_provider.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/features/dashboard/pages/dashboard_page.dart';
+import 'package:budgetbuddy/features/home/providers/sync_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

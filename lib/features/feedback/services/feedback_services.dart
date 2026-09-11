@@ -1,4 +1,4 @@
-import 'package:budgetBuddy/features/feedback/enum/feedback_enum.dart';
+import 'package:budgetbuddy/features/feedback/enum/feedback_enum.dart';
 import 'package:hive/hive.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

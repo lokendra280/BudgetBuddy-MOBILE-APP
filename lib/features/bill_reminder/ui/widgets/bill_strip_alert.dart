@@ -1,6 +1,6 @@
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/common_svg_widget.dart';
-import 'package:budgetBuddy/common/constant/app_typography.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/common_svg_widget.dart';
+import 'package:budgetbuddy/common/constant/app_typography.dart';
 import 'package:flutter/material.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -1,6 +1,6 @@
-import 'package:budgetBuddy/common/widgets/custom_appbar.dart';
-import 'package:budgetBuddy/features/ai_screen/models/goals_transaction.dart';
-import 'package:budgetBuddy/features/ai_screen/pages/widget/goal_transaction_card.dart';
+import 'package:budgetbuddy/common/widgets/custom_appbar.dart';
+import 'package:budgetbuddy/features/ai_screen/models/goals_transaction.dart';
+import 'package:budgetbuddy/features/ai_screen/pages/widget/goal_transaction_card.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

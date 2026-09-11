@@ -1,21 +1,21 @@
 import 'dart:async';
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/hive_storages/hive_storage.dart';
-import 'package:budgetBuddy/common/navigation_service.dart';
-import 'package:budgetBuddy/common/services/ads_service.dart';
-import 'package:budgetBuddy/common/services/notification_service.dart';
-import 'package:budgetBuddy/common/theme_provider.dart';
-import 'package:budgetBuddy/features/expense/models/expense.dart';
-import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
-import 'package:budgetBuddy/features/bill_reminder/ui/pages/bill_reminder_screen.dart';
-import 'package:budgetBuddy/features/dashboard/pages/dashboard_page.dart';
-import 'package:budgetBuddy/features/expense/services/category_services.dart';
-import 'package:budgetBuddy/features/expense/services/hive_migrate_service.dart';
-import 'package:budgetBuddy/features/expense/ui/add_expense_screen.dart';
-import 'package:budgetBuddy/features/home/ui/widgets/home_widget_screen.dart';
-import 'package:budgetBuddy/features/voice_expense/view/voice_expense_screen.dart';
-import 'package:budgetBuddy/l10n/app_localizations.dart';
-import 'package:budgetBuddy/features/splash/ui/splash_page.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/hive_storages/hive_storage.dart';
+import 'package:budgetbuddy/common/navigation_service.dart';
+import 'package:budgetbuddy/common/services/ads_service.dart';
+import 'package:budgetbuddy/common/services/notification_service.dart';
+import 'package:budgetbuddy/common/theme_provider.dart';
+import 'package:budgetbuddy/features/expense/models/expense.dart';
+import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetbuddy/features/bill_reminder/ui/pages/bill_reminder_screen.dart';
+import 'package:budgetbuddy/features/dashboard/pages/dashboard_page.dart';
+import 'package:budgetbuddy/features/expense/services/category_services.dart';
+import 'package:budgetbuddy/features/expense/services/hive_migrate_service.dart';
+import 'package:budgetbuddy/features/expense/ui/add_expense_screen.dart';
+import 'package:budgetbuddy/features/home/ui/widgets/home_widget_screen.dart';
+import 'package:budgetbuddy/features/voice_expense/view/voice_expense_screen.dart';
+import 'package:budgetbuddy/l10n/app_localizations.dart';
+import 'package:budgetbuddy/features/splash/ui/splash_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -80,7 +80,7 @@ Future<void> _init() async {
   await CategoryService.init();
 }
 
-/// Routes a tap on any BudgetBuddy home screen widget to the right screen.
+/// Routes a tap on any budgetbuddy home screen widget to the right screen.
 /// Called once the first frame is up (see main()), so
 /// NavigationService.navigationKey.currentState is guaranteed non-null —
 /// calling this any earlier means a cold-start widget tap silently drops,

@@ -1,5 +1,5 @@
-import 'package:budgetBuddy/features/voice_expense/models/presenter/voice_presenter.dart';
-import 'package:budgetBuddy/features/voice_expense/models/voice_result.dart';
+import 'package:budgetbuddy/features/voice_expense/models/presenter/voice_presenter.dart';
+import 'package:budgetbuddy/features/voice_expense/models/voice_result.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final activeLangProvider = StateProvider<String>((ref) => 'en');

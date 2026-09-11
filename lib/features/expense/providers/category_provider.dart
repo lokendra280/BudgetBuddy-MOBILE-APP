@@ -1,4 +1,4 @@
-import 'package:budgetBuddy/features/expense/services/category_services.dart';
+import 'package:budgetbuddy/features/expense/services/category_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final categoriesProvider = FutureProvider<List<AppCategory>>((ref) async {

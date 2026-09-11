@@ -7,11 +7,11 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'package:budgetBuddy/common/services/ads_service.dart';
+import 'package:budgetbuddy/common/services/ads_service.dart';
 
-import 'package:budgetBuddy/features/expense/services/bill_scaning_service.dart';
-import 'package:budgetBuddy/features/expense/ui/bill_scan_review_screen.dart';
-import 'package:budgetBuddy/features/expense/ui/widgets/bill_scanning_overlay.dart';
+import 'package:budgetbuddy/features/expense/services/bill_scaning_service.dart';
+import 'package:budgetbuddy/features/expense/ui/bill_scan_review_screen.dart';
+import 'package:budgetbuddy/features/expense/ui/widgets/bill_scanning_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

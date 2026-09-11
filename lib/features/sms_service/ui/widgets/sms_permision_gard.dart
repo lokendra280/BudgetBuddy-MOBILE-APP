@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/features/sms_service/services/sms_auto_sync_service.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/features/sms_service/services/sms_auto_sync_service.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -182,7 +182,7 @@ class _SmsDialog extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'BudgetBuddy reads your bank messages to track expenses automatically — no manual entry needed.',
+                  'budgetbuddy reads your bank messages to track expenses automatically — no manual entry needed.',
                   style: TextStyle(
                     fontSize: 13,
                     color: context.c.textMuted,

@@ -1,8 +1,8 @@
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/widgets/emoji_image.dart';
-import 'package:budgetBuddy/features/expense/services/category_services.dart';
-import 'package:budgetBuddy/features/expense/ui/widgets/row.dart';
-import 'package:budgetBuddy/l10n/app_localizations.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/widgets/emoji_image.dart';
+import 'package:budgetbuddy/features/expense/services/category_services.dart';
+import 'package:budgetbuddy/features/expense/ui/widgets/row.dart';
+import 'package:budgetbuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class ItemRow extends StatelessWidget {

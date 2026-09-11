@@ -1,9 +1,9 @@
-import 'package:budgetBuddy/common/hive_storages/hive_storage.dart';
-import 'package:budgetBuddy/features/ai_screen/models/goals_transaction.dart';
-import 'package:budgetBuddy/features/ai_screen/models/goals_model.dart';
+import 'package:budgetbuddy/common/hive_storages/hive_storage.dart';
+import 'package:budgetbuddy/features/ai_screen/models/goals_transaction.dart';
+import 'package:budgetbuddy/features/ai_screen/models/goals_model.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:budgetBuddy/features/auth/services/auth_service.dart';
-import 'package:budgetBuddy/features/expense/models/expense.dart';
+import 'package:budgetbuddy/features/auth/services/auth_service.dart';
+import 'package:budgetbuddy/features/expense/models/expense.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

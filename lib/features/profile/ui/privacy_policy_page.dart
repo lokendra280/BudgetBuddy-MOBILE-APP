@@ -1,4 +1,4 @@
-import 'package:budgetBuddy/features/profile/ui/policy_page.dart';
+import 'package:budgetbuddy/features/profile/ui/policy_page.dart';
 import 'package:flutter/material.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {

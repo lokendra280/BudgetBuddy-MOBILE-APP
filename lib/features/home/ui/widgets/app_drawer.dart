@@ -1,19 +1,19 @@
-import 'package:budgetBuddy/common/services/home_service.dart';
-import 'package:budgetBuddy/features/auth/providers/auth_provider.dart';
-import 'package:budgetBuddy/features/auth/ui/login_screen.dart';
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/common_svg_widget.dart';
-import 'package:budgetBuddy/common/common_widget.dart';
-import 'package:budgetBuddy/common/constant/constant_assets.dart';
-import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
-import 'package:budgetBuddy/features/forecast/ui/forecast_screen.dart';
-import 'package:budgetBuddy/features/heatmap/ui/pages/heatmap_screen.dart';
-import 'package:budgetBuddy/features/home/ui/inslight_screen.dart';
-import 'package:budgetBuddy/features/insights/ui/insight_feed_screen.dart';
-import 'package:budgetBuddy/features/profile/ui/about_page.dart';
-import 'package:budgetBuddy/features/profile/ui/profile_screen.dart';
-import 'package:budgetBuddy/features/profile/ui/setting_screen.dart';
-import 'package:budgetBuddy/l10n/app_localizations.dart';
+import 'package:budgetbuddy/common/services/home_service.dart';
+import 'package:budgetbuddy/features/auth/providers/auth_provider.dart';
+import 'package:budgetbuddy/features/auth/ui/login_screen.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/common_svg_widget.dart';
+import 'package:budgetbuddy/common/common_widget.dart';
+import 'package:budgetbuddy/common/constant/constant_assets.dart';
+import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetbuddy/features/forecast/ui/forecast_screen.dart';
+import 'package:budgetbuddy/features/heatmap/ui/pages/heatmap_screen.dart';
+import 'package:budgetbuddy/features/home/ui/inslight_screen.dart';
+import 'package:budgetbuddy/features/insights/ui/insight_feed_screen.dart';
+import 'package:budgetbuddy/features/profile/ui/about_page.dart';
+import 'package:budgetbuddy/features/profile/ui/profile_screen.dart';
+import 'package:budgetbuddy/features/profile/ui/setting_screen.dart';
+import 'package:budgetbuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -190,7 +190,7 @@ class AppDrawer extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.all(16),
               child: Text(
-                'BudgetBuddy v1.0',
+                'budgetbuddy v1.0',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 11, color: context.c.textMuted),
               ),

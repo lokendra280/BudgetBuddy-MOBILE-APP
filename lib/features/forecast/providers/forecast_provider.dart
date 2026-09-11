@@ -1,4 +1,4 @@
-import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class Forecast {

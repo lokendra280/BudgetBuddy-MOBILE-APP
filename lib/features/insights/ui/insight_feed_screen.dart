@@ -1,9 +1,9 @@
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/common_widget.dart';
-import 'package:budgetBuddy/common/services/ads_service.dart';
-import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
-import 'package:budgetBuddy/features/forecast/providers/forecast_provider.dart';
-import 'package:budgetBuddy/features/insights/providers/insights_provider.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/common_widget.dart';
+import 'package:budgetbuddy/common/services/ads_service.dart';
+import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetbuddy/features/forecast/providers/forecast_provider.dart';
+import 'package:budgetbuddy/features/insights/providers/insights_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

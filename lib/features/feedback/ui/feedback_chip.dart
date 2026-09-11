@@ -1,5 +1,5 @@
 // select_chip.dart
-import 'package:budgetBuddy/common/constant/app_typography.dart';
+import 'package:budgetbuddy/common/constant/app_typography.dart';
 import 'package:flutter/material.dart';
 
 class SelectChip extends StatelessWidget {

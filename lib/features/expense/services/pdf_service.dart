@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
+import 'package:budgetbuddy/features/expense/services/expenses_service.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
@@ -156,13 +156,13 @@ class PdfService {
     if (share) {
       final dir = await getTemporaryDirectory();
       final name =
-          'BudgetBuddy_Statement_${DateFormat('yyyyMMdd').format(from)}_${DateFormat('yyyyMMdd').format(to)}.pdf';
+          'budgetbuddy_Statement_${DateFormat('yyyyMMdd').format(from)}_${DateFormat('yyyyMMdd').format(to)}.pdf';
       final file = File('${dir.path}/$name');
       await file.writeAsBytes(bytes);
       await Share.shareXFiles(
         [XFile(file.path, mimeType: 'application/pdf')],
         subject:
-            'BudgetBuddy Statement — ${fmt.format(from)} to ${fmt.format(to)}',
+            'budgetbuddy Statement — ${fmt.format(from)} to ${fmt.format(to)}',
       );
     } else {
       // Print directly
@@ -187,7 +187,7 @@ class PdfService {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Text(
-                  'BudgetBuddy',
+                  'budgetbuddy',
                   style: pw.TextStyle(
                     fontSize: 18,
                     fontWeight: pw.FontWeight.bold,
@@ -244,7 +244,7 @@ class PdfService {
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
           pw.Text(
-            'BudgetBuddy Personal Finance Tracker',
+            'budgetbuddy Personal Finance Tracker',
             style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey400),
           ),
           pw.Text(

@@ -1,7 +1,7 @@
-// import 'package:budgetBuddy/common/hive_storages/hive_storage.dart';
-// import 'package:budgetBuddy/common/services/notification_service.dart';
-// import 'package:budgetBuddy/features/ai_screen/services/goal_service.dart';
-// import 'package:budgetBuddy/features/home/services/sync_services.dart';
+// import 'package:budgetbuddy/common/hive_storages/hive_storage.dart';
+// import 'package:budgetbuddy/common/services/notification_service.dart';
+// import 'package:budgetbuddy/features/ai_screen/services/goal_service.dart';
+// import 'package:budgetbuddy/features/home/services/sync_services.dart';
 // import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // class GoalsNotifier extends Notifier<List<SavingsGoal>> {

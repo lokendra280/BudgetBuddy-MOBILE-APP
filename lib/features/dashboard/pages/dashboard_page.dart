@@ -1,5 +1,5 @@
-import 'package:budgetBuddy/common/wrapper/update_wrapper.dart';
-import 'package:budgetBuddy/features/dashboard/widget/dashboard_widget.dart';
+import 'package:budgetbuddy/common/wrapper/update_wrapper.dart';
+import 'package:budgetbuddy/features/dashboard/widget/dashboard_widget.dart';
 import 'package:flutter/material.dart';
 
 class DashboardPage extends StatelessWidget {

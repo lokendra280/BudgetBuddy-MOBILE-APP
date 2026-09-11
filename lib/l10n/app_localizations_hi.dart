@@ -201,7 +201,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get createAccount => 'खाता बनाएं';
 
   @override
-  String get signUpToTrack => 'अपने खर्च ट्रैक और सिंक करने के लिए साइन अप करें';
+  String get signUpToTrack =>
+      'अपने खर्च ट्रैक और सिंक करने के लिए साइन अप करें';
 
   @override
   String get alreadyHaveAn => 'पहले से खाता है? साइन इन करें';
@@ -252,7 +253,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get shareInvite => 'आमंत्रण साझा करें';
 
   @override
-  String get signIntoApply => 'रेफरल कोड लगाने के लिए साइन इन करें और स्ट्रीक दिन पाएं';
+  String get signIntoApply =>
+      'रेफरल कोड लगाने के लिए साइन इन करें और स्ट्रीक दिन पाएं';
 
   @override
   String get shareReport => 'रिपोर्ट साझा करें';
@@ -273,13 +275,16 @@ class AppLocalizationsHi extends AppLocalizations {
   String get howItWork => 'यह कैसे काम करता है';
 
   @override
-  String get shareYourCode => 'अपना कोड या खर्च रिपोर्ट दोस्तों के साथ साझा करें';
+  String get shareYourCode =>
+      'अपना कोड या खर्च रिपोर्ट दोस्तों के साथ साझा करें';
 
   @override
-  String get friendDownloads => 'दोस्त BudgetBuddy डाउनलोड करके साइन अप करता है';
+  String get friendDownloads =>
+      'दोस्त budgetbuddy डाउनलोड करके साइन अप करता है';
 
   @override
-  String get theyGoToCommunity => 'वे Community → Invite में जाकर आपका कोड डालते हैं';
+  String get theyGoToCommunity =>
+      'वे Community → Invite में जाकर आपका कोड डालते हैं';
 
   @override
   String get bothGet => 'दोनों को +3 बोनस स्ट्रीक दिन मिलते हैं';
@@ -330,7 +335,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get haveAnFriendsCode => 'क्या आपके पास दोस्त का कोड है?';
 
   @override
-  String get enterItToGiveThemCredit => 'उन्हें क्रेडिट देने और खुद के लिए +3 स्ट्रीक दिन पाने के लिए कोड दर्ज करें';
+  String get enterItToGiveThemCredit =>
+      'उन्हें क्रेडिट देने और खुद के लिए +3 स्ट्रीक दिन पाने के लिए कोड दर्ज करें';
 
   @override
   String get burnRateAndRunWay => 'खर्च दर और रनवे';
@@ -351,7 +357,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get addMoreExpenses => 'और खर्च जोड़ें';
 
   @override
-  String get wellAnalysisPatternOnce => 'We Will analyses pattern once you have more data';
+  String get wellAnalysisPatternOnce =>
+      'We Will analyses pattern once you have more data';
 
   @override
   String get subscriptions => 'सदस्यता और आवर्ती भुगतान';
@@ -372,7 +379,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get autoCategorization => 'स्वचालित वर्गीकरण';
 
   @override
-  String get budgetBuddyDetects => 'BudgetBuddy detect categories automatically from your entry title';
+  String get budgetbuddyDetects =>
+      'budgetbuddy detect categories automatically from your entry title';
 
   @override
   String get nextMonthForecast => 'अगले महीने का पूर्वानुमान';
@@ -390,7 +398,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get categoryForecast => 'श्रेणी पूर्वानुमान';
 
   @override
-  String get addMoreExpenseAcross => 'पूर्वानुमान देखने के लिए अलग-अलग महीनों में और खर्च जोड़ें';
+  String get addMoreExpenseAcross =>
+      'पूर्वानुमान देखने के लिए अलग-अलग महीनों में और खर्च जोड़ें';
 
   @override
   String get incomeGrowth => 'आय वृद्धि';
@@ -465,7 +474,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get noBillsAdded => 'अभी तक कोई बिल नहीं जोड़ा गया';
 
   @override
-  String get addBills => 'बिल, EMI और सदस्यता जोड़ें ताकि समय पर रिमाइंडर मिल सके';
+  String get addBills =>
+      'बिल, EMI और सदस्यता जोड़ें ताकि समय पर रिमाइंडर मिल सके';
 
   @override
   String get addFirstBill => 'पहला बिल जोड़ें';
@@ -603,7 +613,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get keepTracking => 'ट्रैक करते रहें!';
 
   @override
-  String get addMoreDataUnlock => 'व्यक्तिगत कोचिंग अनलॉक करने के लिए अधिक डेटा जोड़ें।';
+  String get addMoreDataUnlock =>
+      'व्यक्तिगत कोचिंग अनलॉक करने के लिए अधिक डेटा जोड़ें।';
 
   @override
   String get disposableIncome => 'बिल के बाद उपयोग योग्य आय';
@@ -636,7 +647,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get target20 => 'लक्ष्य: 20%';
 
   @override
-  String get billCommitmentSubtitle => 'विवेकाधीन खर्च से पहले निश्चित मासिक बहिर्वाह';
+  String get billCommitmentSubtitle =>
+      'विवेकाधीन खर्च से पहले निश्चित मासिक बहिर्वाह';
 
   @override
   String get selectCurrency => 'मुद्रा चुनें';
@@ -651,7 +663,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get biometricLock => 'बायोमेट्रिक लॉक';
 
   @override
-  String get requireFingerprint => 'खोलने के लिए फिंगरप्रिंट या फेस की आवश्यकता है';
+  String get requireFingerprint =>
+      'खोलने के लिए फिंगरप्रिंट या फेस की आवश्यकता है';
 
   @override
   String get notAvailableDevice => 'इस डिवाइस पर उपलब्ध नहीं';
@@ -678,7 +691,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get keepLoggingDaily => 'इसे बनाए रखने के लिए रोज़ लॉग करें';
 
   @override
-  String get aboutBudgetBuddy => 'BudgetBuddy के बारे में';
+  String get aboutbudgetbuddy => 'budgetbuddy के बारे में';
 
   @override
   String get versionMarketsLegal => 'संस्करण, बाजार, कानूनी';
@@ -690,7 +703,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get deleteAccountPermanently => 'अपना खाता स्थायी रूप से हटाने के लिए';
 
   @override
-  String get deleteAccountConfirm => 'क्या आप सुनिश्चित हैं? यह क्रिया पूर्ववत नहीं की जा सकती।';
+  String get deleteAccountConfirm =>
+      'क्या आप सुनिश्चित हैं? यह क्रिया पूर्ववत नहीं की जा सकती।';
 
   @override
   String get cancel => 'रद्द करें';
@@ -812,7 +826,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get noLoansYet => 'अभी कोई ऋण नहीं';
 
   @override
-  String get noLoansDesc => 'EMI ट्रैक करें, प्रगति देखें\nऔर देय तिथि से पहले अनुस्मारक पाएं।';
+  String get noLoansDesc =>
+      'EMI ट्रैक करें, प्रगति देखें\nऔर देय तिथि से पहले अनुस्मारक पाएं।';
 
   @override
   String get addFirstLoan => 'पहला ऋण जोड़ें';
@@ -909,10 +924,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get addWidgetTitle => 'बजट विजेट जोड़ें';
 
   @override
-  String get addWidgetDesc => 'होम स्क्रीन पर विजेट जोड़ने के लिए इन चरणों का पालन करें';
+  String get addWidgetDesc =>
+      'होम स्क्रीन पर विजेट जोड़ने के लिए इन चरणों का पालन करें';
 
   @override
-  String get addWidgetStep1 => 'होम स्क्रीन के किसी खाली क्षेत्र को देर तक दबाएं';
+  String get addWidgetStep1 =>
+      'होम स्क्रीन के किसी खाली क्षेत्र को देर तक दबाएं';
 
   @override
   String get addWidgetStep2 => 'दिखाई देने वाले मेनू से \"विजेट\" पर टैप करें';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
 
 class ChatInput extends StatelessWidget {
   final TextEditingController controller;

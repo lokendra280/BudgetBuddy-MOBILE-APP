@@ -1,16 +1,18 @@
-import 'package:budgetBuddy/common/common_svg_widget.dart';
-import 'package:budgetBuddy/common/constant/constant_assets.dart';
-import 'package:budgetBuddy/common/navigation_service.dart';
-import 'package:budgetBuddy/features/auth/helper/auth_helpers.dart';
-import 'package:budgetBuddy/features/auth/ui/sign_up_screen.dart';
-import 'package:budgetBuddy/features/auth/ui/otp_screen.dart';
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/common_widget.dart';
-import 'package:budgetBuddy/features/dashboard/pages/dashboard_page.dart';
-import 'package:budgetBuddy/features/dashboard/widget/dashboard_widget.dart';
-import 'package:budgetBuddy/features/home/providers/sync_provider.dart';
-import 'package:budgetBuddy/features/auth/providers/auth_provider.dart';
-import 'package:budgetBuddy/l10n/app_localizations.dart';
+import 'dart:io';
+
+import 'package:budgetbuddy/common/common_svg_widget.dart';
+import 'package:budgetbuddy/common/constant/constant_assets.dart';
+import 'package:budgetbuddy/common/navigation_service.dart';
+import 'package:budgetbuddy/features/auth/helper/auth_helpers.dart';
+import 'package:budgetbuddy/features/auth/ui/sign_up_screen.dart';
+import 'package:budgetbuddy/features/auth/ui/otp_screen.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/common_widget.dart';
+import 'package:budgetbuddy/features/dashboard/pages/dashboard_page.dart';
+import 'package:budgetbuddy/features/dashboard/widget/dashboard_widget.dart';
+import 'package:budgetbuddy/features/home/providers/sync_provider.dart';
+import 'package:budgetbuddy/features/auth/providers/auth_provider.dart';
+import 'package:budgetbuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -219,54 +221,55 @@ class _LoginState extends ConsumerState<LoginScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // _OrDivider(c: c),
-                  const SizedBox(height: 10),
-
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: OutlinedButton(
-                      onPressed: loading ? null : _google,
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: c.border),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                  if (!Platform.isIOS) ...[
+                    // _OrDivider(c: c),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: OutlinedButton(
+                        onPressed: loading ? null : _google,
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: c.border),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          foregroundColor: context.isDark
+                              ? Colors.white
+                              : const Color(0xFF1A1A2E),
                         ),
-                        foregroundColor: context.isDark
-                            ? Colors.white
-                            : const Color(0xFF1A1A2E),
-                      ),
-                      child: loading
-                          ? SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                color: c.textMuted,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                // _GoogleLogo(),
-                                CommonSvgWidget(
-                                  svgName: Assets.google,
-                                  height: 30,
-                                  width: 30,
+                        child: loading
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: c.textMuted,
+                                  strokeWidth: 2,
                                 ),
-                                const SizedBox(width: 10),
-                                const Text(
-                                  'Continue with Google',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  // _GoogleLogo(),
+                                  CommonSvgWidget(
+                                    svgName: Assets.google,
+                                    height: 30,
+                                    width: 30,
                                   ),
-                                ),
-                              ],
-                            ),
+                                  const SizedBox(width: 10),
+                                  const Text(
+                                    'Continue with Google',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
+                    const SizedBox(height: 24),
+                  ],
 
                   // Go to sign up
                   Row(

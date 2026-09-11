@@ -14,7 +14,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:home_widget/home_widget.dart';
 
-/// The custom scheme + host used by every BudgetBuddy widget action.
+/// The custom scheme + host used by every budgetbuddy widget action.
 /// Must match:
 ///   - Android: HomeWidgetLaunchIntent.getActivity(..., Uri.parse(...))
 ///   - iOS: .widgetURL(URL(string: "..."))
@@ -88,7 +88,7 @@ class HomeWidgetService {
     // Tell Android + iOS to redraw any widgets that read this data.
     await HomeWidget.updateWidget(
       androidName: 'BalanceWidgetProvider', // add when you build that widget
-      iOSName: 'BudgetBuddyWidgets',
+      iOSName: 'budgetbuddyWidgets',
     );
   }
 }

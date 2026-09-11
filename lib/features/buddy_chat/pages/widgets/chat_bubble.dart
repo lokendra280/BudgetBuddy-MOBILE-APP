@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/features/buddy_chat/models/chat_message.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/features/buddy_chat/models/chat_message.dart';
 
 class ChatBubble extends StatelessWidget {
   final ChatMessage message;

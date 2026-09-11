@@ -1,8 +1,8 @@
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/common_widget.dart';
-import 'package:budgetBuddy/common/navigation_service.dart';
-import 'package:budgetBuddy/features/profile/ui/privacy_policy_page.dart';
-import 'package:budgetBuddy/features/profile/ui/term_service_page.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/common_widget.dart';
+import 'package:budgetbuddy/common/navigation_service.dart';
+import 'package:budgetbuddy/features/profile/ui/privacy_policy_page.dart';
+import 'package:budgetbuddy/features/profile/ui/term_service_page.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -77,7 +77,7 @@ class _State extends State<AboutScreen> {
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'BudgetBuddy',
+                  'budgetbuddy',
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 4),
@@ -114,7 +114,7 @@ class _State extends State<AboutScreen> {
           _Section('Our Mission'),
           AppCard(
             child: const Text(
-              'BudgetBuddy helps you track every rupee, understand your spending habits, '
+              'budgetbuddy helps you track every rupee, understand your spending habits, '
               'and make smarter financial decisions — whether you\'re in Kathmandu, Mumbai, London, or New York.',
               style: TextStyle(fontSize: 13, height: 1.6),
             ),
@@ -248,7 +248,7 @@ class _State extends State<AboutScreen> {
               children: [
                 const SizedBox(height: 4),
                 Text(
-                  '© ${DateTime.now().year} BudgetBuddy. All rights reserved.',
+                  '© ${DateTime.now().year} budgetbuddy. All rights reserved.',
                   style: TextStyle(fontSize: 11, color: c.textMuted),
                 ),
               ],

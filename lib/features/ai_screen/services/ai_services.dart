@@ -1,11 +1,11 @@
 import 'dart:math';
-import 'package:budgetBuddy/common/constant/constant_assets.dart';
-import 'package:budgetBuddy/common/hive_storages/hive_storage.dart';
-import 'package:budgetBuddy/features/ai_screen/models/goals_model.dart';
-import 'package:budgetBuddy/features/bill_reminder/models/bill_reminder.dart';
-import 'package:budgetBuddy/features/expense/models/expense.dart';
-import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
-import 'package:budgetBuddy/l10n/app_localizations.dart';
+import 'package:budgetbuddy/common/constant/constant_assets.dart';
+import 'package:budgetbuddy/common/hive_storages/hive_storage.dart';
+import 'package:budgetbuddy/features/ai_screen/models/goals_model.dart';
+import 'package:budgetbuddy/features/bill_reminder/models/bill_reminder.dart';
+import 'package:budgetbuddy/features/expense/models/expense.dart';
+import 'package:budgetbuddy/features/expense/services/expenses_service.dart';
+import 'package:budgetbuddy/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 

@@ -1,14 +1,14 @@
-import 'package:budgetBuddy/features/ai_screen/pages/ai_screen.dart';
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/button.dart';
-import 'package:budgetBuddy/common/common_svg_widget.dart';
-import 'package:budgetBuddy/common/constant/constant_assets.dart';
-import 'package:budgetBuddy/common/navigation_service.dart';
-import 'package:budgetBuddy/features/expense/ui/add_expense_screen.dart';
-import 'package:budgetBuddy/features/expense/ui/statemet_screen.dart';
-import 'package:budgetBuddy/features/home/ui/pages/home_screen.dart';
-import 'package:budgetBuddy/l10n/app_localizations.dart';
-import 'package:budgetBuddy/features/social/ui/pages/social_screen.dart';
+import 'package:budgetbuddy/features/ai_screen/pages/ai_screen.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/button.dart';
+import 'package:budgetbuddy/common/common_svg_widget.dart';
+import 'package:budgetbuddy/common/constant/constant_assets.dart';
+import 'package:budgetbuddy/common/navigation_service.dart';
+import 'package:budgetbuddy/features/expense/ui/add_expense_screen.dart';
+import 'package:budgetbuddy/features/expense/ui/statemet_screen.dart';
+import 'package:budgetbuddy/features/home/ui/pages/home_screen.dart';
+import 'package:budgetbuddy/l10n/app_localizations.dart';
+import 'package:budgetbuddy/features/social/ui/pages/social_screen.dart';
 import 'package:flutter/material.dart';
 
 class NavigationDestination {

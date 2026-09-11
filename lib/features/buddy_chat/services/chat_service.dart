@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'package:budgetBuddy/common/hive_storages/hive_storage.dart';
+import 'package:budgetbuddy/common/hive_storages/hive_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:budgetBuddy/features/buddy_chat/models/chat_message.dart';
-import 'package:budgetBuddy/features/ai_screen/services/ai_services.dart';
-import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
+import 'package:budgetbuddy/features/buddy_chat/models/chat_message.dart';
+import 'package:budgetbuddy/features/ai_screen/services/ai_services.dart';
+import 'package:budgetbuddy/features/expense/services/expenses_service.dart';
 
 class ChatService {
   static const String _baseUrl =
@@ -119,7 +119,7 @@ class ChatService {
           : alerts.map((a) => '${a.emoji} ${a.title}').join(' | ');
 
       return '''
-=== BUDGETBUDDY USER FINANCIAL DATA ===
+=== budgetbuddy USER FINANCIAL DATA ===
 Date: ${now.day}/${now.month}/${now.year} | Days left: $daysLeft | Currency: $currency
 
 BUDGET:
@@ -168,7 +168,7 @@ CASH FLOW WARNINGS: ${cash.warnings.isEmpty ? 'None' : cash.warnings.join(' | ')
   }
 
   static String get _systemPrompt => '''
-You are BudgetBuddy AI, a friendly and honest personal finance assistant built into the BudgetBuddy app.
+You are budgetbuddy AI, a friendly and honest personal finance assistant built into the budgetbuddy app.
 You have access to the user's REAL financial data including expenses, bills, EMI loans, goals and subscriptions.
 
 Rules:
@@ -241,13 +241,13 @@ ${buildFinancialContext()}''';
 }
 
 // import 'dart:convert';
-// import 'package:budgetBuddy/common/hive_storages/hive_storage.dart';
+// import 'package:budgetbuddy/common/hive_storages/hive_storage.dart';
 // import 'package:flutter/foundation.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 // import 'package:http/http.dart' as http;
-// import 'package:budgetBuddy/features/buddy_chat/models/chat_message.dart';
-// import 'package:budgetBuddy/features/ai_screen/services/ai_services.dart';
-// import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
+// import 'package:budgetbuddy/features/buddy_chat/models/chat_message.dart';
+// import 'package:budgetbuddy/features/ai_screen/services/ai_services.dart';
+// import 'package:budgetbuddy/features/expense/services/expenses_service.dart';
 
 // class ChatService {
 //   static const String _model = 'gemini-flash-latest';
@@ -364,7 +364,7 @@ ${buildFinancialContext()}''';
 //           : alerts.map((a) => '${a.emoji} ${a.title}').join(' | ');
 
 //       return '''
-// === BUDGETBUDDY USER FINANCIAL DATA ===
+// === budgetbuddy USER FINANCIAL DATA ===
 // Date: ${now.day}/${now.month}/${now.year} | Days left: $daysLeft | Currency: $currency
 
 // BUDGET:
@@ -429,7 +429,7 @@ ${buildFinancialContext()}''';
 
 //   // Update _systemPrompt to use cached context
 //   //   static String get _systemPrompt => '''
-//   // You are BudgetBuddy AI, a friendly and honest personal finance assistant built into the BudgetBuddy app.
+//   // You are budgetbuddy AI, a friendly and honest personal finance assistant built into the budgetbuddy app.
 //   // You have access to the user's REAL financial data including expenses, bills, EMI loans, goals and subscriptions.
 
 //   // Rules:
@@ -443,7 +443,7 @@ ${buildFinancialContext()}''';
 
 //   // ${_getFinancialContext()}''';
 //   static String get _systemPrompt => '''
-// You are BudgetBuddy AI, a personal finance assistant.
+// You are budgetbuddy AI, a personal finance assistant.
 
 // Rules:
 // - Use only the user's financial data provided.

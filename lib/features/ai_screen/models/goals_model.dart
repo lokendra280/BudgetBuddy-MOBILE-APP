@@ -1,4 +1,4 @@
-import 'package:budgetBuddy/features/ai_screen/models/goals_transaction.dart';
+import 'package:budgetbuddy/features/ai_screen/models/goals_transaction.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 part 'goals_model.g.dart';

@@ -1,9 +1,9 @@
-import 'package:budgetBuddy/features/ai_screen/models/goals_transaction.dart';
-import 'package:budgetBuddy/features/ai_screen/models/goals_model.dart';
-import 'package:budgetBuddy/features/bill_reminder/models/bill_reminder.dart';
-import 'package:budgetBuddy/features/bill_reminder/models/emi_loan.dart';
-import 'package:budgetBuddy/features/expense/models/expense.dart';
-import 'package:budgetBuddy/features/home/services/sync_services.dart';
+import 'package:budgetbuddy/features/ai_screen/models/goals_transaction.dart';
+import 'package:budgetbuddy/features/ai_screen/models/goals_model.dart';
+import 'package:budgetbuddy/features/bill_reminder/models/bill_reminder.dart';
+import 'package:budgetbuddy/features/bill_reminder/models/emi_loan.dart';
+import 'package:budgetbuddy/features/expense/models/expense.dart';
+import 'package:budgetbuddy/features/home/services/sync_services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';

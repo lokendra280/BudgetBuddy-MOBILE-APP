@@ -4,8 +4,8 @@
 // starting a bill scan. Call showBillSourcePicker(context) from the scan
 // button instead of calling BillScanOrchestrator.start directly.
 
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/features/expense/services/bill_scan_orchestrator.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/features/expense/services/bill_scan_orchestrator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:budgetBuddy/features/auth/services/auth_service.dart';
-import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
+import 'package:budgetbuddy/features/auth/services/auth_service.dart';
+import 'package:budgetbuddy/features/expense/services/expenses_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;

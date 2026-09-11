@@ -1,5 +1,5 @@
-import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
-import 'package:budgetBuddy/features/forecast/providers/forecast_provider.dart';
+import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetbuddy/features/forecast/providers/forecast_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ── 2. Spending patterns — detects behavior trends ────────────────────────────

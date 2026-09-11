@@ -6,18 +6,18 @@
     "configurations": [
     
         {
-            "name": "budgetBuddy",
+            "name": "budgetbuddy",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "budgetBuddy (profile mode)",
+            "name": "budgetbuddy (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "budgetBuddy (release mode)",
+            "name": "budgetbuddy (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

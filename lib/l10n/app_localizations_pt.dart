@@ -9,7 +9,7 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
-  String get appName => 'BudgetBuddy';
+  String get appName => 'budgetbuddy';
 
   @override
   String get home => 'Início';
@@ -201,7 +201,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get createAccount => 'Criar Conta';
 
   @override
-  String get signUpToTrack => 'Cadastre-se para rastrear e sincronizar suas finanças';
+  String get signUpToTrack =>
+      'Cadastre-se para rastrear e sincronizar suas finanças';
 
   @override
   String get alreadyHaveAn => 'Já tem uma conta? Entrar';
@@ -252,7 +253,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get shareInvite => 'Compartilhar Convite';
 
   @override
-  String get signIntoApply => 'Entre para aplicar um código de indicação e ganhar dias de sequência';
+  String get signIntoApply =>
+      'Entre para aplicar um código de indicação e ganhar dias de sequência';
 
   @override
   String get shareReport => 'Compartilhar meu relatório';
@@ -273,13 +275,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get howItWork => 'Como funciona';
 
   @override
-  String get shareYourCode => 'Compartilhe seu código ou relatório de gastos com amigos';
+  String get shareYourCode =>
+      'Compartilhe seu código ou relatório de gastos com amigos';
 
   @override
-  String get friendDownloads => 'O amigo baixa o BudgetBuddy e se cadastra';
+  String get friendDownloads => 'O amigo baixa o budgetbuddy e se cadastra';
 
   @override
-  String get theyGoToCommunity => 'Eles vão em Comunidade → Convidar e inserem seu código';
+  String get theyGoToCommunity =>
+      'Eles vão em Comunidade → Convidar e inserem seu código';
 
   @override
   String get bothGet => 'Ambos ganham +3 dias bônus de sequência';
@@ -330,7 +334,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get haveAnFriendsCode => 'Tem o código de um amigo?';
 
   @override
-  String get enterItToGiveThemCredit => 'Insira para dar crédito a ele e ganhar +3 dias de sequência';
+  String get enterItToGiveThemCredit =>
+      'Insira para dar crédito a ele e ganhar +3 dias de sequência';
 
   @override
   String get burnRateAndRunWay => 'Taxa de Gasto e Prazo';
@@ -351,7 +356,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get addMoreExpenses => 'Adicionar Mais Despesas';
 
   @override
-  String get wellAnalysisPatternOnce => 'Analisaremos padrões quando você tiver mais dados';
+  String get wellAnalysisPatternOnce =>
+      'Analisaremos padrões quando você tiver mais dados';
 
   @override
   String get subscriptions => 'Assinaturas e Recorrentes';
@@ -372,7 +378,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get autoCategorization => 'Categorização Automática';
 
   @override
-  String get budgetBuddyDetects => 'O BudgetBuddy detecta categorias automaticamente pelo título';
+  String get budgetbuddyDetects =>
+      'O budgetbuddy detecta categorias automaticamente pelo título';
 
   @override
   String get nextMonthForecast => 'Previsão do Próximo Mês';
@@ -390,7 +397,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get categoryForecast => 'Previsão por Categoria';
 
   @override
-  String get addMoreExpenseAcross => 'Adicione mais despesas ao longo dos meses para ver previsões';
+  String get addMoreExpenseAcross =>
+      'Adicione mais despesas ao longo dos meses para ver previsões';
 
   @override
   String get incomeGrowth => 'Crescimento de Receita';
@@ -414,7 +422,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get yourAiFinancialCoach => 'Seu Consultor Financeiro de IA';
 
   @override
-  String get personalizedTips => 'Dicas personalizadas com base nos seus gastos';
+  String get personalizedTips =>
+      'Dicas personalizadas com base nos seus gastos';
 
   @override
   String get personalAdvice => 'Conselho Personalizado';
@@ -423,7 +432,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get setARealisticBudget => 'Defina um orçamento realista';
 
   @override
-  String get goToSettings => 'Vá em Configurações > Orçamento e defina seu limite mensal';
+  String get goToSettings =>
+      'Vá em Configurações > Orçamento e defina seu limite mensal';
 
   @override
   String get impact => 'Impacto';
@@ -465,7 +475,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get noBillsAdded => 'Nenhuma conta adicionada ainda';
 
   @override
-  String get addBills => 'Adicione contas, parcelas e assinaturas para ser lembrado antes do vencimento';
+  String get addBills =>
+      'Adicione contas, parcelas e assinaturas para ser lembrado antes do vencimento';
 
   @override
   String get addFirstBill => 'Adicionar Primeira Conta';
@@ -603,7 +614,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get keepTracking => 'Continue rastreando!';
 
   @override
-  String get addMoreDataUnlock => 'Adicione mais dados para desbloquear consultoria personalizada.';
+  String get addMoreDataUnlock =>
+      'Adicione mais dados para desbloquear consultoria personalizada.';
 
   @override
   String get disposableIncome => 'renda disponível após contas';
@@ -627,7 +639,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get wantsDescription => 'Entretenimento, compras, saídas';
 
   @override
-  String get savingsDescription => 'Reserva de emergência, investimentos, metas';
+  String get savingsDescription =>
+      'Reserva de emergência, investimentos, metas';
 
   @override
   String get savingsRateThisMonth => 'Taxa de economia neste mês';
@@ -636,7 +649,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get target20 => 'Meta: 20%';
 
   @override
-  String get billCommitmentSubtitle => 'Saídas fixas mensais antes dos gastos discricionários';
+  String get billCommitmentSubtitle =>
+      'Saídas fixas mensais antes dos gastos discricionários';
 
   @override
   String get selectCurrency => 'Selecionar Moeda';
@@ -651,7 +665,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get biometricLock => 'Bloqueio biométrico';
 
   @override
-  String get requireFingerprint => 'Exigir impressão digital ou rosto para abrir';
+  String get requireFingerprint =>
+      'Exigir impressão digital ou rosto para abrir';
 
   @override
   String get notAvailableDevice => 'Não disponível neste dispositivo';
@@ -678,7 +693,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get keepLoggingDaily => 'Continue registrando diariamente para manter';
 
   @override
-  String get aboutBudgetBuddy => 'Sobre o BudgetBuddy';
+  String get aboutbudgetbuddy => 'Sobre o budgetbuddy';
 
   @override
   String get versionMarketsLegal => 'Versão, mercados, jurídico';
@@ -687,10 +702,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get deleteAccount => 'Excluir Conta';
 
   @override
-  String get deleteAccountPermanently => 'Para Excluir Sua Conta Permanentemente';
+  String get deleteAccountPermanently =>
+      'Para Excluir Sua Conta Permanentemente';
 
   @override
-  String get deleteAccountConfirm => 'Tem certeza? Esta ação não pode ser desfeita.';
+  String get deleteAccountConfirm =>
+      'Tem certeza? Esta ação não pode ser desfeita.';
 
   @override
   String get cancel => 'Cancelar';
@@ -812,7 +829,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get noLoansYet => 'Nenhum Empréstimo Ainda';
 
   @override
-  String get noLoansDesc => 'Acompanhe parcelas, monitore o progresso\ne receba lembretes antes do vencimento.';
+  String get noLoansDesc =>
+      'Acompanhe parcelas, monitore o progresso\ne receba lembretes antes do vencimento.';
 
   @override
   String get addFirstLoan => 'Adicionar Primeiro Empréstimo';
@@ -909,19 +927,23 @@ class AppLocalizationsPt extends AppLocalizations {
   String get addWidgetTitle => 'Adicionar Widget de Orçamento';
 
   @override
-  String get addWidgetDesc => 'Siga estes passos para adicionar o widget à tela inicial';
+  String get addWidgetDesc =>
+      'Siga estes passos para adicionar o widget à tela inicial';
 
   @override
-  String get addWidgetStep1 => 'Pressione e segure uma área vazia da tela inicial';
+  String get addWidgetStep1 =>
+      'Pressione e segure uma área vazia da tela inicial';
 
   @override
   String get addWidgetStep2 => 'Toque em \"Widgets\" no menu que aparecer';
 
   @override
-  String get addWidgetStep3 => 'Pesquise por \"Budget Buddy\" na lista de widgets';
+  String get addWidgetStep3 =>
+      'Pesquise por \"Budget Buddy\" na lista de widgets';
 
   @override
-  String get addWidgetStep4 => 'Pressione e segure o widget e arraste para a tela inicial';
+  String get addWidgetStep4 =>
+      'Pressione e segure o widget e arraste para a tela inicial';
 
   @override
   String get gotIt => 'Entendido!';

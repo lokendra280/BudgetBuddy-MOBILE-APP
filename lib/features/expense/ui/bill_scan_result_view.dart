@@ -1,6 +1,6 @@
 // lib/expense/screens/bill_scan_result_view.dart
 import 'dart:io';
-import 'package:budgetBuddy/features/expense/services/bill_scaning_service.dart';
+import 'package:budgetbuddy/features/expense/services/bill_scaning_service.dart';
 import 'package:flutter/material.dart';
 
 class BillScanResultView extends StatefulWidget {

@@ -1,15 +1,15 @@
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/common_widget.dart';
-import 'package:budgetBuddy/common/language_screen.dart';
-import 'package:budgetBuddy/common/services/notification_service.dart';
-import 'package:budgetBuddy/common/theme_provider.dart';
-import 'package:budgetBuddy/features/auth/providers/auth_provider.dart';
-import 'package:budgetBuddy/features/auth/services/biometric_service.dart';
-import 'package:budgetBuddy/features/auth/services/user_profile_service.dart';
-import 'package:budgetBuddy/features/expense/models/expense.dart';
-import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
-import 'package:budgetBuddy/features/profile/ui/about_page.dart';
-import 'package:budgetBuddy/l10n/app_localizations.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/common_widget.dart';
+import 'package:budgetbuddy/common/language_screen.dart';
+import 'package:budgetbuddy/common/services/notification_service.dart';
+import 'package:budgetbuddy/common/theme_provider.dart';
+import 'package:budgetbuddy/features/auth/providers/auth_provider.dart';
+import 'package:budgetbuddy/features/auth/services/biometric_service.dart';
+import 'package:budgetbuddy/features/auth/services/user_profile_service.dart';
+import 'package:budgetbuddy/features/expense/models/expense.dart';
+import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetbuddy/features/profile/ui/about_page.dart';
+import 'package:budgetbuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -468,7 +468,7 @@ class _State extends ConsumerState<SettingsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'About BudgetBuddy',
+                        'About budgetbuddy',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,

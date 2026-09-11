@@ -1,4 +1,4 @@
-import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
+import 'package:budgetbuddy/features/expense/services/expenses_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'auth_service.dart';
 

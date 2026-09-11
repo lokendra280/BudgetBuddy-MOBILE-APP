@@ -1,6 +1,6 @@
 // lib/features/bill_reminder/services/emi_cycle_service.dart
 
-import 'package:budgetBuddy/features/bill_reminder/models/emi_loan.dart';
+import 'package:budgetbuddy/features/bill_reminder/models/emi_loan.dart';
 
 class EmiCycleService {
   EmiCycleService._();

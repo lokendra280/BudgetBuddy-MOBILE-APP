@@ -1,8 +1,8 @@
 // lib/expense/services/bill_scaning_service.dart
 import 'dart:convert';
 import 'dart:io';
-import 'package:budgetBuddy/features/expense/services/category_services.dart';
-import 'package:budgetBuddy/features/expense/services/expenses_service.dart';
+import 'package:budgetbuddy/features/expense/services/category_services.dart';
+import 'package:budgetbuddy/features/expense/services/expenses_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';

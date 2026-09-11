@@ -1,11 +1,11 @@
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/onboard/onboard_screen.dart';
-import 'package:budgetBuddy/common/services/app_version_service.dart';
-import 'package:budgetBuddy/features/auth/services/biometric_service.dart';
-import 'package:budgetBuddy/features/auth/ui/lock_screen.dart';
-import 'package:budgetBuddy/features/dashboard/pages/dashboard_page.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/onboard/onboard_screen.dart';
+import 'package:budgetbuddy/common/services/app_version_service.dart';
+import 'package:budgetbuddy/features/auth/services/biometric_service.dart';
+import 'package:budgetbuddy/features/auth/ui/lock_screen.dart';
+import 'package:budgetbuddy/features/dashboard/pages/dashboard_page.dart';
 
-import 'package:budgetBuddy/l10n/app_localizations.dart';
+import 'package:budgetbuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';

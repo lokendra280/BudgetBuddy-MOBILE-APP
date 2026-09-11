@@ -1,9 +1,9 @@
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/common_widget.dart';
-import 'package:budgetBuddy/common/constant/app_catalogue.dart';
-import 'package:budgetBuddy/common/constant/app_typography.dart';
-import 'package:budgetBuddy/common/theme_provider.dart';
-import 'package:budgetBuddy/features/profile/ui/currency_screen.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/common_widget.dart';
+import 'package:budgetbuddy/common/constant/app_catalogue.dart';
+import 'package:budgetbuddy/common/constant/app_typography.dart';
+import 'package:budgetbuddy/common/theme_provider.dart';
+import 'package:budgetbuddy/features/profile/ui/currency_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

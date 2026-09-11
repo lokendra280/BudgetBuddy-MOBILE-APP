@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:budgetBuddy/common/remote_config/config_env.dart';
-import 'package:budgetBuddy/common/providers/remote_config_provider.dart';
+import 'package:budgetbuddy/common/remote_config/config_env.dart';
+import 'package:budgetbuddy/common/providers/remote_config_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';

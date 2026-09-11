@@ -1,8 +1,8 @@
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/features/expense/services/bill_scaning_service.dart';
-import 'package:budgetBuddy/features/expense/services/category_services.dart';
-import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
-import 'package:budgetBuddy/common/widgets/emoji_image.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/features/expense/services/bill_scaning_service.dart';
+import 'package:budgetbuddy/features/expense/services/category_services.dart';
+import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetbuddy/common/widgets/emoji_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

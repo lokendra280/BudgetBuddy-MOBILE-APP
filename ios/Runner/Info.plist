@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>BudgetBuddy</string>
+	<string>budgetbuddy</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>BudgetBuddy</string>
+	<string>budgetbuddy</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -29,19 +29,19 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>BudgetBuddy uses the camera to scan receipts and automatically extract expense details.</string>
+	<string>budgetbuddy uses the camera to scan receipts and automatically extract expense details.</string>
 	<key>NSContactsUsageDescription</key>
-	<string>BudgetBuddy accesses contacts to help you split expenses with friends and family.</string>
+	<string>budgetbuddy accesses contacts to help you split expenses with friends and family.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>BudgetBuddy uses Face ID to securely unlock the app and protect your financial data.</string>
+	<string>budgetbuddy uses Face ID to securely unlock the app and protect your financial data.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>BudgetBuddy uses the microphone to let you add expenses by speaking. Your voice is processed on-device and never stored.</string>
+	<string>budgetbuddy uses the microphone to let you add expenses by speaking. Your voice is processed on-device and never stored.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>BudgetBuddy accesses your photo library to attach receipt images to expenses.</string>
+	<string>budgetbuddy accesses your photo library to attach receipt images to expenses.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>BudgetBuddy uses speech recognition to convert your voice into expense entries, making it faster to log transactions.</string>
+	<string>budgetbuddy uses speech recognition to convert your voice into expense entries, making it faster to log transactions.</string>
 	<key>NSUserNotificationsUsageDescription</key>
-	<string>BudgetBuddy sends reminders for bill due dates and budget alerts.</string>
+	<string>budgetbuddy sends reminders for bill due dates and budget alerts.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

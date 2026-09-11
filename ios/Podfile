@@ -1,5 +1,7 @@
+# Uncomment this line to define a global platform for your project
 platform :ios, '15.5'
 
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
 project 'Runner', {
@@ -27,10 +29,8 @@ flutter_ios_podfile_setup
 
 target 'Runner' do
   use_frameworks!
-  use_modular_headers!
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-
   target 'RunnerTests' do
     inherit! :search_paths
   end
@@ -39,20 +39,5 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
-    target.build_configurations.each do |config|
-      config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
-      config.build_settings['ONLY_ACTIVE_ARCH'] = 'NO'
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5'
-      config.build_settings['SWIFT_VERSION'] = '5.0'
-      # Some plugin pods don't yet ship an arm64 Simulator slice (the arm64
-      # warning from the build log). Excluding arm64 only for the simulator
-      # SDK forces those pods to build for x86_64 simulator instead (runs
-      # under Rosetta on Apple Silicon Macs), avoiding a linker/architecture
-      # failure at build/run time. Real device builds are unaffected since
-      # this only applies when sdk=iphonesimulator.
-      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
-    end
   end
-    flutter_post_install(installer) if defined?(flutter_post_install)
-
 end

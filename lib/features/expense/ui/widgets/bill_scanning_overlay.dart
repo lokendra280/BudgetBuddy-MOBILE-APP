@@ -6,7 +6,7 @@
 // same visual language Paytm/GPay use for their bill/QR scan states.
 
 import 'dart:io';
-import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class BillScanningOverlay extends StatefulWidget {

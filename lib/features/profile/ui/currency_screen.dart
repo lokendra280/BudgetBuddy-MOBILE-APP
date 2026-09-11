@@ -1,10 +1,10 @@
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/common_widget.dart';
-import 'package:budgetBuddy/common/constant/app_typography.dart';
-import 'package:budgetBuddy/features/auth/services/user_profile_service.dart';
-import 'package:budgetBuddy/features/dashboard/pages/dashboard_page.dart';
-import 'package:budgetBuddy/features/expense/models/expense.dart';
-import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/common_widget.dart';
+import 'package:budgetbuddy/common/constant/app_typography.dart';
+import 'package:budgetbuddy/features/auth/services/user_profile_service.dart';
+import 'package:budgetbuddy/features/dashboard/pages/dashboard_page.dart';
+import 'package:budgetbuddy/features/expense/models/expense.dart';
+import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

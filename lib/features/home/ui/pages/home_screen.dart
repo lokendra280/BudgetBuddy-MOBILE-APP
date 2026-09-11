@@ -1,34 +1,35 @@
 import 'dart:io';
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/common/common_svg_widget.dart';
-import 'package:budgetBuddy/common/common_widget.dart';
-import 'package:budgetBuddy/common/constant/app_typography.dart';
-import 'package:budgetBuddy/common/constant/constant_assets.dart';
-import 'package:budgetBuddy/common/navigation_service.dart';
-import 'package:budgetBuddy/common/services/ads_service.dart';
-import 'package:budgetBuddy/common/services/notification_service.dart';
-import 'package:budgetBuddy/features/auth/providers/auth_provider.dart';
-import 'package:budgetBuddy/features/auth/ui/login_screen.dart';
-import 'package:budgetBuddy/features/bill_reminder/providers/bill_reminder_provider.dart';
-import 'package:budgetBuddy/features/bill_reminder/ui/pages/bill_reminder_screen.dart';
-import 'package:budgetBuddy/features/bill_reminder/ui/widgets/bill_strip_alert.dart';
-import 'package:budgetBuddy/features/buddy_chat/pages/buddy_chat_page.dart';
-import 'package:budgetBuddy/features/expense/models/expense.dart';
-import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
-import 'package:budgetBuddy/features/expense/services/category_services.dart';
-import 'package:budgetBuddy/features/expense/ui/statemet_screen.dart';
-import 'package:budgetBuddy/features/feedback/services/feedback_promt_services.dart';
-import 'package:budgetBuddy/features/feedback/ui/feedback_sheet.dart';
-import 'package:budgetBuddy/features/home/providers/sync_provider.dart';
-import 'package:budgetBuddy/features/home/ui/widgets/app_drawer.dart';
-import 'package:budgetBuddy/features/home/ui/widgets/chat_card.dart';
-import 'package:budgetBuddy/features/home/ui/widgets/header_widget.dart';
-import 'package:budgetBuddy/features/home/ui/widgets/home_bar_graph.dart';
-import 'package:budgetBuddy/features/profile/ui/profile_screen.dart';
-import 'package:budgetBuddy/features/sms_service/services/sms_auto_sync_service.dart';
-import 'package:budgetBuddy/features/sms_service/ui/widgets/sms_permision_gard.dart';
-import 'package:budgetBuddy/features/social/services/share_service.dart';
-import 'package:budgetBuddy/l10n/app_localizations.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/common_svg_widget.dart';
+import 'package:budgetbuddy/common/common_widget.dart';
+import 'package:budgetbuddy/common/constant/app_typography.dart';
+import 'package:budgetbuddy/common/constant/constant_assets.dart';
+import 'package:budgetbuddy/common/navigation_service.dart';
+import 'package:budgetbuddy/common/services/ads_service.dart';
+import 'package:budgetbuddy/common/services/notification_service.dart';
+import 'package:budgetbuddy/features/auth/providers/auth_provider.dart';
+import 'package:budgetbuddy/features/auth/ui/login_screen.dart';
+import 'package:budgetbuddy/features/bill_reminder/providers/bill_reminder_provider.dart';
+import 'package:budgetbuddy/features/bill_reminder/ui/pages/bill_reminder_screen.dart';
+import 'package:budgetbuddy/features/bill_reminder/ui/widgets/bill_strip_alert.dart';
+import 'package:budgetbuddy/features/buddy_chat/pages/buddy_chat_page.dart';
+import 'package:budgetbuddy/features/expense/models/expense.dart';
+import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetbuddy/features/expense/services/category_services.dart';
+import 'package:budgetbuddy/features/expense/ui/statemet_screen.dart';
+import 'package:budgetbuddy/features/feedback/services/feedback_promt_services.dart';
+import 'package:budgetbuddy/features/feedback/ui/feedback_sheet.dart';
+import 'package:budgetbuddy/features/home/providers/sync_provider.dart';
+import 'package:budgetbuddy/features/home/ui/widgets/app_drawer.dart';
+import 'package:budgetbuddy/features/home/ui/widgets/chat_card.dart';
+import 'package:budgetbuddy/features/home/ui/widgets/header_widget.dart';
+import 'package:budgetbuddy/features/home/ui/widgets/home_bar_graph.dart';
+import 'package:budgetbuddy/features/profile/ui/profile_screen.dart';
+import 'package:budgetbuddy/features/sms_service/services/sms_auto_sync_service.dart';
+import 'package:budgetbuddy/features/sms_service/ui/widgets/sms_permision_gard.dart';
+import 'package:budgetbuddy/features/social/services/share_service.dart';
+import 'package:budgetbuddy/l10n/app_localizations.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -67,55 +68,55 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     CategoryService.init();
 
     // ── SMS auto-sync — Android only, throttled internally ──────────────
-    // if (!Platform.isIOS) {
-    //   await _runSmsSync(ignoreThrottle: false); // ← throttled
-    // }
+    if (!Platform.isIOS) {
+      await _runSmsSync(ignoreThrottle: false); // ← throttled
+    }
   }
 
-  // Future<bool> _isOnline() async {
-  //   final result = await Connectivity().checkConnectivity();
-  //   // On newer connectivity_plus versions checkConnectivity() returns a
-  //   // List<ConnectivityResult> — adjust this line to match your version.
-  //   return result != ConnectivityResult.none;
-  // }
+  Future<bool> _isOnline() async {
+    final result = await Connectivity().checkConnectivity();
+    // On newer connectivity_plus versions checkConnectivity() returns a
+    // List<ConnectivityResult> — adjust this line to match your version.
+    return result != ConnectivityResult.none;
+  }
 
-  // Future<void> _maybeShowFeedback() async {
-  //   if (!FeedbackPromptService.shouldShowToday) return;
-  //   if (!mounted) return;
-  //   if (!await _isOnline()) return;
-  //   if (!mounted) return;
-  //   showFeedbackSheet(context, isDailyPrompt: true);
-  // }
+  Future<void> _maybeShowFeedback() async {
+    if (!FeedbackPromptService.shouldShowToday) return;
+    if (!mounted) return;
+    if (!await _isOnline()) return;
+    if (!mounted) return;
+    showFeedbackSheet(context, isDailyPrompt: true);
+  }
 
-  /// Runs SMS sync using the current Riverpod expense list.
-  /// Called both from _init() on every app open AND from the permission
-  /// guard's onSyncRequested callback when user first grants permission.
+  // / Runs SMS sync using the current Riverpod expense list.
+  // / Called both from _init() on every app open AND from the permission
+  // / guard's onSyncRequested callback when user first grants permission.
   // In home_screen.dart
-  // Future<void> _runSmsSync({bool ignoreThrottle = false}) async {
-  //   final expenses = ref.read(expenseProvider).all;
-  //   await SmsAutoSyncService.sync(
-  //     addExpense:
-  //         ({
-  //           required String title,
-  //           required double amount,
-  //           required String category,
-  //           required bool isIncome,
-  //           required DateTime date,
-  //         }) async {
-  //           await ref
-  //               .read(expenseProvider.notifier)
-  //               .addExpense(
-  //                 title: title,
-  //                 amount: amount,
-  //                 category: category,
-  //                 isIncome: isIncome,
-  //                 date: date,
-  //               );
-  //         },
-  //     existingExpenses: expenses,
-  //     ignoreThrottle: ignoreThrottle, // ← pass through
-  //   );
-  // }
+  Future<void> _runSmsSync({bool ignoreThrottle = false}) async {
+    final expenses = ref.read(expenseProvider).all;
+    await SmsAutoSyncService.sync(
+      addExpense:
+          ({
+            required String title,
+            required double amount,
+            required String category,
+            required bool isIncome,
+            required DateTime date,
+          }) async {
+            await ref
+                .read(expenseProvider.notifier)
+                .addExpense(
+                  title: title,
+                  amount: amount,
+                  category: category,
+                  isIncome: isIncome,
+                  date: date,
+                );
+          },
+      existingExpenses: expenses,
+      ignoreThrottle: ignoreThrottle, // ← pass through
+    );
+  }
 
   void _push(Widget s) =>
       Navigator.push(context, MaterialPageRoute(builder: (_) => s));

@@ -1,5 +1,5 @@
-import 'package:budgetBuddy/features/bill_reminder/models/bill_reminder.dart';
-import 'package:budgetBuddy/features/bill_reminder/models/emi_loan.dart';
+import 'package:budgetbuddy/features/bill_reminder/models/bill_reminder.dart';
+import 'package:budgetbuddy/features/bill_reminder/models/emi_loan.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -169,7 +169,7 @@ class NotificationService {
     try {
       await _plugin.periodicallyShow(
         id: 0,
-        title: 'BudgetBuddy',
+        title: 'budgetbuddy',
         body: "Don't forget to log today's expenses!",
         repeatInterval: RepeatInterval.daily,
         notificationDetails: _dailyDetails,
@@ -391,7 +391,7 @@ class NotificationService {
 
   // ── Debug ──────────────────────────────────────────────────────────────────
   static Future<void> showNow({
-    String title = 'BudgetBuddy',
+    String title = 'budgetbuddy',
     String body = 'Your finances are waiting!',
   }) async {
     try {

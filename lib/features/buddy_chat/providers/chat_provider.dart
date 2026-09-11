@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
-import 'package:budgetBuddy/features/buddy_chat/models/chat_message.dart';
-import 'package:budgetBuddy/features/buddy_chat/services/chat_service.dart';
+import 'package:budgetbuddy/features/buddy_chat/models/chat_message.dart';
+import 'package:budgetbuddy/features/buddy_chat/services/chat_service.dart';
 
 const _uuid = Uuid();
 const _chatKey = 'buddy_chat_history';
@@ -118,7 +118,7 @@ class ChatNotifier extends StateNotifier<ChatState> {
       id: _uuid.v4(),
       role: MessageRole.assistant,
       content:
-          'Hi! I\'m BudgetBuddy AI 👋\n'
+          'Hi! I\'m budgetbuddy AI 👋\n'
           'I can see your real financial data. Ask me anything like:\n'
           '• "Can I spend \$500 on food this month?"\n'
           '• "How is my budget looking?"\n'

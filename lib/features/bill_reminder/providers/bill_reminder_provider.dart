@@ -1,6 +1,6 @@
-import 'package:budgetBuddy/common/hive_storages/hive_storage.dart';
-import 'package:budgetBuddy/common/services/notification_service.dart';
-import 'package:budgetBuddy/features/bill_reminder/models/bill_reminder.dart';
+import 'package:budgetbuddy/common/hive_storages/hive_storage.dart';
+import 'package:budgetbuddy/common/services/notification_service.dart';
+import 'package:budgetbuddy/features/bill_reminder/models/bill_reminder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const _pageSize = 10;

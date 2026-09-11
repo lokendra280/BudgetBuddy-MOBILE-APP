@@ -1,4 +1,4 @@
-import 'package:budgetBuddy/features/ai_screen/services/ai_services.dart';
+import 'package:budgetbuddy/features/ai_screen/services/ai_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ── AI providers ──────────────────────────────────────────────────────────────

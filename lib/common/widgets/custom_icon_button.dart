@@ -1,4 +1,4 @@
-import 'package:budgetBuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class CustomIconButton extends StatelessWidget {

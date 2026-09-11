@@ -1,4 +1,4 @@
-import 'package:budgetBuddy/common/constant/constant_assets.dart';
+import 'package:budgetbuddy/common/constant/constant_assets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 part 'bill_reminder.g.dart';
 

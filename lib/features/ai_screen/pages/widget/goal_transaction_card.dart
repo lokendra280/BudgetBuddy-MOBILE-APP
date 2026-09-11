@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:budgetBuddy/features/ai_screen/models/goals_transaction.dart';
-import 'package:budgetBuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetbuddy/features/ai_screen/models/goals_transaction.dart';
+import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

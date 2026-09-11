@@ -1,9 +1,9 @@
-import 'package:budgetBuddy/common/hive_storages/hive_storage.dart';
-import 'package:budgetBuddy/common/services/notification_service.dart';
-import 'package:budgetBuddy/features/ai_screen/models/goals_model.dart';
-import 'package:budgetBuddy/features/ai_screen/models/goals_transaction.dart';
-import 'package:budgetBuddy/features/ai_screen/services/ai_services.dart';
-import 'package:budgetBuddy/features/home/services/sync_services.dart';
+import 'package:budgetbuddy/common/hive_storages/hive_storage.dart';
+import 'package:budgetbuddy/common/services/notification_service.dart';
+import 'package:budgetbuddy/features/ai_screen/models/goals_model.dart';
+import 'package:budgetbuddy/features/ai_screen/models/goals_transaction.dart';
+import 'package:budgetbuddy/features/ai_screen/services/ai_services.dart';
+import 'package:budgetbuddy/features/home/services/sync_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ── Display model ─────────────────────────────────────────────────

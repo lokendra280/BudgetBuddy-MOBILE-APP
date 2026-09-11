@@ -1,4 +1,4 @@
-import 'package:budgetBuddy/common/onboard/ui/widgets/corner_painter.dart';
+import 'package:budgetbuddy/common/onboard/ui/widgets/corner_painter.dart';
 import 'package:flutter/material.dart';
 
 class CornerWidget extends StatelessWidget {

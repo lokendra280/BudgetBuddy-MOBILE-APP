@@ -1,12 +1,12 @@
-import 'package:budgetBuddy/common/widgets/app_tabbar.dart';
-import 'package:budgetBuddy/common/widgets/custom_appbar.dart';
-import 'package:budgetBuddy/features/ai_screen/pages/widget/budget_tab.dart';
-import 'package:budgetBuddy/features/ai_screen/pages/widget/coach_tab.dart';
-import 'package:budgetBuddy/features/ai_screen/pages/widget/goal_tab.dart';
-import 'package:budgetBuddy/features/ai_screen/pages/widget/over_view_tab.dart';
-import 'package:budgetBuddy/features/ai_screen/pages/widget/predict.dart';
-import 'package:budgetBuddy/common/app_theme.dart';
-import 'package:budgetBuddy/l10n/app_localizations.dart';
+import 'package:budgetbuddy/common/widgets/app_tabbar.dart';
+import 'package:budgetbuddy/common/widgets/custom_appbar.dart';
+import 'package:budgetbuddy/features/ai_screen/pages/widget/budget_tab.dart';
+import 'package:budgetbuddy/features/ai_screen/pages/widget/coach_tab.dart';
+import 'package:budgetbuddy/features/ai_screen/pages/widget/goal_tab.dart';
+import 'package:budgetbuddy/features/ai_screen/pages/widget/over_view_tab.dart';
+import 'package:budgetbuddy/features/ai_screen/pages/widget/predict.dart';
+import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
