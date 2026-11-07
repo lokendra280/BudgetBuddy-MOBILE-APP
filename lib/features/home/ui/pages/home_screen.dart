@@ -23,6 +23,7 @@ import 'package:budgetbuddy/features/home/providers/sync_provider.dart';
 import 'package:budgetbuddy/features/home/ui/widgets/app_drawer.dart';
 import 'package:budgetbuddy/features/home/ui/widgets/chat_card.dart';
 import 'package:budgetbuddy/features/home/ui/widgets/header_widget.dart';
+import 'package:budgetbuddy/features/home/ui/widgets/home_banner_ad.dart';
 import 'package:budgetbuddy/features/home/ui/widgets/home_bar_graph.dart';
 import 'package:budgetbuddy/features/profile/ui/profile_screen.dart';
 import 'package:budgetbuddy/features/sms_service/services/sms_auto_sync_service.dart';
@@ -67,7 +68,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     NotificationService.scheduleDailyReminder();
     CategoryService.init();
 
-    // ── SMS auto-sync — Android only, throttled internally ──────────────
     if (!Platform.isIOS) {
       await _runSmsSync(ignoreThrottle: false); // ← throttled
     }
@@ -94,28 +94,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   // In home_screen.dart
   Future<void> _runSmsSync({bool ignoreThrottle = false}) async {
     final expenses = ref.read(expenseProvider).all;
-    await SmsAutoSyncService.sync(
-      addExpense:
-          ({
-            required String title,
-            required double amount,
-            required String category,
-            required bool isIncome,
-            required DateTime date,
-          }) async {
-            await ref
-                .read(expenseProvider.notifier)
-                .addExpense(
-                  title: title,
-                  amount: amount,
-                  category: category,
-                  isIncome: isIncome,
-                  date: date,
-                );
-          },
-      existingExpenses: expenses,
-      ignoreThrottle: ignoreThrottle, // ← pass through
-    );
+    // await SmsAutoSyncService.sync(
+    //   addExpense:
+    //       ({
+    //         required String title,
+    //         required double amount,
+    //         required String category,
+    //         required bool isIncome,
+    //         required DateTime date,
+    //       }) async {
+    //         await ref
+    //             .read(expenseProvider.notifier)
+    //             .addExpense(
+    //               title: title,
+    //               amount: amount,
+    //               category: category,
+    //               isIncome: isIncome,
+    //               date: date,
+    //             );
+    //       },
+    //   existingExpenses: expenses,
+    //   ignoreThrottle: ignoreThrottle, // ← pass through
+    // );
   }
 
   void _push(Widget s) =>
@@ -139,17 +139,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       body: Column(
         children: [
+          // SizedBox(height: 30),
           // ── SMS banner — Android only ──────────────────────────────────
           // Shows if user skipped the splash dialog.
           // onSyncRequested triggers immediate sync when they enable here.
           // In HomeScreen.build() — banner passes ignoreThrottle: true for first grant
-          // if (!Platform.isIOS)
-          //   SmsPermissionGuard(
-          //     modal: false,
-          //     onSyncRequested: () =>
-          //         _runSmsSync(ignoreThrottle: true), // ← true
-          //     child: const SizedBox.shrink(),
-          //   ),
+          if (!Platform.isIOS)
+            SmsPermissionGuard(
+              modal: false,
+              onSyncRequested: () =>
+                  _runSmsSync(ignoreThrottle: true), // ← true
+              child: const SizedBox.shrink(),
+            ),
           Expanded(
             child: CustomScrollView(
               slivers: [
@@ -176,6 +177,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       const SizedBox(height: 14),
                       const _WeeklyInsightCard(),
                       const SizedBox(height: 14),
+                      const HomeBannerAd(),
+
                       const _WeekCompareCard(),
                       const SizedBox(height: 14),
                       _RecentTransactions(

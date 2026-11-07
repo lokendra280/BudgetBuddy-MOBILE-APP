@@ -1,6 +1,5 @@
 import 'package:budgetbuddy/features/bill_reminder/models/bill_reminder.dart';
 import 'package:budgetbuddy/features/bill_reminder/models/emi_loan.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -167,16 +166,31 @@ class NotificationService {
   // ── Daily reminder ─────────────────────────────────────────────────────────
   static Future<void> scheduleDailyReminder() async {
     try {
-      await _plugin.periodicallyShow(
+      final now = tz.TZDateTime.now(tz.local);
+      var scheduled = tz.TZDateTime(
+        tz.local,
+        now.year,
+        now.month,
+        now.day,
+        20, // 8 PM
+        0,
+      );
+
+      if (scheduled.isBefore(now)) {
+        scheduled = scheduled.add(const Duration(days: 1));
+      }
+
+      await _plugin.zonedSchedule(
         id: 0,
         title: 'budgetbuddy',
         body: "Don't forget to log today's expenses!",
-        repeatInterval: RepeatInterval.daily,
+        scheduledDate: scheduled,
         notificationDetails: _dailyDetails,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        matchDateTimeComponents: DateTimeComponents.time,
         payload: homePayload,
       );
-      debugPrint('[NotificationService] Daily reminder scheduled');
+      debugPrint('[NotificationService] Daily reminder scheduled for 8 PM');
     } catch (e) {
       debugPrint('[NotificationService] scheduleDailyReminder error: $e');
     }
@@ -403,6 +417,15 @@ class NotificationService {
       );
     } catch (e) {
       debugPrint('[NotificationService] showNow error: $e');
+    }
+  }
+
+  static Future<void> cancelDailyReminder() async {
+    try {
+      await _plugin.cancel(id: 0);
+      debugPrint('[NotificationService] Daily reminder cancelled');
+    } catch (e) {
+      debugPrint('[NotificationService] cancelDailyReminder error: $e');
     }
   }
 

@@ -1,10 +1,3 @@
-// lib/expense/ui/widgets/bill_scanning_overlay.dart
-//
-// Full-screen scanning animation shown while Gemini processes the photo:
-// the captured image with a glowing horizontal line sweeping top-to-
-// bottom on a loop, framed by viewfinder-style corner brackets — the
-// same visual language Paytm/GPay use for their bill/QR scan states.
-
 import 'dart:io';
 import 'package:budgetbuddy/common/app_theme.dart';
 import 'package:flutter/material.dart';

@@ -38,12 +38,12 @@ Future<void> _init() async {
   await dotenv.load(fileName: '.env');
 
   // 1. Firebase first — required before any Firebase.* usage
-  await Firebase.initializeApp();
+  // await Firebase.initializeApp();
 
-  // 2. Crashlytics — only after Firebase is ready
-  await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
-    !kDebugMode,
-  );
+  // // 2. Crashlytics — only after Firebase is ready
+  // await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
+  //   !kDebugMode,
+  // );
 
   // 3. Everything else
   await Supabase.initialize(
@@ -126,13 +126,13 @@ void main() {
       await _init();
 
       // Wire error handlers after Firebase is ready
-      FlutterError.onError =
-          FirebaseCrashlytics.instance.recordFlutterFatalError;
+      // FlutterError.onError =
+      //     FirebaseCrashlytics.instance.recordFlutterFatalError;
 
-      PlatformDispatcher.instance.onError = (error, stack) {
-        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-        return true;
-      };
+      // PlatformDispatcher.instance.onError = (error, stack) {
+      //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      //   return true;
+      // };
 
       runApp(const ProviderScope(child: SpendSenseApp()));
 

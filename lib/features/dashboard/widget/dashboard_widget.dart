@@ -7,6 +7,7 @@ import 'package:budgetbuddy/common/navigation_service.dart';
 import 'package:budgetbuddy/features/expense/ui/add_expense_screen.dart';
 import 'package:budgetbuddy/features/expense/ui/statemet_screen.dart';
 import 'package:budgetbuddy/features/home/ui/pages/home_screen.dart';
+import 'package:budgetbuddy/features/home/ui/widgets/home_banner_ad.dart';
 import 'package:budgetbuddy/l10n/app_localizations.dart';
 import 'package:budgetbuddy/features/social/ui/pages/social_screen.dart';
 import 'package:flutter/material.dart';
@@ -92,6 +93,8 @@ class _DashboardWidgetState extends State<DashboardWidget>
                 //return false when click on "NO"
                 title: "No",
               ),
+              const HomeBannerAd(),
+
               const SizedBox(height: 10),
               PrimaryButton(
                 width: 85,

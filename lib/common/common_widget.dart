@@ -487,6 +487,76 @@ class SmartBudgetBar extends StatelessWidget {
 }
 
 // ── WeekCompareBar ────────────────────────────────────────────────────────────
+// class WeekCompareBar extends StatelessWidget {
+//   final double thisWeek, lastWeek;
+//   const WeekCompareBar({
+//     super.key,
+//     required this.thisWeek,
+//     required this.lastWeek,
+//   });
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final max = [thisWeek, lastWeek, 1.0].reduce((a, b) => a > b ? a : b);
+//     return Row(
+//       children: [
+//         _WBar(
+//           AppLocalizations.of(context)!.thisweek,
+//           thisWeek,
+//           thisWeek / max,
+//           AppColors.primaryColor,
+//         ),
+//         const SizedBox(width: 12),
+//         _WBar(
+//           AppLocalizations.of(context)!.lastWeek,
+//           lastWeek,
+//           lastWeek / max,
+//           context.c.textMuted,
+//         ),
+//       ],
+//     );
+//   }
+// }
+//
+// class _WBar extends StatelessWidget {
+//   final String label;
+//   final double val, frac;
+//   final Color color;
+//   const _WBar(this.label, this.val, this.frac, this.color);
+//   @override
+//   Widget build(BuildContext context) => Expanded(
+//     child: Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         ClipRRect(
+//           borderRadius: BorderRadius.circular(6),
+//           child: LinearProgressIndicator(
+//             value: frac.clamp(0.0, 1.0),
+//             minHeight: 8,
+//             backgroundColor: context.c.border,
+//             valueColor: AlwaysStoppedAnimation(color),
+//           ),
+//         ),
+//         const SizedBox(height: 6),
+//         Text(
+//           ExpenseService.fmt(val),
+//           style: TextStyle(
+//             fontSize: 13,
+//             fontWeight: FontWeight.w700,
+//             color: color,
+//           ),
+//         ),
+//         Text(label, style: TextStyle(fontSize: 10, color: context.c.textMuted)),
+//       ],
+//     ),
+//   );
+// }
+// import 'package:flutter/material.dart';
+// Adjust these imports to match your project structure:
+// import 'package:yourapp/l10n/app_localizations.dart';
+// import 'package:yourapp/core/theme/theme_extensions.dart';
+// import 'package:yourapp/core/services/expense_service.dart';
+
 class WeekCompareBar extends StatelessWidget {
   final double thisWeek, lastWeek;
   const WeekCompareBar({
@@ -498,6 +568,13 @@ class WeekCompareBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final max = [thisWeek, lastWeek, 1.0].reduce((a, b) => a > b ? a : b);
+
+    // Debug: confirm what's actually being passed in and computed.
+    debugPrint(
+      '📊 WeekCompareBar -> thisWeek: $thisWeek, lastWeek: $lastWeek, '
+          'max: $max, thisFrac: ${thisWeek / max}, lastFrac: ${lastWeek / max}',
+    );
+
     return Row(
       children: [
         _WBar(
@@ -523,35 +600,40 @@ class _WBar extends StatelessWidget {
   final double val, frac;
   final Color color;
   const _WBar(this.label, this.val, this.frac, this.color);
-  @override
-  Widget build(BuildContext context) => Expanded(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(6),
-          child: LinearProgressIndicator(
-            value: frac.clamp(0.0, 1.0),
-            minHeight: 8,
-            backgroundColor: context.c.border,
-            valueColor: AlwaysStoppedAnimation(color),
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          ExpenseService.fmt(val),
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: color,
-          ),
-        ),
-        Text(label, style: TextStyle(fontSize: 10, color: context.c.textMuted)),
-      ],
-    ),
-  );
-}
 
+  @override
+  Widget build(BuildContext context) {
+    // Debug: confirm each bar's individual render inputs.
+    debugPrint('  ↳ _WBar "$label" -> val: $val, frac: $frac (clamped: ${frac.clamp(0.0, 1.0)})');
+
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: LinearProgressIndicator(
+              value: frac.clamp(0.0, 1.0),
+              minHeight: 8,
+              backgroundColor: context.c.border,
+              valueColor: AlwaysStoppedAnimation(color),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            ExpenseService.fmt(val),
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+          ),
+          Text(label, style: TextStyle(fontSize: 10, color: context.c.textMuted)),
+        ],
+      ),
+    );
+  }
+}
 // ── ExpenseTile ───────────────────────────────────────────────────────────────
 class ExpenseTile extends StatelessWidget {
   final Expense e;

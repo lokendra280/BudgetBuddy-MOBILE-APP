@@ -70,7 +70,7 @@ class _State extends ConsumerState<SettingsScreen> {
     await p.setBool('notif', v);
     v
         ? await NotificationService.scheduleDailyReminder()
-        : await NotificationService.cancelAll();
+        : await NotificationService.cancelDailyReminder();
   }
 
   Future<void> _toggleBio(bool v) async {

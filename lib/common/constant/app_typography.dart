@@ -12,9 +12,9 @@ class AppTypography {
     height: 1.15,
     letterSpacing: -0.5,
   );
-  static TextStyle get captionMuted => caption; // 10px Inter, no colour
-  static TextStyle get labelMuted => labelSmall; // 11px Inter, no colour
-  static TextStyle get bodySub => bodySmall; // 13px Inter, no colour
+  static TextStyle get captionMuted => caption; // 10px plusJakartaSans, no colour
+  static TextStyle get labelMuted => labelSmall; // 11px plusJakartaSans, no colour
+  static TextStyle get bodySub => bodySmall; // 13px plusJakartaSans, no colour
   // ── Headings ─────────────────────────────────────────────────────────────
   /// 26 px · w800 · plusJakartaSans — screen titles
   ///
@@ -50,35 +50,35 @@ class AppTypography {
 
   // ── Body ─────────────────────────────────────────────────────────────────
   /// 15 px · w400 · Inter — primary reading text
-  static TextStyle get body => GoogleFonts.inter(
+  static TextStyle get body => GoogleFonts.plusJakartaSans(
     fontSize: 15,
     fontWeight: FontWeight.w400,
     height: 1.55,
   );
 
-  /// 15 px · w500 · Inter — slightly emphasised body
+  /// 15 px · w500 · plusJakartaSans — slightly emphasised body
   static TextStyle get bodyMedium =>
-      GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w500, height: 1.5);
+      GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w500, height: 1.5);
 
-  /// 13 px · w400 · Inter — secondary / supporting text
+  /// 13 px · w400 · plusJakartaSans — secondary / supporting text
   static TextStyle get bodySmall =>
-      GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w400, height: 1.5);
+      GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w400, height: 1.5);
 
   // ── Labels ────────────────────────────────────────────────────────────────
-  /// 13 px · w600 · Inter — list item primaries, row titles
+  /// 13 px · w600 · plusJakartaSans — list item primaries, row titles
   static TextStyle get labelLarge =>
-      GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, height: 1.4);
+      GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w600, height: 1.4);
 
-  /// 11 px · w500 · Inter — captions, secondary row text
-  static TextStyle get labelSmall => GoogleFonts.inter(
+  /// 11 px · w500 · plusJakartaSans — captions, secondary row text
+  static TextStyle get labelSmall => GoogleFonts.plusJakartaSans(
     fontSize: 11,
     fontWeight: FontWeight.w500,
     height: 1.4,
     letterSpacing: 0.1,
   );
 
-  /// 10 px · w500 · Inter — tags, badges, chips
-  static TextStyle get caption => GoogleFonts.inter(
+  /// 10 px · w500 · plusJakartaSans — tags, badges, chips
+  static TextStyle get caption => GoogleFonts.plusJakartaSans(
     fontSize: 10,
     fontWeight: FontWeight.w500,
     height: 1.3,
@@ -134,8 +134,8 @@ class AppTypography {
   );
 
   // ── Step / overline ───────────────────────────────────────────────────────
-  /// 11 px · w600 · Inter · uppercase tracking — step indicators, overlines
-  static TextStyle get overline => GoogleFonts.inter(
+  /// 11 px · w600 · plusJakartaSans · uppercase tracking — step indicators, overlines
+  static TextStyle get overline => GoogleFonts.plusJakartaSans(
     fontSize: 11,
     fontWeight: FontWeight.w600,
     height: 1.2,
@@ -219,7 +219,7 @@ class _ContextualTypography {
     BuildContext c, {
     required bool selected,
     required Color color,
-  }) => GoogleFonts.inter(
+  }) => GoogleFonts.plusJakartaSans(
     fontSize: 12,
     fontWeight: FontWeight.w600,
     color: selected ? color : c.t._muted,
