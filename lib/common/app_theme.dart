@@ -8,6 +8,11 @@ const kGreen = Color(0xFF10B981); // emerald
 const kAmber = Color(0xFFF59E0B); // amber
 const kBlue = Color(0xFF3B82F6); // blue
 
+// Deep-green "card" palette (balance card, profile health card, statements)
+const kDeepGreen = Color(0xFF0E4A30);
+const kMidGreen = Color(0xFF17694A);
+const kMint = Color(0xFFE3F4EA); // soft tint for icon tiles / backgrounds
+
 final kCatColors = [
   const Color(0xFF6366F1),
   const Color(0xFFF43F5E),

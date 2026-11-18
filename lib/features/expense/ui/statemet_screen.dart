@@ -9,6 +9,7 @@ import 'package:budgetbuddy/common/services/ads_service.dart';
 import 'package:budgetbuddy/common/widgets/custom_appbar.dart';
 import 'package:budgetbuddy/features/expense/models/expense.dart';
 import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetbuddy/features/expense/services/excel_service.dart';
 import 'package:budgetbuddy/features/expense/services/pdf_service.dart';
 import 'package:budgetbuddy/features/expense/ui/widgets/button.dart';
 import 'package:budgetbuddy/features/expense/ui/widgets/date_range.dart';
@@ -21,6 +22,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum _Mode { month, dateRange }
+
+enum _ExportFormat { pdf, excel }
 
 class StatementsScreen extends ConsumerStatefulWidget {
   const StatementsScreen({super.key});
@@ -130,7 +133,10 @@ class _StatementsScreenState extends ConsumerState<StatementsScreen> {
   }
 
   // ── PDF export ─────────────────────────────────────────────────────────────
-  Future<void> _export(List<Expense> expenses) async {
+  Future<void> _export(
+    List<Expense> expenses, {
+    _ExportFormat format = _ExportFormat.pdf,
+  }) async {
     if (expenses.isEmpty) {
       _showSnack('No transactions to export');
       return;
@@ -139,7 +145,7 @@ class _StatementsScreenState extends ConsumerState<StatementsScreen> {
         .read(adServiceProvider)
         .showRewarded(
           onRewarded: () async {
-            await _doExport(expenses);
+            await _doExport(expenses, format);
             ref.read(adServiceProvider).preloadRewarded();
           },
           onNotAvailable: () =>
@@ -147,7 +153,7 @@ class _StatementsScreenState extends ConsumerState<StatementsScreen> {
         );
   }
 
-  Future<void> _doExport(List<Expense> expenses) async {
+  Future<void> _doExport(List<Expense> expenses, _ExportFormat format) async {
     setState(() => _exporting = true);
     try {
       final from = _mode == _Mode.dateRange && _fromDate != null
@@ -156,12 +162,97 @@ class _StatementsScreenState extends ConsumerState<StatementsScreen> {
       final to = _mode == _Mode.dateRange && _toDate != null
           ? _toDate!
           : DateTime(_month.year, _month.month + 1, 0);
-      await PdfService.exportStatement(expenses: expenses, from: from, to: to);
+      if (format == _ExportFormat.excel) {
+        final l10n = AppLocalizations.of(context)!;
+        final box = context.findRenderObject() as RenderBox?;
+        await ExcelService.exportStatement(
+          expenses: expenses,
+          from: from,
+          to: to,
+          categoryName: (c) => CategoryLocalization.getName(l10n, c),
+          shareOrigin: box == null
+              ? null
+              : box.localToGlobal(Offset.zero) & box.size,
+        );
+      } else {
+        await PdfService.exportStatement(
+          expenses: expenses,
+          from: from,
+          to: to,
+        );
+      }
     } catch (e) {
       if (mounted) _showSnack('Export failed: $e', isError: true);
     } finally {
       if (mounted) setState(() => _exporting = false);
     }
+  }
+
+  Future<void> _chooseExport(List<Expense> expenses) async {
+    final format = await showModalBottomSheet<_ExportFormat>(
+      context: context,
+      backgroundColor: context.c.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 12, 18, 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: ctx.c.borderStrong,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Export statement',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${expenses.length} transactions',
+                style: TextStyle(fontSize: 12, color: ctx.c.textMuted),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: _ExportTile(
+                      icon: Icons.picture_as_pdf_rounded,
+                      title: 'PDF',
+                      subtitle: 'Bank-style report',
+                      color: kAccent,
+                      onTap: () => Navigator.pop(ctx, _ExportFormat.pdf),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _ExportTile(
+                      icon: Icons.table_chart_rounded,
+                      title: 'Excel',
+                      subtitle: '.xlsx spreadsheet',
+                      color: kMidGreen,
+                      onTap: () => Navigator.pop(ctx, _ExportFormat.excel),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (format == null || !mounted) return;
+    _export(expenses, format: format);
   }
 
   void _showSnack(String msg, {bool isError = false}) {
@@ -224,14 +315,13 @@ class _StatementsScreenState extends ConsumerState<StatementsScreen> {
                         color: AppColors.primaryColor,
                       ),
                     )
-                  : CommonSvgWidget(
-                      svgName: Assets.pdf,
-                      color: kAccent,
-                      height: 30,
-                      width: 30,
+                  : const Icon(
+                      Icons.file_download_outlined,
+                      color: kMidGreen,
+                      size: 26,
                     ),
-              tooltip: 'Export as PDF',
-              onPressed: _exporting ? null : () => _export(period),
+              tooltip: 'Export',
+              onPressed: _exporting ? null : () => _chooseExport(period),
             ),
           ),
         ],
@@ -280,22 +370,12 @@ class _StatementsScreenState extends ConsumerState<StatementsScreen> {
           const SizedBox(height: 14),
 
           // ── Summary ────────────────────────────────────────────────────
-          AppCard(
-            child: Row(
-              children: [
-                _SumCol(l10n.income, totalInc, kGreen, fmt: fmt),
-                Container(width: 1, height: 40, color: context.c.border),
-                _SumCol(l10n.expense, totalExp, kAccent, fmt: fmt),
-                Container(width: 1, height: 40, color: context.c.border),
-                _SumCol(
-                  l10n.net,
-                  net.abs(),
-                  net >= 0 ? kGreen : kAccent,
-                  fmt: fmt,
-                  prefix: net >= 0 ? '+' : '-',
-                ),
-              ],
-            ),
+          _SummaryCard(
+            net: net,
+            income: totalInc,
+            expense: totalExp,
+            count: period.length,
+            fmt: fmt,
           ),
           const SizedBox(height: 14),
 
@@ -365,7 +445,7 @@ class _StatementsScreenState extends ConsumerState<StatementsScreen> {
                 (cat) => FiChip(
                   CategoryLocalization.getName(l10n, cat),
                   _filterCat == cat,
-                  AppColors.primaryColor,
+                  kMidGreen,
                   () => setState(
                     () => _filterCat = _filterCat == cat ? null : cat,
                   ),
@@ -375,66 +455,36 @@ class _StatementsScreenState extends ConsumerState<StatementsScreen> {
           ),
           const SizedBox(height: 14),
 
-          // ── Export card ────────────────────────────────────────────────
-          AppCard(
-            onTap: () => _export(filtered),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: kAccent.withOpacity(0.10),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: CommonSvgWidget(
-                    svgName: Assets.pdf,
-                    color: kAccent,
-                    height: 20,
-                    width: 20,
-                  ),
+          // ── Export ─────────────────────────────────────────────────────
+          SectionLabel(l10n.export),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: _ExportTile(
+                  icon: Icons.picture_as_pdf_rounded,
+                  title: 'PDF',
+                  subtitle: '${filtered.length} ${l10n.transactions}',
+                  color: kAccent,
+                  busy: _exporting,
+                  onTap: () => _export(filtered),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.export,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      Text(
-                        '${l10n.bankStyle} · ${filtered.length} ${l10n.transactions}',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: context.c.textMuted,
-                        ),
-                      ),
-                    ],
-                  ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _ExportTile(
+                  icon: Icons.table_chart_rounded,
+                  title: 'Excel',
+                  subtitle: '${filtered.length} ${l10n.transactions}',
+                  color: kMidGreen,
+                  busy: _exporting,
+                  onTap: () =>
+                      _export(filtered, format: _ExportFormat.excel),
                 ),
-                _exporting
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: kAccent,
-                        ),
-                      )
-                    : CommonSvgWidget(
-                        svgName: Assets.download,
-                        color: kAccent,
-                        height: 30,
-                        width: 30,
-                      ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 18),
 
           // ── Transactions list (paginated) ──────────────────────────────
           SectionLabel(
@@ -465,11 +515,22 @@ class _StatementsScreenState extends ConsumerState<StatementsScreen> {
               ),
             )
           else ...[
-            // Paginated rows
-            ...paginatedFiltered.map(
-              (e) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: TransactionWidget(expense: e),
+            // Paginated rows, grouped in one card like Home
+            AppCard(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Column(
+                children: [
+                  for (var i = 0; i < paginatedFiltered.length; i++) ...[
+                    TransactionWidget(expense: paginatedFiltered[i]),
+                    if (i != paginatedFiltered.length - 1)
+                      Divider(
+                        height: 1,
+                        indent: 70,
+                        endIndent: 16,
+                        color: context.c.border,
+                      ),
+                  ],
+                ],
               ),
             ),
 
@@ -483,7 +544,7 @@ class _StatementsScreenState extends ConsumerState<StatementsScreen> {
                     height: 24,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: AppColors.primaryColor,
+                      color: kMidGreen,
                     ),
                   ),
                 ),
@@ -641,43 +702,244 @@ class _PieCard extends StatelessWidget {
   }
 }
 
-class _SumCol extends StatelessWidget {
-  final String label, prefix;
-  final double amount;
-  final Color color;
+class _SummaryCard extends StatelessWidget {
+  final double net, income, expense;
+  final int count;
   final String Function(double) fmt;
 
-  const _SumCol(
-    this.label,
-    this.amount,
-    this.color, {
+  const _SummaryCard({
+    required this.net,
+    required this.income,
+    required this.expense,
+    required this.count,
     required this.fmt,
-    this.prefix = '',
   });
 
   @override
-  Widget build(BuildContext context) => Expanded(
-    child: Column(
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final positive = net >= 0;
+
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [kDeepGreen, kMidGreen],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: kDeepGreen.withOpacity(0.25),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            right: -30,
+            top: -40,
+            child: Container(
+              width: 140,
+              height: 140,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.07),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      l10n.net,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.14),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        '$count ${l10n.transactions}',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '${positive ? '+' : '-'}${fmt(net.abs())}',
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _SumChip(
+                        icon: Icons.south_west_rounded,
+                        label: l10n.income,
+                        value: fmt(income),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _SumChip(
+                        icon: Icons.north_east_rounded,
+                        label: l10n.expense,
+                        value: fmt(expense),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SumChip extends StatelessWidget {
+  final IconData icon;
+  final String label, value;
+  const _SumChip({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    decoration: BoxDecoration(
+      color: Colors.white.withOpacity(0.12),
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Row(
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 10,
-            color: context.c.textMuted,
-            fontWeight: FontWeight.w600,
+        Icon(icon, size: 16, color: Colors.white),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Colors.white.withOpacity(0.75),
+                ),
+              ),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 4),
-        Text(
-          '$prefix${fmt(amount)}',
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w800,
-            color: color,
+      ],
+    ),
+  );
+}
+
+class _ExportTile extends StatelessWidget {
+  final IconData icon;
+  final String title, subtitle;
+  final Color color;
+  final bool busy;
+  final VoidCallback onTap;
+
+  const _ExportTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.color,
+    required this.onTap,
+    this.busy = false,
+  });
+
+  @override
+  Widget build(BuildContext context) => AppCard(
+    padding: const EdgeInsets.all(12),
+    onTap: busy ? null : onTap,
+    child: Row(
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.12),
+            borderRadius: BorderRadius.circular(12),
           ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+          child: busy
+              ? Padding(
+                  padding: const EdgeInsets.all(11),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: color,
+                  ),
+                )
+              : Icon(icon, color: color, size: 20),
         ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                subtitle,
+                style: TextStyle(fontSize: 10, color: context.c.textMuted),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+        Icon(Icons.download_rounded, size: 18, color: color),
       ],
     ),
   );

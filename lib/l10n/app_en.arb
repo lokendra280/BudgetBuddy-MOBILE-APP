@@ -1,5 +1,5 @@
 {
-  "appName": "budgetbuddy",
+  "appName": "BudgetBuddy",
   "home": "Home",
   "insights": "Insights",
   "ai": "AI",
@@ -341,6 +341,147 @@
 "addWidgetStep4": "Long press the widget and drag it to your home screen",
 "gotIt": "Got it!",
   "chatWithBuddy": "Chat with Buddy",
-  "powerByAi": "Power By Ai"
+  "powerByAi": "Power By Ai",
 
+
+
+
+  "budgetPlanner": "Budget Planner",
+  "setYourMonthlyBudget": "Set your monthly budget",
+  "setYourMonthlyBudgetDesc": "Choose a spending limit and see how much you can spend each day.",
+  "setBudget": "Set budget",
+  "planYourBudget": "Plan your budget",
+  "planYourBudgetDesc": "Split your {amount} across food, bills and more to see where your money goes.",
+  "@planYourBudgetDesc": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "planNow": "Plan now",
+  "budgetPlan": "Budget plan",
+  "monthBudget": "{month} budget",
+  "@monthBudget": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "editLimit": "Edit limit",
+  "setLimit": "Set limit",
+  "setLimitToStart": "Set a monthly limit to start planning",
+  "overBy": "Over by {amount}",
+  "@overBy": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "amountLeft": "{amount} left",
+  "@amountLeft": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "amountLeftPerDay": "{amount} left · {perDay}/day",
+  "@amountLeftPerDay": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "perDay": {
+        "type": "String"
+      }
+    }
+  },
+  "amountLeftPerDayFor": "{amount} left · {perDay}/day for {days} days",
+  "@amountLeftPerDayFor": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "perDay": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "categoriesOverBudget": "{count, plural, =1{1 category over budget} other{{count} categories over budget}}",
+  "@categoriesOverBudget": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "categoryBudgetsOverLimit": "Category budgets are {amount} more than your monthly limit",
+  "@categoryBudgetsOverLimit": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "plannedNotAssigned": "{planned} planned · {unassigned} not yet assigned",
+  "@plannedNotAssigned": {
+    "placeholders": {
+      "planned": {
+        "type": "String"
+      },
+      "unassigned": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryBudgets": "Category budgets",
+  "categoryBudgetsEmpty": "Split your monthly limit across categories to see exactly where your money goes.",
+  "addCategoryBudget": "Add category budget",
+  "spendingWithoutBudget": "Spending without a budget",
+  "amountSpent": "{amount} spent",
+  "@amountSpent": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "spentOfLimit": "{spent} of {limit}",
+  "@spentOfLimit": {
+    "placeholders": {
+      "spent": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "newCategoryBudget": "New category budget",
+  "chooseCategory": "Choose a category",
+  "spentThisMonth": "Spent this month: {amount}",
+  "@spentThisMonth": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "notAssignedYet": "{amount} of your monthly limit is not assigned yet",
+  "@notAssignedYet": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeBudget": "Remove this budget",
+  "budgetSaved": "Budget saved",
+  "monthlyLimit": "Monthly limit"
 }

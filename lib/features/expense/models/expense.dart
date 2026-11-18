@@ -47,7 +47,7 @@ class Budget extends HiveObject {
   String currency;
 
   Budget({
-    this.monthlyLimit = 10000,
+    this.monthlyLimit = 0,
     this.streakDays = 0,
     this.lastActiveDate = '',
     this.referralCode,

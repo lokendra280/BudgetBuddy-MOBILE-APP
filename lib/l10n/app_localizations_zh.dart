@@ -931,4 +931,131 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get powerByAi => '由 AI 驱动';
+
+  @override
+  String get budgetPlanner => '预算规划';
+
+  @override
+  String get setYourMonthlyBudget => '设置您的月度预算';
+
+  @override
+  String get setYourMonthlyBudgetDesc => '选择支出限额，查看您每天可以花多少。';
+
+  @override
+  String get setBudget => '设置预算';
+
+  @override
+  String get planYourBudget => '规划您的预算';
+
+  @override
+  String planYourBudgetDesc(String amount) {
+    return '将您的 $amount 分配到餐饮、账单等类别，看清钱花在哪里。';
+  }
+
+  @override
+  String get planNow => '立即规划';
+
+  @override
+  String get budgetPlan => '预算计划';
+
+  @override
+  String monthBudget(String month) {
+    return '$month预算';
+  }
+
+  @override
+  String get editLimit => '修改限额';
+
+  @override
+  String get setLimit => '设置限额';
+
+  @override
+  String get setLimitToStart => '设置月度限额以开始规划';
+
+  @override
+  String overBy(String amount) {
+    return '超出 $amount';
+  }
+
+  @override
+  String amountLeft(String amount) {
+    return '剩余 $amount';
+  }
+
+  @override
+  String amountLeftPerDay(String amount, String perDay) {
+    return '剩余 $amount · 每天 $perDay';
+  }
+
+  @override
+  String amountLeftPerDayFor(String amount, String perDay, int days) {
+    return '剩余 $amount · 未来 $days 天每天 $perDay';
+  }
+
+  @override
+  String categoriesOverBudget(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个类别超出预算',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String categoryBudgetsOverLimit(String amount) {
+    return '类别预算比您的月度限额多 $amount';
+  }
+
+  @override
+  String plannedNotAssigned(String planned, String unassigned) {
+    return '已规划 $planned · 未分配 $unassigned';
+  }
+
+  @override
+  String get categoryBudgets => '类别预算';
+
+  @override
+  String get categoryBudgetsEmpty => '将月度限额分配到各个类别，清楚了解钱的去向。';
+
+  @override
+  String get addCategoryBudget => '添加类别预算';
+
+  @override
+  String get spendingWithoutBudget => '未设预算的支出';
+
+  @override
+  String amountSpent(String amount) {
+    return '已支出 $amount';
+  }
+
+  @override
+  String spentOfLimit(String spent, String limit) {
+    return '$spent / $limit';
+  }
+
+  @override
+  String get newCategoryBudget => '新建类别预算';
+
+  @override
+  String get chooseCategory => '请选择类别';
+
+  @override
+  String spentThisMonth(String amount) {
+    return '本月已支出：$amount';
+  }
+
+  @override
+  String notAssignedYet(String amount) {
+    return '月度限额中还有 $amount 未分配';
+  }
+
+  @override
+  String get removeBudget => '删除此预算';
+
+  @override
+  String get budgetSaved => '预算已保存';
+
+  @override
+  String get monthlyLimit => '月度限额';
 }

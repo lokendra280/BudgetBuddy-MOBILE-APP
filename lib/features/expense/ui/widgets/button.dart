@@ -18,7 +18,7 @@ class ModeBtn extends StatelessWidget {
         margin: const EdgeInsets.all(3),
         padding: const EdgeInsets.symmetric(vertical: 9),
         decoration: BoxDecoration(
-          color: active ? AppColors.primaryColor : Colors.transparent,
+          color: active ? kMidGreen : Colors.transparent,
           borderRadius: BorderRadius.circular(9),
         ),
         child: Text(
@@ -58,16 +58,16 @@ class MonthNav extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: AppColors.primaryColor.withOpacity(0.08),
+            color: context.isDark ? kMidGreen.withOpacity(0.2) : kMint,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.primaryColor.withOpacity(0.2)),
+            border: Border.all(color: kMidGreen.withOpacity(0.2)),
           ),
           child: Text(
             DateFormat('MMMM yyyy').format(month),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w700,
-              color: AppColors.primaryColor,
+              color: context.isDark ? Colors.white : kMidGreen,
             ),
           ),
         ),

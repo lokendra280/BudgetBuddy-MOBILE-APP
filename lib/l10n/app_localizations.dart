@@ -65,8 +65,7 @@ import 'app_localizations_zh.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -74,8 +73,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -87,13 +85,12 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
@@ -101,7 +98,7 @@ abstract class AppLocalizations {
     Locale('hi'),
     Locale('ne'),
     Locale('pt'),
-    Locale('zh'),
+    Locale('zh')
   ];
 
   /// No description provided for @appName.
@@ -1939,10 +1936,201 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Power By Ai'**
   String get powerByAi;
+
+  /// No description provided for @budgetPlanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget Planner'**
+  String get budgetPlanner;
+
+  /// No description provided for @setYourMonthlyBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your monthly budget'**
+  String get setYourMonthlyBudget;
+
+  /// No description provided for @setYourMonthlyBudgetDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a spending limit and see how much you can spend each day.'**
+  String get setYourMonthlyBudgetDesc;
+
+  /// No description provided for @setBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Set budget'**
+  String get setBudget;
+
+  /// No description provided for @planYourBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan your budget'**
+  String get planYourBudget;
+
+  /// No description provided for @planYourBudgetDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Split your {amount} across food, bills and more to see where your money goes.'**
+  String planYourBudgetDesc(String amount);
+
+  /// No description provided for @planNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan now'**
+  String get planNow;
+
+  /// No description provided for @budgetPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget plan'**
+  String get budgetPlan;
+
+  /// No description provided for @monthBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'{month} budget'**
+  String monthBudget(String month);
+
+  /// No description provided for @editLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit limit'**
+  String get editLimit;
+
+  /// No description provided for @setLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Set limit'**
+  String get setLimit;
+
+  /// No description provided for @setLimitToStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a monthly limit to start planning'**
+  String get setLimitToStart;
+
+  /// No description provided for @overBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Over by {amount}'**
+  String overBy(String amount);
+
+  /// No description provided for @amountLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} left'**
+  String amountLeft(String amount);
+
+  /// No description provided for @amountLeftPerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} left · {perDay}/day'**
+  String amountLeftPerDay(String amount, String perDay);
+
+  /// No description provided for @amountLeftPerDayFor.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} left · {perDay}/day for {days} days'**
+  String amountLeftPerDayFor(String amount, String perDay, int days);
+
+  /// No description provided for @categoriesOverBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 category over budget} other{{count} categories over budget}}'**
+  String categoriesOverBudget(int count);
+
+  /// No description provided for @categoryBudgetsOverLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Category budgets are {amount} more than your monthly limit'**
+  String categoryBudgetsOverLimit(String amount);
+
+  /// No description provided for @plannedNotAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'{planned} planned · {unassigned} not yet assigned'**
+  String plannedNotAssigned(String planned, String unassigned);
+
+  /// No description provided for @categoryBudgets.
+  ///
+  /// In en, this message translates to:
+  /// **'Category budgets'**
+  String get categoryBudgets;
+
+  /// No description provided for @categoryBudgetsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Split your monthly limit across categories to see exactly where your money goes.'**
+  String get categoryBudgetsEmpty;
+
+  /// No description provided for @addCategoryBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Add category budget'**
+  String get addCategoryBudget;
+
+  /// No description provided for @spendingWithoutBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Spending without a budget'**
+  String get spendingWithoutBudget;
+
+  /// No description provided for @amountSpent.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} spent'**
+  String amountSpent(String amount);
+
+  /// No description provided for @spentOfLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'{spent} of {limit}'**
+  String spentOfLimit(String spent, String limit);
+
+  /// No description provided for @newCategoryBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'New category budget'**
+  String get newCategoryBudget;
+
+  /// No description provided for @chooseCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a category'**
+  String get chooseCategory;
+
+  /// No description provided for @spentThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Spent this month: {amount}'**
+  String spentThisMonth(String amount);
+
+  /// No description provided for @notAssignedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} of your monthly limit is not assigned yet'**
+  String notAssignedYet(String amount);
+
+  /// No description provided for @removeBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this budget'**
+  String get removeBudget;
+
+  /// No description provided for @budgetSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget saved'**
+  String get budgetSaved;
+
+  /// No description provided for @monthlyLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly limit'**
+  String get monthlyLimit;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -1951,32 +2139,28 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'hi', 'ne', 'pt', 'zh'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'hi', 'ne', 'pt', 'zh'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'en':
-      return AppLocalizationsEn();
-    case 'hi':
-      return AppLocalizationsHi();
-    case 'ne':
-      return AppLocalizationsNe();
-    case 'pt':
-      return AppLocalizationsPt();
-    case 'zh':
-      return AppLocalizationsZh();
+    case 'en': return AppLocalizationsEn();
+    case 'hi': return AppLocalizationsHi();
+    case 'ne': return AppLocalizationsNe();
+    case 'pt': return AppLocalizationsPt();
+    case 'zh': return AppLocalizationsZh();
   }
 
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
+    'that was used.'
   );
 }

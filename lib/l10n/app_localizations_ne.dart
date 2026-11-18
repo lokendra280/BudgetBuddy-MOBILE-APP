@@ -201,8 +201,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get createAccount => 'खाता बनाउनुहोस्';
 
   @override
-  String get signUpToTrack =>
-      'तपाईंको खर्च ट्र्याक गर्न र समक्रमण गर्न साइन अप गर्नुहोस्';
+  String get signUpToTrack => 'तपाईंको खर्च ट्र्याक गर्न र समक्रमण गर्न साइन अप गर्नुहोस्';
 
   @override
   String get alreadyHaveAn => 'पहिले नै खाता छ? साइन इन गर्नुहोस्';
@@ -253,8 +252,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get shareInvite => 'निमन्त्रणा सेयर गर्नुहोस्';
 
   @override
-  String get signIntoApply =>
-      'रेफरल कोड प्रयोग गर्न साइन इन गर्नुहोस् र स्ट्रिक दिन कमाउनुहोस्';
+  String get signIntoApply => 'रेफरल कोड प्रयोग गर्न साइन इन गर्नुहोस् र स्ट्रिक दिन कमाउनुहोस्';
 
   @override
   String get shareReport => 'मेरो रिपोर्ट सेयर गर्नुहोस्';
@@ -275,15 +273,13 @@ class AppLocalizationsNe extends AppLocalizations {
   String get howItWork => 'यो कसरी काम गर्छ';
 
   @override
-  String get shareYourCode =>
-      'आफ्नो कोड वा खर्च रिपोर्ट साथीहरूसँग सेयर गर्नुहोस्';
+  String get shareYourCode => 'आफ्नो कोड वा खर्च रिपोर्ट साथीहरूसँग सेयर गर्नुहोस्';
 
   @override
   String get friendDownloads => 'साथीले budgetbuddy डाउनलोड गरेर साइन अप गर्छ';
 
   @override
-  String get theyGoToCommunity =>
-      'उनीहरू Community → Invite मा गएर तपाईंको कोड प्रविष्ट गर्छन्';
+  String get theyGoToCommunity => 'उनीहरू Community → Invite मा गएर तपाईंको कोड प्रविष्ट गर्छन्';
 
   @override
   String get bothGet => 'दुवैले +3 बोनस स्ट्रिक दिन पाउँछन्';
@@ -334,8 +330,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get haveAnFriendsCode => 'साथीको कोड छ?';
 
   @override
-  String get enterItToGiveThemCredit =>
-      'उनीहरूलाई क्रेडिट दिन र आफूलाई +३ स्ट्रिक दिन कमाउन कोड प्रविष्ट गर्नुहोस्';
+  String get enterItToGiveThemCredit => 'उनीहरूलाई क्रेडिट दिन र आफूलाई +३ स्ट्रिक दिन कमाउन कोड प्रविष्ट गर्नुहोस्';
 
   @override
   String get burnRateAndRunWay => 'खर्च दर र रनवे';
@@ -356,8 +351,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get addMoreExpenses => 'थप खर्च थप्नुहोस्';
 
   @override
-  String get wellAnalysisPatternOnce =>
-      'थप डेटा भएपछि हामी ढाँचा विश्लेषण गर्नेछौं';
+  String get wellAnalysisPatternOnce => 'थप डेटा भएपछि हामी ढाँचा विश्लेषण गर्नेछौं';
 
   @override
   String get subscriptions => 'सदस्यता र आवर्ती भुक्तानी';
@@ -378,8 +372,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get autoCategorization => 'स्वतः वर्गीकरण';
 
   @override
-  String get budgetbuddyDetects =>
-      'budgetbuddy ले तपाईंको इन्ट्री शीर्षकबाट स्वचालित रूपमा श्रेणी पत्ता लगाउँछ';
+  String get budgetbuddyDetects => 'budgetbuddy ले तपाईंको इन्ट्री शीर्षकबाट स्वचालित रूपमा श्रेणी पत्ता लगाउँछ';
 
   @override
   String get nextMonthForecast => 'अर्को महिनाको पूर्वानुमान';
@@ -397,15 +390,13 @@ class AppLocalizationsNe extends AppLocalizations {
   String get categoryForecast => 'श्रेणी पूर्वानुमान';
 
   @override
-  String get addMoreExpenseAcross =>
-      'पूर्वानुमान हेर्नका लागि विभिन्न महिनामा थप खर्च थप्नुहोस्';
+  String get addMoreExpenseAcross => 'पूर्वानुमान हेर्नका लागि विभिन्न महिनामा थप खर्च थप्नुहोस्';
 
   @override
   String get incomeGrowth => 'आम्दानी वृद्धि';
 
   @override
-  String get logIncome =>
-      'समयसँगै वृद्धि ट्र्याक गर्न आम्दानी प्रविष्ट गर्नुहोस्';
+  String get logIncome => 'समयसँगै वृद्धि ट्र्याक गर्न आम्दानी प्रविष्ट गर्नुहोस्';
 
   @override
   String get savingGoal => 'बचत लक्ष्य';
@@ -612,8 +603,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get keepTracking => 'ट्र्याक गरिरहनुहोस्!';
 
   @override
-  String get addMoreDataUnlock =>
-      'व्यक्तिगत कोचिङ अनलक गर्न थप डेटा थप्नुहोस्।';
+  String get addMoreDataUnlock => 'व्यक्तिगत कोचिङ अनलक गर्न थप डेटा थप्नुहोस्।';
 
   @override
   String get disposableIncome => 'बिल पछिको उपयोगयोग्य आम्दानी';
@@ -646,8 +636,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get target20 => 'लक्ष्य: २०%';
 
   @override
-  String get billCommitmentSubtitle =>
-      'विवेकाधीन खर्च अघि निश्चित मासिक बहिर्गमन';
+  String get billCommitmentSubtitle => 'विवेकाधीन खर्च अघि निश्चित मासिक बहिर्गमन';
 
   @override
   String get selectCurrency => 'मुद्रा छान्नुहोस्';
@@ -701,8 +690,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get deleteAccountPermanently => 'आफ्नो खाता स्थायी रूपमा मेट्न';
 
   @override
-  String get deleteAccountConfirm =>
-      'के तपाईं निश्चित हुनुहुन्छ? यो कार्य पूर्ववत गर्न सकिँदैन।';
+  String get deleteAccountConfirm => 'के तपाईं निश्चित हुनुहुन्छ? यो कार्य पूर्ववत गर्न सकिँदैन।';
 
   @override
   String get cancel => 'रद्द गर्नुहोस्';
@@ -824,8 +812,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get noLoansYet => 'अहिलेसम्म कुनै ऋण छैन';
 
   @override
-  String get noLoansDesc =>
-      'EMI ट्र्याक गर्नुहोस्, प्रगति हेर्नुहोस्\nर देय मितिभन्दा पहिले रिमाइन्डर पाउनुहोस्।';
+  String get noLoansDesc => 'EMI ट्र्याक गर्नुहोस्, प्रगति हेर्नुहोस्\nर देय मितिभन्दा पहिले रिमाइन्डर पाउनुहोस्।';
 
   @override
   String get addFirstLoan => 'पहिलो ऋण थप्नुहोस्';
@@ -922,8 +909,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get addWidgetTitle => 'बजेट विजेट थप्नुहोस्';
 
   @override
-  String get addWidgetDesc =>
-      'होम स्क्रिनमा विजेट थप्न यी चरणहरू पालना गर्नुहोस्';
+  String get addWidgetDesc => 'होम स्क्रिनमा विजेट थप्न यी चरणहरू पालना गर्नुहोस्';
 
   @override
   String get addWidgetStep1 => 'होम स्क्रिनको खाली ठाउँमा लामो थिच्नुहोस्';
@@ -945,4 +931,132 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get powerByAi => 'एआईद्वारा सञ्चालित';
+
+  @override
+  String get budgetPlanner => 'बजेट प्लानर';
+
+  @override
+  String get setYourMonthlyBudget => 'आफ्नो मासिक बजेट सेट गर्नुहोस्';
+
+  @override
+  String get setYourMonthlyBudgetDesc => 'खर्च सीमा छान्नुहोस् र हरेक दिन कति खर्च गर्न सकिन्छ हेर्नुहोस्।';
+
+  @override
+  String get setBudget => 'बजेट सेट गर्नुहोस्';
+
+  @override
+  String get planYourBudget => 'आफ्नो बजेट योजना बनाउनुहोस्';
+
+  @override
+  String planYourBudgetDesc(String amount) {
+    return 'आफ्नो $amount खाना, बिल र अन्यमा बाँडेर पैसा कहाँ जान्छ हेर्नुहोस्।';
+  }
+
+  @override
+  String get planNow => 'अहिले योजना बनाउनुहोस्';
+
+  @override
+  String get budgetPlan => 'बजेट योजना';
+
+  @override
+  String monthBudget(String month) {
+    return '$month को बजेट';
+  }
+
+  @override
+  String get editLimit => 'सीमा सम्पादन';
+
+  @override
+  String get setLimit => 'सीमा सेट गर्नुहोस्';
+
+  @override
+  String get setLimitToStart => 'योजना सुरु गर्न मासिक सीमा सेट गर्नुहोस्';
+
+  @override
+  String overBy(String amount) {
+    return '$amount ले बढी';
+  }
+
+  @override
+  String amountLeft(String amount) {
+    return '$amount बाँकी';
+  }
+
+  @override
+  String amountLeftPerDay(String amount, String perDay) {
+    return '$amount बाँकी · $perDay/दिन';
+  }
+
+  @override
+  String amountLeftPerDayFor(String amount, String perDay, int days) {
+    return '$amount बाँकी · $days दिनसम्म $perDay/दिन';
+  }
+
+  @override
+  String categoriesOverBudget(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count श्रेणीहरू बजेटभन्दा बढी',
+      one: '1 श्रेणी बजेटभन्दा बढी',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String categoryBudgetsOverLimit(String amount) {
+    return 'श्रेणी बजेटहरू तपाईंको मासिक सीमाभन्दा $amount बढी छन्';
+  }
+
+  @override
+  String plannedNotAssigned(String planned, String unassigned) {
+    return '$planned योजना गरिएको · $unassigned अझै बाँडिएको छैन';
+  }
+
+  @override
+  String get categoryBudgets => 'श्रेणी बजेट';
+
+  @override
+  String get categoryBudgetsEmpty => 'आफ्नो मासिक सीमा श्रेणीहरूमा बाँडेर पैसा ठ्याक्कै कहाँ जान्छ हेर्नुहोस्।';
+
+  @override
+  String get addCategoryBudget => 'श्रेणी बजेट थप्नुहोस्';
+
+  @override
+  String get spendingWithoutBudget => 'बजेट बिनाको खर्च';
+
+  @override
+  String amountSpent(String amount) {
+    return '$amount खर्च';
+  }
+
+  @override
+  String spentOfLimit(String spent, String limit) {
+    return '$limit मध्ये $spent';
+  }
+
+  @override
+  String get newCategoryBudget => 'नयाँ श्रेणी बजेट';
+
+  @override
+  String get chooseCategory => 'श्रेणी छान्नुहोस्';
+
+  @override
+  String spentThisMonth(String amount) {
+    return 'यस महिनाको खर्च: $amount';
+  }
+
+  @override
+  String notAssignedYet(String amount) {
+    return 'तपाईंको मासिक सीमाबाट $amount अझै बाँडिएको छैन';
+  }
+
+  @override
+  String get removeBudget => 'यो बजेट हटाउनुहोस्';
+
+  @override
+  String get budgetSaved => 'बजेट सुरक्षित भयो';
+
+  @override
+  String get monthlyLimit => 'मासिक सीमा';
 }

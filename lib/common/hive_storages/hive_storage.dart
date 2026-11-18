@@ -13,6 +13,10 @@ import 'package:uuid/uuid.dart';
 class HiveStorage {
   HiveStorage._();
 
+  // ── Box names ─────────────────────────────────────────────────
+  static const _kCategoryBudgets = 'category_budgets'; // ← budget planner
+  static const _kFeedback = 'feedback_box';
+
   // ── Box accessors ─────────────────────────────────────────────
   static Box<Expense> get expenses => Hive.box<Expense>('expenses');
   static Box<Budget> get budget => Hive.box<Budget>('budget');
@@ -23,7 +27,13 @@ class HiveStorage {
   static Box<GoalTransaction> get goalsTransaction =>
       Hive.box<GoalTransaction>('goals_transaction');
   static Box<EmiLoan> get emiLoans => Hive.box<EmiLoan>('emi_loans');
+
+  /// Untyped box: category name (String) → monthly limit (double).
+  /// No TypeAdapter needed, so adding it doesn't require a schema bump.
+  static Box get categoryBudgets => Hive.box(_kCategoryBudgets); // ← new
+
   // ── Init ──────────────────────────────────────────────────────
+  // Not bumped: a new untyped box doesn't change any existing schema.
   static const int _schemaVersion = 6;
   static const String _versionKey = 'hive_schema_v';
 
@@ -49,28 +59,35 @@ class HiveStorage {
     if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(ExpenseAdapter());
     if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(BudgetAdapter());
     if (!Hive.isAdapterRegistered(2)) Hive.registerAdapter(GoalEntryAdapter());
-    if (!Hive.isAdapterRegistered(3))
+    if (!Hive.isAdapterRegistered(3)) {
       Hive.registerAdapter(BillReminderAdapter());
-    if (!Hive.isAdapterRegistered(4))
+    }
+    if (!Hive.isAdapterRegistered(4)) {
       Hive.registerAdapter(GoalTransactionAdapter());
-    if (!Hive.isAdapterRegistered(5))
-      Hive.registerAdapter(EmiPaymentAdapter()); // ← new
-    if (!Hive.isAdapterRegistered(6))
-      Hive.registerAdapter(EmiLoanAdapter()); // ← new
+    }
+    if (!Hive.isAdapterRegistered(5)) Hive.registerAdapter(EmiPaymentAdapter());
+    if (!Hive.isAdapterRegistered(6)) Hive.registerAdapter(EmiLoanAdapter());
   }
+
+  /// Typed boxes — these are wiped on a schema change.
+  static Future<void> _openTypedBoxes() => Future.wait([
+    Hive.openBox<Expense>('expenses'),
+    Hive.openBox<Budget>('budget'),
+    Hive.openBox<GoalEntry>('goals'),
+    Hive.openBox<BillReminder>('bill_reminders'),
+    Hive.openBox<GoalTransaction>('goals_transaction'),
+    Hive.openBox<EmiLoan>('emi_loans'),
+  ]);
+
+  /// Untyped boxes — safe across schema changes, so never wiped.
+  static Future<void> _openUntypedBoxes() => Future.wait([
+    Hive.openBox(_kFeedback),
+    Hive.openBox(_kCategoryBudgets), // ← new
+  ]);
 
   static Future<void> _openWithRecovery() async {
     try {
-      await Future.wait([
-        Hive.openBox<Expense>('expenses'),
-        Hive.openBox<Budget>('budget'),
-        Hive.openBox<GoalEntry>('goals'),
-        Hive.openBox<BillReminder>('bill_reminders'),
-        Hive.openBox<GoalTransaction>('goals_transaction'),
-        Hive.openBox<EmiLoan>('emi_loans'), // ← new
-        //  await Hive.openBox('feedback_box');
-        Hive.openBox('feedback_box'), // ← new
-      ]);
+      await Future.wait([_openTypedBoxes(), _openUntypedBoxes()]);
     } catch (e) {
       debugPrint('[HiveStorage] Open failed: $e — wiping');
       await _wipeAndRebuild();
@@ -91,14 +108,10 @@ class HiveStorage {
       } catch (_) {}
       await Hive.deleteBoxFromDisk(name).catchError((_) {});
     }
-    await Future.wait([
-      Hive.openBox<Expense>('expenses'),
-      Hive.openBox<Budget>('budget'),
-      Hive.openBox<GoalEntry>('goals'),
-      Hive.openBox<BillReminder>('bill_reminders'),
-      Hive.openBox<GoalTransaction>('goals_transaction'),
-      Hive.openBox<EmiLoan>('emi_loans'), // ← new
-    ]);
+    await _openTypedBoxes();
+    // Previously feedback_box was not reopened here, so Hive.box('feedback_box')
+    // would throw after a wipe. Both untyped boxes are opened now.
+    await _openUntypedBoxes();
   }
 
   // ── Expenses ──────────────────────────────────────────────────
@@ -125,9 +138,24 @@ class HiveStorage {
   }
 
   static Future<void> saveBudget(Budget b) async {
-    await budget.putAt(0, b); // ← putAt instead of b.save()
+    await budget.putAt(0, b);
     SyncService.pushBudget(b);
   }
+
+  // ── Category Budgets (budget planner) ─────────────────────────
+  static Map<String, double> allCategoryBudgets() => {
+    for (final key in categoryBudgets.keys)
+      key.toString(): (categoryBudgets.get(key) as num).toDouble(),
+  };
+
+  static Future<void> saveCategoryBudget(String category, double limit) =>
+      categoryBudgets.put(category, limit);
+
+  static Future<void> deleteCategoryBudget(String category) =>
+      categoryBudgets.delete(category);
+
+  /// Call from the delete-account / logout flow.
+  static Future<void> clearCategoryBudgets() => categoryBudgets.clear();
 
   // ── Goals ─────────────────────────────────────────────────────
   static Future<GoalEntry> addGoal({
@@ -152,7 +180,6 @@ class HiveStorage {
     return entry;
   }
 
-  // add mount
   static Future<void> addToGoal(String id, double amount) async {
     try {
       final entries = goals.values.toList();
@@ -170,7 +197,7 @@ class HiveStorage {
         ),
       );
       g.saved = (g.saved + amount).clamp(0, g.target);
-      await goals.putAt(idx, g); // ← putAt instead of g.save()
+      await goals.putAt(idx, g);
       SyncService.pushGoal(g);
     } catch (e) {
       debugPrint('[HiveStorage] addToGoal error: $e');
@@ -197,7 +224,8 @@ class HiveStorage {
   static List<BillReminder> allBillReminders() => billReminders.values.toList();
   static List<BillReminder> activeBillReminders() =>
       billReminders.values.where((b) => b.isActive).toList();
-  // ── EMI / Loans ────────────────────────────────────────────────────────────
+
+  // ── EMI / Loans ───────────────────────────────────────────────
   static Future<void> saveEmiLoan(EmiLoan loan) async =>
       emiLoans.put(loan.id, loan);
 

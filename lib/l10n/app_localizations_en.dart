@@ -252,8 +252,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareInvite => 'Share Invite';
 
   @override
-  String get signIntoApply =>
-      'Sing in to apply a referral code and earn streak days';
+  String get signIntoApply => 'Sing in to apply a referral code and earn streak days';
 
   @override
   String get shareReport => 'Share Report';
@@ -280,8 +279,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendDownloads => 'Friend downloads budgetbuddy and signs up';
 
   @override
-  String get theyGoToCommunity =>
-      'They go to Community -> Invite and enter your code';
+  String get theyGoToCommunity => 'They go to Community -> Invite and enter your code';
 
   @override
   String get bothGet => 'Both get +3 bonus streak days';
@@ -332,8 +330,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get haveAnFriendsCode => 'Have a friend\'s Code?';
 
   @override
-  String get enterItToGiveThemCredit =>
-      'Enter it to give them credit and earn +3 streak days for yourSelf';
+  String get enterItToGiveThemCredit => 'Enter it to give them credit and earn +3 streak days for yourSelf';
 
   @override
   String get burnRateAndRunWay => 'Burn Rate & RunWay';
@@ -354,8 +351,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addMoreExpenses => 'Add More Expenses';
 
   @override
-  String get wellAnalysisPatternOnce =>
-      'We Will analyses pattern once you have more data';
+  String get wellAnalysisPatternOnce => 'We Will analyses pattern once you have more data';
 
   @override
   String get subscriptions => 'Subscriptions & Recurring';
@@ -376,8 +372,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get autoCategorization => 'Auto-Categorization';
 
   @override
-  String get budgetbuddyDetects =>
-      'budgetbuddy detect categories automatically from your entry title';
+  String get budgetbuddyDetects => 'budgetbuddy detect categories automatically from your entry title';
 
   @override
   String get nextMonthForecast => 'Next Month Forecast';
@@ -395,8 +390,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categoryForecast => 'Category Forecast';
 
   @override
-  String get addMoreExpenseAcross =>
-      'Add More expenses across months to see predictions';
+  String get addMoreExpenseAcross => 'Add More expenses across months to see predictions';
 
   @override
   String get incomeGrowth => 'Income Growth';
@@ -471,8 +465,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noBillsAdded => 'No bills added yet';
 
   @override
-  String get addBills =>
-      'Add bills, EMIs and subscriptions to get reminded before they\'re due';
+  String get addBills => 'Add bills, EMIs and subscriptions to get reminded before they\'re due';
 
   @override
   String get addFirstBill => 'Add First Bill';
@@ -610,8 +603,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get keepTracking => 'Keep tracking!';
 
   @override
-  String get addMoreDataUnlock =>
-      'Add more data to unlock personalised coaching.';
+  String get addMoreDataUnlock => 'Add more data to unlock personalised coaching.';
 
   @override
   String get disposableIncome => 'disposable income after bills';
@@ -644,8 +636,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get target20 => 'Target: 20%';
 
   @override
-  String get billCommitmentSubtitle =>
-      'Fixed monthly outflows before discretionary spend';
+  String get billCommitmentSubtitle => 'Fixed monthly outflows before discretionary spend';
 
   @override
   String get selectCurrency => 'Select Currency';
@@ -699,8 +690,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteAccountPermanently => 'To Delete Your Account Permanently';
 
   @override
-  String get deleteAccountConfirm =>
-      'Are you sure? This action cannot be undone.';
+  String get deleteAccountConfirm => 'Are you sure? This action cannot be undone.';
 
   @override
   String get cancel => 'Cancel';
@@ -822,8 +812,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noLoansYet => 'No Loans Yet';
 
   @override
-  String get noLoansDesc =>
-      'Track EMIs, monitor progress\nand get reminded before due dates.';
+  String get noLoansDesc => 'Track EMIs, monitor progress\nand get reminded before due dates.';
 
   @override
   String get addFirstLoan => 'Add First Loan';
@@ -920,12 +909,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addWidgetTitle => 'Add Budget Widget';
 
   @override
-  String get addWidgetDesc =>
-      'Follow these steps to add the widget to your home screen';
+  String get addWidgetDesc => 'Follow these steps to add the widget to your home screen';
 
   @override
-  String get addWidgetStep1 =>
-      'Long press on an empty area of your home screen';
+  String get addWidgetStep1 => 'Long press on an empty area of your home screen';
 
   @override
   String get addWidgetStep2 => 'Tap \"Widgets\" from the menu that appears';
@@ -934,8 +921,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addWidgetStep3 => 'Search for \"Budget Buddy\" in the widget list';
 
   @override
-  String get addWidgetStep4 =>
-      'Long press the widget and drag it to your home screen';
+  String get addWidgetStep4 => 'Long press the widget and drag it to your home screen';
 
   @override
   String get gotIt => 'Got it!';
@@ -945,4 +931,132 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get powerByAi => 'Power By Ai';
+
+  @override
+  String get budgetPlanner => 'Budget Planner';
+
+  @override
+  String get setYourMonthlyBudget => 'Set your monthly budget';
+
+  @override
+  String get setYourMonthlyBudgetDesc => 'Choose a spending limit and see how much you can spend each day.';
+
+  @override
+  String get setBudget => 'Set budget';
+
+  @override
+  String get planYourBudget => 'Plan your budget';
+
+  @override
+  String planYourBudgetDesc(String amount) {
+    return 'Split your $amount across food, bills and more to see where your money goes.';
+  }
+
+  @override
+  String get planNow => 'Plan now';
+
+  @override
+  String get budgetPlan => 'Budget plan';
+
+  @override
+  String monthBudget(String month) {
+    return '$month budget';
+  }
+
+  @override
+  String get editLimit => 'Edit limit';
+
+  @override
+  String get setLimit => 'Set limit';
+
+  @override
+  String get setLimitToStart => 'Set a monthly limit to start planning';
+
+  @override
+  String overBy(String amount) {
+    return 'Over by $amount';
+  }
+
+  @override
+  String amountLeft(String amount) {
+    return '$amount left';
+  }
+
+  @override
+  String amountLeftPerDay(String amount, String perDay) {
+    return '$amount left · $perDay/day';
+  }
+
+  @override
+  String amountLeftPerDayFor(String amount, String perDay, int days) {
+    return '$amount left · $perDay/day for $days days';
+  }
+
+  @override
+  String categoriesOverBudget(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count categories over budget',
+      one: '1 category over budget',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String categoryBudgetsOverLimit(String amount) {
+    return 'Category budgets are $amount more than your monthly limit';
+  }
+
+  @override
+  String plannedNotAssigned(String planned, String unassigned) {
+    return '$planned planned · $unassigned not yet assigned';
+  }
+
+  @override
+  String get categoryBudgets => 'Category budgets';
+
+  @override
+  String get categoryBudgetsEmpty => 'Split your monthly limit across categories to see exactly where your money goes.';
+
+  @override
+  String get addCategoryBudget => 'Add category budget';
+
+  @override
+  String get spendingWithoutBudget => 'Spending without a budget';
+
+  @override
+  String amountSpent(String amount) {
+    return '$amount spent';
+  }
+
+  @override
+  String spentOfLimit(String spent, String limit) {
+    return '$spent of $limit';
+  }
+
+  @override
+  String get newCategoryBudget => 'New category budget';
+
+  @override
+  String get chooseCategory => 'Choose a category';
+
+  @override
+  String spentThisMonth(String amount) {
+    return 'Spent this month: $amount';
+  }
+
+  @override
+  String notAssignedYet(String amount) {
+    return '$amount of your monthly limit is not assigned yet';
+  }
+
+  @override
+  String get removeBudget => 'Remove this budget';
+
+  @override
+  String get budgetSaved => 'Budget saved';
+
+  @override
+  String get monthlyLimit => 'Monthly limit';
 }

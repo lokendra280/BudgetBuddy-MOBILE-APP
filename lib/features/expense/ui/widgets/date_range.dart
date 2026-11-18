@@ -14,16 +14,16 @@ class DateRange extends StatelessWidget {
     child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: AppColors.primaryColor.withOpacity(0.07),
+        color: kMidGreen.withOpacity(0.07),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.primaryColor.withOpacity(0.25)),
+        border: Border.all(color: kMidGreen.withOpacity(0.25)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(
             Icons.date_range_rounded,
-            color: AppColors.primaryColor,
+            color: kMidGreen,
             size: 18,
           ),
           const SizedBox(width: 10),
@@ -34,13 +34,13 @@ class DateRange extends StatelessWidget {
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: AppColors.primaryColor,
+              color: kMidGreen,
             ),
           ),
           const SizedBox(width: 8),
           const Icon(
             Icons.edit_calendar_rounded,
-            color: AppColors.primaryColor,
+            color: kMidGreen,
             size: 16,
           ),
         ],
