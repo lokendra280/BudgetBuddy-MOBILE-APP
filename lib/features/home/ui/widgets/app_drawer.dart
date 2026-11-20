@@ -12,7 +12,6 @@ import 'package:budgetbuddy/features/home/ui/inslight_screen.dart';
 import 'package:budgetbuddy/features/insights/ui/insight_feed_screen.dart';
 import 'package:budgetbuddy/features/profile/ui/about_page.dart';
 import 'package:budgetbuddy/features/profile/ui/profile_screen.dart';
-import 'package:budgetbuddy/features/profile/ui/setting_screen.dart';
 import 'package:budgetbuddy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -161,7 +160,7 @@ class AppDrawer extends ConsumerWidget {
                     null,
                     () {
                       Navigator.pop(context);
-                      onPush(const SettingsScreen());
+                      onPush(const ProfileScreen());
                     },
                   ),
                   _DrawerItem(

@@ -5,6 +5,9 @@ import 'package:budgetbuddy/common/app_theme.dart';
 import 'package:budgetbuddy/common/common_widget.dart';
 import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetbuddy/l10n/app_localizations.dart';
+import 'package:budgetbuddy/common/constant/app_typography.dart';
+import 'package:budgetbuddy/common/widgets/brand_widgets.dart';
+import 'package:budgetbuddy/common/widgets/piggy_mascot.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -22,26 +25,20 @@ class CoachTab extends ConsumerWidget {
     final c = context.c;
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(18, 16, 18, 40),
+      padding: const EdgeInsets.fromLTRB(18, 8, 18, 120),
       children: [
         // ── Coach header ─────────────────────────────────────────────────────
-        Container(
-          padding: const EdgeInsets.all(18),
-          decoration: gradBox(AppColors.primaryColor),
+        BrandHeroCard(
           child: Row(
             children: [
               Container(
-                width: 52,
-                height: 52,
+                width: 56,
+                height: 56,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [AppColors.primaryColor, Color(0xFF818CF8)],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.white.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(18),
                 ),
-                child: const Center(
-                  child: Text('🤖', style: TextStyle(fontSize: 24)),
-                ),
+                child: const Center(child: PiggyMascot(size: 44)),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -50,20 +47,10 @@ class CoachTab extends ConsumerWidget {
                   children: [
                     Text(
                       l.yourAiFinancialCoach,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: context.t.h4.copyWith(color: Colors.white),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      l.personalizedTips,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: c.textMuted,
-                        height: 1.4,
-                      ),
-                    ),
+                    Text(l.personalizedTips, style: context.heroBody),
                   ],
                 ),
               ),
@@ -86,7 +73,10 @@ class CoachTab extends ConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        Text(g.emoji, style: const TextStyle(fontSize: 22)),
+                        Text(
+                          g.emoji,
+                          style: AppTypography.h2.copyWith(fontSize: 22),
+                        ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Column(
@@ -94,15 +84,13 @@ class CoachTab extends ConsumerWidget {
                             children: [
                               Text(
                                 g.name,
-                                style: const TextStyle(
-                                  fontSize: 13,
+                                style: AppTypography.labelLarge.copyWith(
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
                               Text(
                                 '${g.daysLeft} ${l.daysLeft} · ${(g.progress * 100).toInt()}% ${l.complete}',
-                                style: TextStyle(
-                                  fontSize: 10,
+                                style: AppTypography.caption.copyWith(
                                   color: c.textMuted,
                                 ),
                               ),
@@ -125,12 +113,13 @@ class CoachTab extends ConsumerWidget {
                       children: [
                         Text(
                           '${fmt(g.saved)} ${l.saved}',
-                          style: TextStyle(fontSize: 10, color: c.textMuted),
+                          style: AppTypography.caption.copyWith(
+                            color: c.textMuted,
+                          ),
                         ),
                         Text(
                           '${fmt(g.target)} ${l.target}',
-                          style: const TextStyle(
-                            fontSize: 10,
+                          style: AppTypography.caption.copyWith(
                             fontWeight: FontWeight.w700,
                             color: AppColors.primaryColor,
                           ),
@@ -152,8 +141,7 @@ class CoachTab extends ConsumerWidget {
                         children: [
                           Text(
                             g.statusMessage,
-                            style: TextStyle(
-                              fontSize: 11,
+                            style: AppTypography.labelSmall.copyWith(
                               fontWeight: FontWeight.w600,
                               color: g.onTrack ? kGreen : kAmber,
                             ),
@@ -162,8 +150,7 @@ class CoachTab extends ConsumerWidget {
                             const SizedBox(height: 4),
                             Text(
                               '${l.availablePerDay}: ${fmt(g.availableDailyAmount)}${l.perDay} · ${l.needPerDay}: ${fmt(g.requiredDailyAmount)}${l.perDay}',
-                              style: TextStyle(
-                                fontSize: 10,
+                              style: AppTypography.caption.copyWith(
                                 color: c.textMuted,
                               ),
                             ),
@@ -186,87 +173,199 @@ class CoachTab extends ConsumerWidget {
         if (tips.isEmpty)
           EmptyCard('🌱', l.keepTracking, l.addMoreDataUnlock)
         else
-          ...tips.asMap().entries.map(
-            (e) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: AppCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+          ...tips
+              .asMap()
+              .entries
+              .take(2)
+              .map(
+                (e) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: AppCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        EmojiBox(
-                          e.value.emoji,
-                          Color(e.value.impactColor).withOpacity(0.12),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            e.value.title,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
+                        Row(
+                          children: [
+                            EmojiBox(
+                              e.value.emoji,
+                              Color(e.value.impactColor).withOpacity(0.12),
                             ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                e.value.title,
+                                style: AppTypography.labelLarge.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            _TipBadge(e.key + 1, l),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.all(11),
+                          decoration: BoxDecoration(
+                            color: c.bg,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: c.border),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Icon(
+                                Icons.play_arrow_rounded,
+                                size: 14,
+                                color: AppColors.primaryColor,
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  e.value.action,
+                                  style: AppTypography.labelSmall.copyWith(
+                                    fontSize: 12,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        _TipBadge(e.key + 1, l),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.bolt_rounded,
+                              size: 14,
+                              color: kAmber,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${l.impact}: ',
+                              style: AppTypography.labelSmall.copyWith(
+                                color: c.textMuted,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                e.value.impact,
+                                style: AppTypography.labelSmall.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(e.value.impactColor),
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.all(11),
-                      decoration: BoxDecoration(
-                        color: c.bg,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: c.border),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Icon(
-                            Icons.play_arrow_rounded,
-                            size: 14,
-                            color: AppColors.primaryColor,
-                          ),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: Text(
-                              e.value.action,
-                              style: const TextStyle(fontSize: 12, height: 1.4),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(Icons.bolt_rounded, size: 14, color: kAmber),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${l.impact}: ',
-                          style: TextStyle(fontSize: 11, color: c.textMuted),
-                        ),
-                        Expanded(
-                          child: Text(
-                            e.value.impact,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: Color(e.value.impactColor),
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
               ),
+        if (tips.asMap().entries.length > 2)
+          RewardGate(
+            feature: 'coach_tips',
+            title: '+${tips.asMap().entries.length - 2} more personalised tips',
+            subtitle: 'Watch a short ad · unlocked for 24h',
+            child: Column(
+              children: tips
+                  .asMap()
+                  .entries
+                  .skip(2)
+                  .map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: AppCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                EmojiBox(
+                                  e.value.emoji,
+                                  Color(e.value.impactColor).withOpacity(0.12),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    e.value.title,
+                                    style: AppTypography.labelLarge.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                                _TipBadge(e.key + 1, l),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Container(
+                              padding: const EdgeInsets.all(11),
+                              decoration: BoxDecoration(
+                                color: c.bg,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: c.border),
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Icon(
+                                    Icons.play_arrow_rounded,
+                                    size: 14,
+                                    color: AppColors.primaryColor,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      e.value.action,
+                                      style: AppTypography.labelSmall.copyWith(
+                                        fontSize: 12,
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.bolt_rounded,
+                                  size: 14,
+                                  color: kAmber,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${l.impact}: ',
+                                  style: AppTypography.labelSmall.copyWith(
+                                    color: c.textMuted,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    e.value.impact,
+                                    style: AppTypography.labelSmall.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(e.value.impactColor),
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
             ),
           ),
 
         const SizedBox(height: 8),
+
+        const AdSlot(),
 
         // ── Recurring Expenses ───────────────────────────────────────────────
         SectionLabel(l.recurringExpenses),
@@ -295,7 +394,7 @@ class CoachTab extends ConsumerWidget {
                       child: Center(
                         child: Text(
                           r.emoji,
-                          style: const TextStyle(fontSize: 16),
+                          style: AppTypography.h4.copyWith(fontSize: 16),
                         ),
                       ),
                     ),
@@ -306,8 +405,7 @@ class CoachTab extends ConsumerWidget {
                         children: [
                           Text(
                             r.title,
-                            style: const TextStyle(
-                              fontSize: 13,
+                            style: AppTypography.labelLarge.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                             maxLines: 1,
@@ -315,7 +413,9 @@ class CoachTab extends ConsumerWidget {
                           ),
                           Text(
                             '${r.occurrences}× · avg ${fmt(r.avgAmount)} · next ~${DateFormat('MMM d').format(r.nextEstimate)}',
-                            style: TextStyle(fontSize: 10, color: c.textMuted),
+                            style: AppTypography.caption.copyWith(
+                              color: c.textMuted,
+                            ),
                           ),
                         ],
                       ),
@@ -329,7 +429,10 @@ class CoachTab extends ConsumerWidget {
                         color: kGreen.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Text('🔄', style: TextStyle(fontSize: 12)),
+                      child: Text(
+                        '🔄',
+                        style: AppTypography.labelSmall.copyWith(fontSize: 12),
+                      ),
                     ),
                   ],
                 ),
@@ -357,7 +460,7 @@ class _GoalStatusBadge extends StatelessWidget {
     ),
     child: Text(
       onTrack ? '✅ ${l.onTrack}' : '⚠️ ${l.atRisk}',
-      style: TextStyle(
+      style: AppTypography.caption.copyWith(
         fontSize: 9,
         fontWeight: FontWeight.w700,
         color: onTrack ? kGreen : kAmber,
@@ -379,7 +482,7 @@ class _TipBadge extends StatelessWidget {
     ),
     child: Text(
       'Tip $number',
-      style: const TextStyle(
+      style: AppTypography.caption.copyWith(
         fontSize: 9,
         fontWeight: FontWeight.w700,
         color: AppColors.primaryColor,

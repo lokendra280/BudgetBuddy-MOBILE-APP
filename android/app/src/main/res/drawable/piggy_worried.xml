@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- BudgetBuddy piggy mascot (worried). Same 100x100 geometry as ios/StreakWidget/StreakWidget.swift -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp" android:height="64dp"
+    android:viewportWidth="100" android:viewportHeight="100">
+  <path android:fillColor="#FFC8EFD9" android:strokeColor="#FF0E4A30" android:strokeWidth="2.5" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M18,32 L27,8 L44,24 Z"/>
+  <path android:fillColor="#FFC8EFD9" android:strokeColor="#FF0E4A30" android:strokeWidth="2.5" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M82,32 L73,8 L56,24 Z"/>
+  <path android:fillColor="#FFC8EFD9" android:strokeColor="#FF0E4A30" android:strokeWidth="2.5" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M14,56 a36,36 0 1,0 72,0 a36,36 0 1,0 -72,0 Z"/>
+  <path android:fillColor="#FF0E4A30" android:pathData="M32,46 a4,4.5 0 1,0 8,0 a4,4.5 0 1,0 -8,0 Z"/>
+  <path android:fillColor="#FF0E4A30" android:pathData="M60,46 a4,4.5 0 1,0 8,0 a4,4.5 0 1,0 -8,0 Z"/>
+  <path android:strokeColor="#FF0E4A30" android:strokeWidth="2.5" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M29,38 L41,34"/>
+  <path android:strokeColor="#FF0E4A30" android:strokeWidth="2.5" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M71,38 L59,34"/>
+  <path android:fillColor="#FF9BDDB8" android:strokeColor="#FF0E4A30" android:strokeWidth="2.5" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M35,65 a15,11 0 1,0 30,0 a15,11 0 1,0 -30,0 Z"/>
+  <path android:fillColor="#FF0E4A30" android:pathData="M42.0,65 a2.5,4 0 1,0 5.0,0 a2.5,4 0 1,0 -5.0,0 Z"/>
+  <path android:fillColor="#FF0E4A30" android:pathData="M53.0,65 a2.5,4 0 1,0 5.0,0 a2.5,4 0 1,0 -5.0,0 Z"/>
+  <path android:strokeColor="#FF0E4A30" android:strokeWidth="3.5" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M41,83 Q45.5,79 50,83 Q54.5,87 59,83"/>
+  <path android:fillColor="#FF7DD3FC" android:pathData="M86,28 Q93,38 86,42 Q79,38 86,28 Z"/>
+</vector>

@@ -5,6 +5,8 @@ import 'package:budgetbuddy/features/ai_screen/pages/widget/shared_wdiget.dart';
 import 'package:budgetbuddy/features/ai_screen/providers/ai_providers.dart';
 import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetbuddy/l10n/app_localizations.dart';
+import 'package:budgetbuddy/common/widgets/brand_widgets.dart';
+import 'package:budgetbuddy/common/constant/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -28,7 +30,7 @@ class BudgetTab extends ConsumerWidget {
     );
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(18, 16, 18, 40),
+      padding: const EdgeInsets.fromLTRB(18, 8, 18, 120),
       children: [
         // ── 50/30/20 Bars ────────────────────────────────────────────────────
         AppCard(
@@ -78,7 +80,7 @@ class BudgetTab extends ConsumerWidget {
             children: [
               Text(
                 l.thisMonth,
-                style: const TextStyle(
+                style: AppTypography.labelLarge.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
@@ -97,7 +99,7 @@ class BudgetTab extends ConsumerWidget {
                 const SizedBox(height: 14),
                 Text(
                   l.savingsRateThisMonth,
-                  style: TextStyle(fontSize: 11, color: c.textMuted),
+                  style: AppTypography.labelSmall.copyWith(color: c.textMuted),
                 ),
                 const SizedBox(height: 6),
                 ProgressBar(
@@ -116,12 +118,13 @@ class BudgetTab extends ConsumerWidget {
                   children: [
                     Text(
                       '$pct% ${l.achieved}',
-                      style: TextStyle(fontSize: 11, color: c.textMuted),
+                      style: AppTypography.labelSmall.copyWith(
+                        color: c.textMuted,
+                      ),
                     ),
                     Text(
                       l.target20,
-                      style: const TextStyle(
-                        fontSize: 11,
+                      style: AppTypography.labelSmall.copyWith(
                         fontWeight: FontWeight.w700,
                         color: kGreen,
                       ),
@@ -153,12 +156,13 @@ class BudgetTab extends ConsumerWidget {
                 children: [
                   Text(
                     l.billsVsIncome,
-                    style: TextStyle(fontSize: 11, color: c.textMuted),
+                    style: AppTypography.labelSmall.copyWith(
+                      color: c.textMuted,
+                    ),
                   ),
                   Text(
                     '$billRatioPct%',
-                    style: TextStyle(
-                      fontSize: 11,
+                    style: AppTypography.labelSmall.copyWith(
                       fontWeight: FontWeight.w700,
                       color: billHealth.isCritical
                           ? kAccent
@@ -186,7 +190,7 @@ class BudgetTab extends ConsumerWidget {
                 children: [
                   Text(
                     '${fmt(billHealth.totalMonthlyCommitment)}${l.perMonth} committed',
-                    style: TextStyle(fontSize: 10, color: c.textMuted),
+                    style: AppTypography.caption.copyWith(color: c.textMuted),
                   ),
                   Text(
                     billRatioPct > 50
@@ -194,8 +198,7 @@ class BudgetTab extends ConsumerWidget {
                         : billRatioPct > 35
                         ? '↗ ${l.moderate}'
                         : '✅ ${l.healthy}',
-                    style: TextStyle(
-                      fontSize: 10,
+                    style: AppTypography.caption.copyWith(
                       fontWeight: FontWeight.w700,
                       color: billHealth.isCritical
                           ? kAccent
@@ -213,7 +216,7 @@ class BudgetTab extends ConsumerWidget {
                 const SizedBox(height: 12),
                 Text(
                   l.largestBillsLabel,
-                  style: TextStyle(fontSize: 11, color: c.textMuted),
+                  style: AppTypography.labelSmall.copyWith(color: c.textMuted),
                 ),
                 const SizedBox(height: 8),
                 ...billHealth.largestBills.map(
@@ -221,7 +224,10 @@ class BudgetTab extends ConsumerWidget {
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Row(
                       children: [
-                        Text(bill.emoji, style: const TextStyle(fontSize: 18)),
+                        Text(
+                          bill.emoji,
+                          style: AppTypography.h3.copyWith(fontSize: 18),
+                        ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Column(
@@ -229,15 +235,14 @@ class BudgetTab extends ConsumerWidget {
                             children: [
                               Text(
                                 bill.title,
-                                style: const TextStyle(
+                                style: AppTypography.labelSmall.copyWith(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               Text(
                                 bill.category,
-                                style: TextStyle(
-                                  fontSize: 10,
+                                style: AppTypography.caption.copyWith(
                                   color: c.textMuted,
                                 ),
                               ),
@@ -249,8 +254,7 @@ class BudgetTab extends ConsumerWidget {
                           children: [
                             Text(
                               fmt(bill.amount),
-                              style: const TextStyle(
-                                fontSize: 13,
+                              style: AppTypography.labelLarge.copyWith(
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.primaryColor,
                               ),
@@ -259,7 +263,10 @@ class BudgetTab extends ConsumerWidget {
                               b.income > 0
                                   ? '${(bill.amount / b.income * 100).toInt()}% ${l.ofIncome}'
                                   : l.perMonth,
-                              style: TextStyle(fontSize: 9, color: c.textMuted),
+                              style: AppTypography.caption.copyWith(
+                                fontSize: 9,
+                                color: c.textMuted,
+                              ),
                             ),
                           ],
                         ),
@@ -281,13 +288,15 @@ class BudgetTab extends ConsumerWidget {
                   ),
                   child: Row(
                     children: [
-                      const Text('⏰', style: TextStyle(fontSize: 14)),
+                      Text(
+                        '⏰',
+                        style: AppTypography.labelLarge.copyWith(fontSize: 14),
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           '${billHealth.dueSoonList.length} ${l.bill.toLowerCase()}${billHealth.dueSoonList.length > 1 ? "s" : ""} ${l.dueSoon.toLowerCase()} — ${billHealth.dueSoonList.map((b) => b.title).take(2).join(', ')}',
-                          style: TextStyle(
-                            fontSize: 11,
+                          style: AppTypography.labelSmall.copyWith(
                             color: kAmber,
                             fontWeight: FontWeight.w600,
                           ),
@@ -300,6 +309,8 @@ class BudgetTab extends ConsumerWidget {
             ],
           ),
         ),
+        const SizedBox(height: 14),
+        const AdSlot(),
       ],
     );
   }

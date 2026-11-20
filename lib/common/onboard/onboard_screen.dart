@@ -1,29 +1,25 @@
 import 'package:budgetbuddy/common/app_theme.dart';
-import 'package:budgetbuddy/common/onboard/ui/widgets/analyseillustration.dart';
-import 'package:budgetbuddy/common/onboard/ui/widgets/chip_widget.dart';
-import 'package:budgetbuddy/common/onboard/ui/widgets/dot_grid_painter.dart';
-import 'package:budgetbuddy/common/onboard/ui/widgets/dots_widget.dart';
-import 'package:budgetbuddy/common/onboard/ui/widgets/grow_illustration_widget.dart';
-import 'package:budgetbuddy/common/onboard/ui/widgets/logo_widget.dart';
-import 'package:budgetbuddy/common/onboard/ui/widgets/onboarding_button.dart';
-import 'package:budgetbuddy/common/onboard/ui/widgets/skip_button.dart';
-import 'package:budgetbuddy/common/onboard/ui/widgets/track_illustration_widget.dart';
+import 'package:budgetbuddy/common/onboard/ui/widgets/onboard_illustrations.dart';
 import 'package:budgetbuddy/common/services/app_version_service.dart';
+import 'package:budgetbuddy/common/widgets/piggy_mascot.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../language_screen.dart';
 
+// Light, brand-green onboarding that matches the in-app design
+// (mint background, deep-green cards, piggy mascot). Always light — it's
+// the first screen and should look the same regardless of system theme.
+
+const _ink = Color(0xFF0F0F1A);
+const _sub = Color(0xFF606080);
+
 class _PageData {
-  final String chip, title, subtitle;
-  final List<Color> bg;
-  final Color orbColor;
+  final String tag, title, subtitle;
   final Widget Function(double t) illustration;
   const _PageData({
-    required this.chip,
+    required this.tag,
     required this.title,
     required this.subtitle,
-    required this.bg,
-    required this.orbColor,
     required this.illustration,
   });
 }
@@ -37,79 +33,58 @@ class OnboardScreen extends StatefulWidget {
 class _OnboardState extends State<OnboardScreen> with TickerProviderStateMixin {
   final _pageCtrl = PageController();
   int _page = 0;
-  double _offset = 0;
 
-  // Slide-up + fade animation for bottom text content
-  late final _contentCtrl = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 700),
-  );
-  late final _contentAnim = CurvedAnimation(
-    parent: _contentCtrl,
-    curve: Curves.easeOutExpo,
-  );
-
-  // Float animation for illustration cards
+  // Gentle float for the illustration pieces.
   late final _floatCtrl = AnimationController(
     vsync: this,
     duration: const Duration(seconds: 4),
   )..repeat(reverse: true);
 
-  late final List<_PageData> _pages = [
+  // Fade/slide-in for the first page's content.
+  late final _introCtrl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 700),
+  )..forward();
+
+  final _pages = <_PageData>[
     _PageData(
-      chip: '01 / TRACK',
-      title: 'Every Rupee\nCounts',
+      tag: 'TRACK',
+      title: 'Take control of\nevery rupee',
       subtitle:
-          'Snap a bill or type an amount in seconds.\nSee exactly where your money goes.',
-      bg: const [Color(0xFF0D0825), Color(0xFF1A1060), Color(0xFF2A1869)],
-      orbColor: AppColors.primaryColor,
+          'Log expenses in seconds — type, speak or snap a bill. See exactly where your money goes.',
       illustration: (t) => TrackIllustration(t: t),
     ),
     _PageData(
-      chip: '02 / ANALYSE',
-      title: 'Smart AI\nInsights',
+      tag: 'UNDERSTAND',
+      title: 'Smart insights,\nzero effort',
       subtitle:
-          'Spot overspending before it hurts.\nGet a financial health score daily.',
-      bg: const [Color(0xFF051228), Color(0xFF092040), Color(0xFF0D3560)],
-      orbColor: AppColors.secondaryColor,
+          'Spot overspending early, see your top categories and get a daily financial health score.',
       illustration: (t) => AnalyseIllustration(t: t),
     ),
     _PageData(
-      chip: '03 / GROW',
-      title: 'Build Wealth\nTogether',
+      tag: 'GROW',
+      title: 'Save more,\nstress less',
       subtitle:
-          'Set savings goals, beat streaks and\ncompete on the leaderboard.',
-      bg: const [Color(0xFF021410), Color(0xFF053828), Color(0xFF0A5240)],
-      orbColor: AppColors.primaryColor,
-      illustration: (t) => GrowIllustrationWidget(t: t),
+          'Set budgets and goals, keep your streak alive and check in right from your home screen.',
+      illustration: (t) => GrowIllustration(t: t),
     ),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _pageCtrl.addListener(() => setState(() => _offset = _pageCtrl.page ?? 0));
-    _contentCtrl.forward();
-  }
+  bool get _isLast => _page == _pages.length - 1;
 
   @override
   void dispose() {
     _pageCtrl.dispose();
-    _contentCtrl.dispose();
     _floatCtrl.dispose();
+    _introCtrl.dispose();
     super.dispose();
-  }
-
-  void _onPageChanged(int i) {
-    setState(() => _page = i);
-    _contentCtrl.forward(from: 0);
   }
 
   Future<void> _next() async {
     HapticFeedback.lightImpact();
-    if (_page < _pages.length - 1) {
+    if (!_isLast) {
       _pageCtrl.nextPage(
-        duration: const Duration(milliseconds: 520),
+        duration: const Duration(milliseconds: 480),
         curve: Curves.easeInOutCubic,
       );
     } else {
@@ -131,187 +106,218 @@ class _OnboardState extends State<OnboardScreen> with TickerProviderStateMixin {
     );
   }
 
-  // Interpolate gradient between current page and next during swipe
-  Color _lerpBg(int stop) {
-    final floor = _offset.floor().clamp(0, _pages.length - 1);
-    final ceil = (_offset.ceil()).clamp(0, _pages.length - 1);
-    final t = _offset - _offset.floor();
-    return Color.lerp(_pages[floor].bg[stop], _pages[ceil].bg[stop], t)!;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final p = _pages[_page];
-    final isLast = _page == _pages.length - 1;
+    final bottomInset = MediaQuery.of(context).padding.bottom;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.dark, // Android
+        statusBarBrightness: Brightness.light, // iOS
       ),
       child: Scaffold(
-        body: Stack(
-          children: [
-            // ── Animated gradient background ─────────────────────────────────
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 80),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [_lerpBg(0), _lerpBg(1), _lerpBg(2)],
-                  stops: const [0.0, 0.5, 1.0],
-                ),
-              ),
+        backgroundColor: Colors.white,
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [kMint, Color(0xFFF4FBF7), Colors.white],
+              stops: [0.0, 0.55, 1.0],
             ),
-
-            // ── Dot-grid texture ─────────────────────────────────────────────
-            Positioned.fill(child: CustomPaint(painter: DotGridPainter())),
-
-            // ── Large radial orb top-right ────────────────────────────────────
-            AnimatedPositioned(
-              duration: const Duration(milliseconds: 600),
-              top: -80,
-              right: -80,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 600),
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [p.orbColor.withOpacity(0.22), Colors.transparent],
-                  ),
-                ),
-              ),
-            ),
-
-            // Small orb bottom-left
-            AnimatedPositioned(
-              duration: const Duration(milliseconds: 600),
-              bottom: size.height * 0.28,
-              left: -50,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 600),
-                width: 180,
-                height: 180,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [p.orbColor.withOpacity(0.12), Colors.transparent],
-                  ),
-                ),
-              ),
-            ),
-
-            // ── Illustration PageView (fills the top 70%) ─────────────────────
-            AnimatedBuilder(
-              animation: _floatCtrl,
-              builder: (_, __) => PageView.builder(
-                controller: _pageCtrl,
-                onPageChanged: _onPageChanged,
-                itemCount: _pages.length,
-                itemBuilder: (_, i) => _pages[i].illustration(_floatCtrl.value),
-              ),
-            ),
-
-            // ── Top bar: logo + skip ─────────────────────────────────────────
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(22, 14, 18, 0),
-                child: Row(
-                  children: [
-                    LogoWidget(),
-                    const Spacer(),
-                    SkipButton(onTap: _finish),
-                  ],
-                ),
-              ),
-            ),
-
-            // ── Bottom gradient overlay + content ────────────────────────────
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(0, 0.12),
-                  end: Offset.zero,
-                ).animate(_contentAnim),
-                child: FadeTransition(
-                  opacity: _contentAnim,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withOpacity(0.55),
-                          Colors.black.withOpacity(0.90),
-                        ],
-                        stops: const [0.0, 0.22, 1.0],
-                      ),
-                    ),
-                    child: SafeArea(
-                      top: false,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(26, 48, 26, 28),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Chip tag
-                            ChipWidget(p.chip),
-                            const SizedBox(height: 12),
-
-                            // Title
-                            Text(
-                              p.title,
-                              style: const TextStyle(
-                                fontSize: 36,
-                                fontWeight: FontWeight.w900,
-                                color: Colors.white,
-                                height: 1.08,
-                                letterSpacing: -1.0,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-
-                            // Subtitle
-                            Text(
-                              p.subtitle,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white.withOpacity(0.58),
-                                height: 1.55,
-                              ),
-                            ),
-                            const SizedBox(height: 30),
-
-                            // Dots + CTA
-                            Row(
-                              children: [
-                                DotsWidget(
-                                  count: _pages.length,
-                                  current: _page,
-                                ),
-                                const Spacer(),
-                                OnBoardingButton(isLast: isLast, onTap: _next),
-                              ],
-                            ),
-                          ],
+          ),
+          child: SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                // ── Top bar ───────────────────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 10, 12, 0),
+                  child: Row(
+                    children: [
+                      const PiggyMascot(size: 32),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'BudgetBuddy',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: kDeepGreen,
+                          letterSpacing: -0.3,
                         ),
                       ),
+                      const Spacer(),
+                      AnimatedOpacity(
+                        duration: const Duration(milliseconds: 200),
+                        opacity: _isLast ? 0 : 1,
+                        child: TextButton(
+                          onPressed: _isLast ? null : _finish,
+                          style: TextButton.styleFrom(foregroundColor: _sub),
+                          child: const Text(
+                            'Skip',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // ── Pages: illustration + copy swipe together ─────────────
+                Expanded(
+                  child: FadeTransition(
+                    opacity: _introCtrl,
+                    child: PageView.builder(
+                      controller: _pageCtrl,
+                      itemCount: _pages.length,
+                      onPageChanged: (i) => setState(() => _page = i),
+                      itemBuilder: (_, i) =>
+                          _Page(data: _pages[i], float: _floatCtrl),
+                    ),
+                  ),
+                ),
+
+                // ── Dots + CTA ────────────────────────────────────────────
+                Padding(
+                  padding: EdgeInsets.fromLTRB(24, 8, 24, bottomInset + 20),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          for (var i = 0; i < _pages.length; i++)
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 250),
+                              margin: const EdgeInsets.symmetric(horizontal: 3),
+                              width: i == _page ? 22 : 7,
+                              height: 7,
+                              decoration: BoxDecoration(
+                                color: i == _page
+                                    ? kMidGreen
+                                    : kMidGreen.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 22),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: FilledButton(
+                          onPressed: _next,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: kMidGreen,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28),
+                            ),
+                          ),
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 200),
+                            child: Row(
+                              key: ValueKey(_isLast),
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  _isLast ? 'Get Started' : 'Next',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                const Icon(
+                                  Icons.arrow_forward_rounded,
+                                  size: 20,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Page extends StatelessWidget {
+  final _PageData data;
+  final Animation<double> float;
+  const _Page({required this.data, required this.float});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Illustration takes whatever height is left; sits low so it stays
+          // close to the copy on tall phones (capped so it doesn't balloon).
+          Expanded(
+            child: Align(
+              alignment: const Alignment(0, 0.6),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 380),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: AnimatedBuilder(
+                    animation: float,
+                    builder: (_, __) => data.illustration(
+                      Curves.easeInOut.transform(float.value),
                     ),
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: kMint,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              data.tag,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.2,
+                color: kMidGreen,
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            data.title,
+            style: const TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.w800,
+              height: 1.12,
+              letterSpacing: -0.8,
+              color: _ink,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            data.subtitle,
+            style: const TextStyle(fontSize: 15, height: 1.5, color: _sub),
+          ),
+          const SizedBox(height: 12),
+        ],
       ),
     );
   }

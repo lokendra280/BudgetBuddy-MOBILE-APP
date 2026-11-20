@@ -21,9 +21,6 @@ class AppLocalizationsNe extends AppLocalizations {
   String get ai => 'एआई';
 
   @override
-  String get settings => 'सेटिङ्स';
-
-  @override
   String get appearance => 'देखावट';
 
   @override
@@ -46,15 +43,6 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get netSaving => 'कुल बचत';
-
-  @override
-  String get expense => 'खर्च';
-
-  @override
-  String get income => 'आम्दानी';
-
-  @override
-  String get transactions => 'कारोबारहरू';
 
   @override
   String get last7Days => 'पछिल्ला ७ दिन';
@@ -93,9 +81,6 @@ class AppLocalizationsNe extends AppLocalizations {
   String get social => 'सामाजिक';
 
   @override
-  String get aiInsight => 'एआई अन्तर्दृष्टि';
-
-  @override
   String get netDeficit => 'कुल घाटा';
 
   @override
@@ -115,6 +100,9 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get bankStyle => 'बैंक-शैली विवरणहरू । 0 कारोबारहरू';
+
+  @override
+  String get transactions => 'कारोबारहरू';
 
   @override
   String get items => 'वस्तुहरू';
@@ -162,9 +150,6 @@ class AppLocalizationsNe extends AppLocalizations {
   String get health => 'स्वास्थ्य';
 
   @override
-  String get bill => 'बिल';
-
-  @override
   String get entertainment => 'मनोरञ्जन';
 
   @override
@@ -172,9 +157,6 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get food => 'खाना';
-
-  @override
-  String get other => 'अन्य';
 
   @override
   String get welcomeBack => 'फेरि स्वागत छ';
@@ -255,9 +237,6 @@ class AppLocalizationsNe extends AppLocalizations {
   String get signIntoApply => 'रेफरल कोड प्रयोग गर्न साइन इन गर्नुहोस् र स्ट्रिक दिन कमाउनुहोस्';
 
   @override
-  String get shareReport => 'मेरो रिपोर्ट सेयर गर्नुहोस्';
-
-  @override
   String get shareMonthly => 'मासिक खर्च सारांश तस्बिरको रूपमा सेयर गर्नुहोस्';
 
   @override
@@ -291,7 +270,13 @@ class AppLocalizationsNe extends AppLocalizations {
   String get addEntry => 'प्रविष्टि थप्नुहोस्';
 
   @override
-  String get category => 'श्रेणी';
+  String get expense => 'खर्च';
+
+  @override
+  String get income => 'आम्दानी';
+
+  @override
+  String get other => 'अन्य';
 
   @override
   String get row => 'पंक्ति';
@@ -307,6 +292,9 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get saveExpense => 'खर्च सुरक्षित गर्नुहोस्';
+
+  @override
+  String get aiInsight => 'एआई अन्तर्दृष्टि';
 
   @override
   String get overView => 'सारांश';
@@ -354,16 +342,10 @@ class AppLocalizationsNe extends AppLocalizations {
   String get wellAnalysisPatternOnce => 'थप डेटा भएपछि हामी ढाँचा विश्लेषण गर्नेछौं';
 
   @override
-  String get subscriptions => 'सदस्यता र आवर्ती भुक्तानी';
-
-  @override
   String get thisMonth => 'यस महिना';
 
   @override
   String get spend => 'खर्च';
-
-  @override
-  String get saved => 'बचत';
 
   @override
   String get achieved => 'पूरा भयो';
@@ -441,6 +423,12 @@ class AppLocalizationsNe extends AppLocalizations {
   String get insight => 'अन्तर्दृष्टि';
 
   @override
+  String get shareReport => 'मेरो रिपोर्ट सेयर गर्नुहोस्';
+
+  @override
+  String get settings => 'सेटिङ्स';
+
+  @override
   String get about => 'बारेमा';
 
   @override
@@ -450,6 +438,9 @@ class AppLocalizationsNe extends AppLocalizations {
   String get aiSpending => 'AI खर्च विश्लेषण';
 
   @override
+  String get subscriptions => 'सदस्यता र आवर्ती भुक्तानी';
+
+  @override
   String get savingGoals => 'बचत लक्ष्य';
 
   @override
@@ -457,6 +448,9 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get monthlyCommitments => 'मासिक प्रतिबद्धताहरू';
+
+  @override
+  String get bill => 'बिल';
 
   @override
   String get active => 'सक्रिय';
@@ -480,9 +474,6 @@ class AppLocalizationsNe extends AppLocalizations {
   String get addBillEmi => 'बिल / EMI थप्नुहोस्';
 
   @override
-  String get amount => 'रकम';
-
-  @override
   String get example => 'बिलको नाम (जस्तै Netflix, घर EMI)';
 
   @override
@@ -495,9 +486,6 @@ class AppLocalizationsNe extends AppLocalizations {
   String get dueOnDayOfMonth => 'महिनाको कुन दिन तिर्ने';
 
   @override
-  String get remindMeBefore => 'पहिले रिमाइन्ड गर्नुहोस्';
-
-  @override
   String get addSchedule => 'रिमाइन्डर थप्नुहोस् र तालिका बनाउनुहोस्';
 
   @override
@@ -505,21 +493,6 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get savingRate => 'बचत दर';
-
-  @override
-  String get budgetControl => 'बजेट नियन्त्रण';
-
-  @override
-  String get expenseBalance => 'खर्च सन्तुलन';
-
-  @override
-  String get consistency => 'निरन्तरता';
-
-  @override
-  String get billLoad => 'बिल भार';
-
-  @override
-  String get goalProgress => 'लक्ष्य प्रगति';
 
   @override
   String get burnRate => 'खर्च दर र रनवे';
@@ -562,9 +535,6 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get ofIncome => 'आम्दानीको';
-
-  @override
-  String get overdue => 'म्याद नाघेको';
 
   @override
   String get monthlyBills => 'मासिक बिलहरू';
@@ -672,9 +642,6 @@ class AppLocalizationsNe extends AppLocalizations {
   String get getRemindedToLog => 'खर्च लग गर्न सम्झाउनुहोस्';
 
   @override
-  String get dayStreak => 'दिनको स्ट्रिक';
-
-  @override
   String get keepLoggingDaily => 'यसलाई कायम राख्न दैनिक लग गर्नुहोस्';
 
   @override
@@ -691,12 +658,6 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get deleteAccountConfirm => 'के तपाईं निश्चित हुनुहुन्छ? यो कार्य पूर्ववत गर्न सकिँदैन।';
-
-  @override
-  String get cancel => 'रद्द गर्नुहोस्';
-
-  @override
-  String get delete => 'मेट्नुहोस्';
 
   @override
   String get budgetUpdated => 'बजेट अपडेट भयो';
@@ -738,13 +699,28 @@ class AppLocalizationsNe extends AppLocalizations {
   String get targetAmount => 'लक्ष्य रकम';
 
   @override
-  String get days => 'दिन';
-
-  @override
   String get createGoal => 'लक्ष्य सिर्जना गर्नुहोस्';
 
   @override
   String get savingsRate => 'बचत दर';
+
+  @override
+  String get budgetControl => 'बजेट नियन्त्रण';
+
+  @override
+  String get expenseBalance => 'खर्च सन्तुलन';
+
+  @override
+  String get consistency => 'निरन्तरता';
+
+  @override
+  String get billLoad => 'बिल भार';
+
+  @override
+  String get goalProgress => 'लक्ष्य प्रगति';
+
+  @override
+  String get saved => 'बचत';
 
   @override
   String get ofLimitUsed => 'सीमा प्रयोग';
@@ -774,6 +750,9 @@ class AppLocalizationsNe extends AppLocalizations {
   String get inProgress => 'प्रगतिमा';
 
   @override
+  String get dayStreak => 'दिनको स्ट्रिक';
+
+  @override
   String get top => 'शीर्ष';
 
   @override
@@ -797,6 +776,12 @@ class AppLocalizationsNe extends AppLocalizations {
   }
 
   @override
+  String get cancel => 'रद्द गर्नुहोस्';
+
+  @override
+  String get delete => 'मेट्नुहोस्';
+
+  @override
   String get yourLoans => 'तपाईंका ऋणहरू';
 
   @override
@@ -804,6 +789,9 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get monthlyEmis => 'मासिक EMI हरू';
+
+  @override
+  String get overdue => 'म्याद नाघेको';
 
   @override
   String get missed => 'छुटेको';
@@ -821,15 +809,15 @@ class AppLocalizationsNe extends AppLocalizations {
   String get addBillLabel => 'बिल थप्नुहोस्';
 
   @override
-  String get addLoan => 'ऋण थप्नुहोस्';
-
-  @override
   String get recordPayment => 'भुक्तानी दर्ज गर्नुहोस्';
 
   @override
   String emiPaymentHint(Object amount, Object title) {
     return '$title · EMI $amount';
   }
+
+  @override
+  String get amount => 'रकम';
 
   @override
   String get noteOptional => 'नोट (वैकल्पिक)';
@@ -839,9 +827,6 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get reducesPrincipal => 'मूलधन घटाउँछ';
-
-  @override
-  String get saving => 'सुरक्षित गर्दै…';
 
   @override
   String get recordExtraPayment => 'अतिरिक्त भुक्तानी दर्ज गर्नुहोस्';
@@ -863,6 +848,9 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get lenderUnknown => 'अज्ञात';
+
+  @override
+  String get category => 'श्रेणी';
 
   @override
   String get principalAmount => 'मूलधन रकम';
@@ -891,13 +879,25 @@ class AppLocalizationsNe extends AppLocalizations {
   String get emiDueDay => 'EMI देय दिवस';
 
   @override
+  String get remindMeBefore => 'पहिले रिमाइन्ड गर्नुहोस्';
+
+  @override
   String get day => 'दिन';
+
+  @override
+  String get days => 'दिन';
 
   @override
   String get notesOptional => 'नोटहरू (वैकल्पिक)';
 
   @override
+  String get saving => 'सुरक्षित गर्दै…';
+
+  @override
   String get updateLoan => 'ऋण अपडेट गर्नुहोस्';
+
+  @override
+  String get addLoan => 'ऋण थप्नुहोस्';
 
   @override
   String get addHomeWidget => 'होम स्क्रिन विजेट थप्नुहोस्';

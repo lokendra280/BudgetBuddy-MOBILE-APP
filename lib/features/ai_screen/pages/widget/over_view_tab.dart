@@ -2,7 +2,9 @@ import 'package:budgetbuddy/common/app_theme.dart';
 import 'package:budgetbuddy/common/common_svg_widget.dart';
 import 'package:budgetbuddy/common/common_widget.dart';
 import 'package:budgetbuddy/common/constant/constant_assets.dart';
-import 'package:budgetbuddy/features/ai_screen/pages/widget/score_test_animation.dart';
+import 'package:budgetbuddy/common/constant/app_typography.dart';
+import 'package:budgetbuddy/common/widgets/brand_widgets.dart';
+import 'dart:math' as math;
 import 'package:budgetbuddy/features/ai_screen/pages/widget/shared_wdiget.dart';
 import 'package:budgetbuddy/features/ai_screen/providers/ai_providers.dart';
 import 'package:budgetbuddy/features/ai_screen/services/ai_services.dart';
@@ -29,102 +31,95 @@ class OverviewTab extends ConsumerWidget {
     final c = context.c;
 
     return Scaffold(
+      backgroundColor: c.bg,
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(18, 16, 18, 40),
+        padding: const EdgeInsets.fromLTRB(18, 8, 18, 120),
         children: [
           // ── Financial Health Score ───────────────────────────────────────────
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  score.color.withOpacity(0.2),
-                  score.color.withOpacity(0.1),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
+          BrandHeroCard(
             child: Row(
               children: [
-                AwesomeScoreWidget(score: score),
-                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        l.financialHealth,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF9090B0),
-                        ),
-                      ),
+                      Text(l.financialHealth, style: context.heroLabel),
                       const SizedBox(height: 4),
-                      Text(
-                        score.headline,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          height: 1.3,
+                      Text(score.grade, style: context.heroValue),
+                      const SizedBox(height: 6),
+                      Text(score.headline, style: context.heroBody),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                _ScoreRing(score: score.score),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          AppCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("What's behind your score", style: context.t.h4),
+                const SizedBox(height: 12),
+                ...score.factors.map(
+                  (f) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: context.isDark
+                                ? kMidGreen.withValues(alpha: .2)
+                                : kMint,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: CommonSvgWidget(svgName: f.emoji),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      ...score.factors.map(
-                        (f) => Padding(
-                          padding: const EdgeInsets.only(bottom: 6),
-                          child: Row(
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              CommonSvgWidget(svgName: f.emoji),
-                              const SizedBox(width: 6),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          f.resolveLabel(l),
-                                          style: const TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        Text(
-                                          '${f.score}',
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w700,
-                                            color: score.color,
-                                          ),
-                                        ),
-                                      ],
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      f.resolveLabel(l),
+                                      style: context.t.labelLarge,
                                     ),
-                                    const SizedBox(height: 2),
-                                    ProgressBar(
-                                      f.score / 100,
-                                      score.color,
-                                      height: 4,
+                                  ),
+                                  Text(
+                                    '${f.score}',
+                                    style: context.t.labelLarge.copyWith(
+                                      fontWeight: FontWeight.w800,
+                                      color: _factorColor(f.score),
                                     ),
-                                    Text(
-                                      f.resolveDetail(l),
-                                      style: TextStyle(
-                                        fontSize: 9,
-                                        color: c.textMuted,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                              ProgressBar(
+                                f.score / 100,
+                                _factorColor(f.score),
+                                height: 6,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                f.resolveDetail(l),
+                                style: context.t.labelMuted,
                               ),
                             ],
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -186,7 +181,7 @@ class OverviewTab extends ConsumerWidget {
                               : burn.runwayDays < 90
                               ? 'Moderate: ${burn.runwayDays} day runway. Build emergency fund.'
                               : 'Healthy ${burn.runwayDays}-day runway 🎉',
-                          style: TextStyle(
+                          style: AppTypography.labelSmall.copyWith(
                             fontSize: 12,
                             height: 1.4,
                             fontWeight: FontWeight.w600,
@@ -263,13 +258,17 @@ class OverviewTab extends ConsumerWidget {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('⚠️', style: TextStyle(fontSize: 12)),
+                          Text(
+                            '⚠️',
+                            style: AppTypography.labelSmall.copyWith(
+                              fontSize: 12,
+                            ),
+                          ),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
                               w,
-                              style: TextStyle(
-                                fontSize: 11,
+                              style: AppTypography.labelSmall.copyWith(
                                 color: c.textMuted,
                                 height: 1.4,
                               ),
@@ -285,6 +284,7 @@ class OverviewTab extends ConsumerWidget {
           ),
 
           const SizedBox(height: 14),
+          const AdSlot(),
 
           // ── Smart Alerts ─────────────────────────────────────────────────────
           if (alerts.isNotEmpty) ...[
@@ -295,8 +295,7 @@ class OverviewTab extends ConsumerWidget {
                 Chip(
                   label: Text(
                     '${alerts.length}',
-                    style: const TextStyle(
-                      fontSize: 10,
+                    style: AppTypography.caption.copyWith(
                       fontWeight: FontWeight.w700,
                       color: kAccent,
                     ),
@@ -322,7 +321,7 @@ class OverviewTab extends ConsumerWidget {
                   ),
                   child: Row(
                     children: [
-                      Text(a.emoji, style: const TextStyle(fontSize: 20)),
+                      Text(a.emoji, style: AppTypography.h2),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -330,8 +329,7 @@ class OverviewTab extends ConsumerWidget {
                           children: [
                             Text(
                               a.title,
-                              style: TextStyle(
-                                fontSize: 13,
+                              style: AppTypography.labelLarge.copyWith(
                                 fontWeight: FontWeight.w700,
                                 color: Color(a.severityColor),
                               ),
@@ -339,8 +337,7 @@ class OverviewTab extends ConsumerWidget {
                             const SizedBox(height: 3),
                             Text(
                               a.body,
-                              style: TextStyle(
-                                fontSize: 11,
+                              style: AppTypography.labelSmall.copyWith(
                                 color: c.textMuted,
                                 height: 1.4,
                               ),
@@ -402,7 +399,9 @@ class OverviewTab extends ConsumerWidget {
                   const SizedBox(height: 10),
                   Text(
                     l.largestBills,
-                    style: TextStyle(fontSize: 11, color: c.textMuted),
+                    style: AppTypography.labelSmall.copyWith(
+                      color: c.textMuted,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   ...billHealth.largestBills.map(
@@ -410,12 +409,15 @@ class OverviewTab extends ConsumerWidget {
                       padding: const EdgeInsets.only(bottom: 6),
                       child: Row(
                         children: [
-                          Text(b.emoji, style: const TextStyle(fontSize: 16)),
+                          Text(
+                            b.emoji,
+                            style: AppTypography.h4.copyWith(fontSize: 16),
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               b.title,
-                              style: const TextStyle(
+                              style: AppTypography.labelSmall.copyWith(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -423,7 +425,7 @@ class OverviewTab extends ConsumerWidget {
                           ),
                           Text(
                             fmt(b.amount),
-                            style: const TextStyle(
+                            style: AppTypography.labelSmall.copyWith(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
                               color: AppColors.primaryColor,
@@ -445,13 +447,17 @@ class OverviewTab extends ConsumerWidget {
                     ),
                     child: Row(
                       children: [
-                        const Text('🔴', style: TextStyle(fontSize: 14)),
+                        Text(
+                          '🔴',
+                          style: AppTypography.labelLarge.copyWith(
+                            fontSize: 14,
+                          ),
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             '${billHealth.overdueList.map((b) => b.title).take(2).join(', ')} ${l.overdue.toLowerCase()}',
-                            style: TextStyle(
-                              fontSize: 11,
+                            style: AppTypography.labelSmall.copyWith(
                               color: kAccent,
                               fontWeight: FontWeight.w600,
                             ),
@@ -488,16 +494,14 @@ class OverviewTab extends ConsumerWidget {
                           children: [
                             Text(
                               s.title,
-                              style: const TextStyle(
-                                fontSize: 13,
+                              style: AppTypography.labelLarge.copyWith(
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
                             const SizedBox(height: 3),
                             Text(
                               s.body,
-                              style: TextStyle(
-                                fontSize: 11,
+                              style: AppTypography.labelSmall.copyWith(
                                 color: c.textMuted,
                                 height: 1.4,
                               ),
@@ -552,8 +556,7 @@ class OverviewTab extends ConsumerWidget {
                         children: [
                           Text(
                             title,
-                            style: const TextStyle(
-                              fontSize: 13,
+                            style: AppTypography.labelLarge.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                             maxLines: 1,
@@ -561,15 +564,16 @@ class OverviewTab extends ConsumerWidget {
                           ),
                           Text(
                             subtitle,
-                            style: TextStyle(fontSize: 10, color: c.textMuted),
+                            style: AppTypography.caption.copyWith(
+                              color: c.textMuted,
+                            ),
                           ),
                         ],
                       ),
                     ),
                     Text(
                       fmt(amount),
-                      style: const TextStyle(
-                        fontSize: 13,
+                      style: AppTypography.labelLarge.copyWith(
                         fontWeight: FontWeight.w700,
                         color: AppColors.primaryColor,
                       ),
@@ -596,16 +600,91 @@ class _MiniStat extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(label, style: TextStyle(fontSize: 10, color: context.c.textMuted)),
+      Text(
+        label,
+        style: AppTypography.caption.copyWith(color: context.c.textMuted),
+      ),
       const SizedBox(height: 2),
       Text(
         value,
-        style: TextStyle(
-          fontSize: 13,
+        style: AppTypography.labelLarge.copyWith(
           fontWeight: FontWeight.w700,
           color: color,
         ),
       ),
     ],
   );
+}
+
+Color _factorColor(int v) => v >= 70
+    ? kGreen
+    : v >= 40
+    ? kAmber
+    : kAccent;
+
+/// Animated 0–100 ring for the hero card.
+class _ScoreRing extends StatelessWidget {
+  final int score;
+  const _ScoreRing({required this.score});
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 84,
+    height: 84,
+    child: TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: score / 100),
+      duration: const Duration(milliseconds: 1000),
+      curve: Curves.easeOutCubic,
+      builder: (_, v, __) => CustomPaint(
+        painter: _RingPainter(v),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '${(v * 100).round()}',
+                style: context.t.h2.copyWith(color: Colors.white),
+              ),
+              Text('/ 100', style: context.heroLabel.copyWith(fontSize: 9)),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+class _RingPainter extends CustomPainter {
+  final double v;
+  _RingPainter(this.v);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const w = 7.0;
+    final r = (Offset.zero & size).deflate(w / 2);
+    canvas.drawArc(
+      r,
+      0,
+      math.pi * 2,
+      false,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = w
+        ..color = Colors.white.withValues(alpha: 0.18),
+    );
+    canvas.drawArc(
+      r,
+      -math.pi / 2,
+      math.pi * 2 * v,
+      false,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = w
+        ..strokeCap = StrokeCap.round
+        ..color = const Color(0xFF6EE7B7),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_RingPainter o) => o.v != v;
 }

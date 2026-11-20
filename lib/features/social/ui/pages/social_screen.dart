@@ -86,13 +86,16 @@ class _SS extends ConsumerState<SocialScreen>
 
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(62),
-          child: AppTabBar(
-            controller: _tabs,
-            tabs: [
-              AppLocalizations.of(context)!.leaderboard,
-              AppLocalizations.of(context)!.challenges,
-              AppLocalizations.of(context)!.invite,
-            ],
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
+            child: AppTabBar(
+              controller: _tabs,
+              tabs: [
+                AppLocalizations.of(context)!.leaderboard,
+                AppLocalizations.of(context)!.challenges,
+                AppLocalizations.of(context)!.invite,
+              ],
+            ),
           ),
         ),
       ),

@@ -5,6 +5,8 @@ import 'package:budgetbuddy/common/common_widget.dart';
 import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetbuddy/l10n/app_localizations.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:budgetbuddy/common/constant/app_typography.dart';
+import 'package:budgetbuddy/common/widgets/brand_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,59 +25,51 @@ class PredictTab extends ConsumerWidget {
     final c = context.c;
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(18, 16, 18, 40),
+      padding: const EdgeInsets.fromLTRB(18, 8, 18, 120),
       children: [
         // ── Next month forecast card ─────────────────────────────────────────
-        Container(
-          padding: const EdgeInsets.all(18),
-          decoration: gradBox(AppColors.primaryColor),
+        BrandHeroCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('🔮', style: TextStyle(fontSize: 24)),
-              const SizedBox(height: 8),
-              Text(
-                l.nextMonthForecast,
-                style: TextStyle(fontSize: 11, color: c.textMuted),
-              ),
-              const SizedBox(height: 4),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    fmt(pred.nextMonthExpense),
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.primaryColor,
-                    ),
+                  Expanded(
+                    child: Text(l.nextMonthForecast, style: context.heroLabel),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    l.predictSpend,
-                    style: TextStyle(fontSize: 12, color: c.textMuted),
-                  ),
+                  Text('🔮', style: AppTypography.h2.copyWith(fontSize: 22)),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 2),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  fmt(pred.nextMonthExpense),
+                  style: context.heroValue,
+                ),
+              ),
+              Text(l.predictSpend, style: context.heroBody),
+              const SizedBox(height: 14),
               Row(
                 children: [
-                  PredStat(
-                    l.predictedIncome,
-                    fmt(pred.nextMonthIncome),
-                    kGreen,
+                  Expanded(
+                    child: HeroChip(
+                      icon: Icons.south_west_rounded,
+                      label: l.predictedIncome,
+                      value: fmt(pred.nextMonthIncome),
+                    ),
                   ),
-                  Container(
-                    width: 1,
-                    height: 30,
-                    color: AppColors.primaryColor.withOpacity(0.2),
-                    margin: const EdgeInsets.symmetric(horizontal: 12),
-                  ),
-                  PredStat(
-                    l.estBalance,
-                    fmt(pred.futureBalance.abs()),
-                    pred.futureBalance >= 0 ? kGreen : kAccent,
-                    prefix: pred.futureBalance >= 0 ? '+' : '-',
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: HeroChip(
+                      icon: pred.futureBalance >= 0
+                          ? Icons.savings_outlined
+                          : Icons.warning_amber_rounded,
+                      label: l.estBalance,
+                      value:
+                          '${pred.futureBalance >= 0 ? '+' : '-'}${fmt(pred.futureBalance.abs())}',
+                    ),
                   ),
                 ],
               ),
@@ -92,7 +86,7 @@ class PredictTab extends ConsumerWidget {
             children: [
               Text(
                 l.nextMonthCashFlow,
-                style: const TextStyle(
+                style: AppTypography.labelLarge.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
@@ -155,13 +149,17 @@ class PredictTab extends ConsumerWidget {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('⚠️', style: TextStyle(fontSize: 12)),
+                          Text(
+                            '⚠️',
+                            style: AppTypography.labelSmall.copyWith(
+                              fontSize: 12,
+                            ),
+                          ),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
                               w,
-                              style: TextStyle(
-                                fontSize: 11,
+                              style: AppTypography.labelSmall.copyWith(
                                 color: c.textMuted,
                                 height: 1.4,
                               ),
@@ -186,7 +184,7 @@ class PredictTab extends ConsumerWidget {
             children: [
               Text(
                 l.categoryForecast,
-                style: const TextStyle(
+                style: AppTypography.labelLarge.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
@@ -195,84 +193,187 @@ class PredictTab extends ConsumerWidget {
               if (pred.byCategory.isEmpty)
                 Text(
                   l.addMoreExpenseAcross,
-                  style: TextStyle(fontSize: 12, color: c.textMuted),
+                  style: AppTypography.labelSmall.copyWith(
+                    fontSize: 12,
+                    color: c.textMuted,
+                  ),
                 )
               else
-                ...pred.byCategory.map(
-                  (p) => Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: Row(
-                      children: [
-                        EmojiBox(
-                          p.emoji,
-                          AppColors.primaryColor.withOpacity(0.1),
-                          size: 32,
-                          iconSize: 14,
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                ...pred.byCategory
+                    .take(3)
+                    .map(
+                      (p) => Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Row(
+                          children: [
+                            EmojiBox(
+                              p.emoji,
+                              AppColors.primaryColor.withOpacity(0.1),
+                              size: 32,
+                              iconSize: 14,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        p.category,
+                                        style: AppTypography.labelSmall
+                                            .copyWith(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            p.isUp
+                                                ? Icons.trending_up_rounded
+                                                : Icons.trending_down_rounded,
+                                            size: 14,
+                                            color: p.isUp ? kAccent : kGreen,
+                                          ),
+                                          const SizedBox(width: 3),
+                                          Text(
+                                            '${p.changePercent.abs().toInt()}%',
+                                            style: AppTypography.labelSmall
+                                                .copyWith(
+                                                  fontWeight: FontWeight.w700,
+                                                  color: p.isUp
+                                                      ? kAccent
+                                                      : kGreen,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  ProgressBar(
+                                    (p.predicted /
+                                            (pred.nextMonthExpense > 0
+                                                ? pred.nextMonthExpense
+                                                : 1))
+                                        .clamp(0, 1),
+                                    p.isUp
+                                        ? kAccent.withOpacity(0.8)
+                                        : kGreen.withOpacity(0.8),
+                                    height: 5,
+                                    clip: 3,
+                                  ),
+                                  const SizedBox(height: 2),
                                   Text(
-                                    p.category,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
+                                    '${fmt(p.predicted)} predicted (was ${fmt(p.lastMonth)})',
+                                    style: AppTypography.caption.copyWith(
+                                      color: c.textMuted,
                                     ),
                                   ),
-                                  Row(
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+              if (pred.byCategory.length > 3)
+                RewardGate(
+                  feature: 'predict_categories',
+                  title:
+                      '+${pred.byCategory.length - 3} more category forecasts',
+                  subtitle: 'Watch a short ad · unlocked for 24h',
+                  child: Column(
+                    children: pred.byCategory
+                        .skip(3)
+                        .map(
+                          (p) => Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: Row(
+                              children: [
+                                EmojiBox(
+                                  p.emoji,
+                                  AppColors.primaryColor.withOpacity(0.1),
+                                  size: 32,
+                                  iconSize: 14,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Icon(
-                                        p.isUp
-                                            ? Icons.trending_up_rounded
-                                            : Icons.trending_down_rounded,
-                                        size: 14,
-                                        color: p.isUp ? kAccent : kGreen,
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            p.category,
+                                            style: AppTypography.labelSmall
+                                                .copyWith(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                p.isUp
+                                                    ? Icons.trending_up_rounded
+                                                    : Icons
+                                                          .trending_down_rounded,
+                                                size: 14,
+                                                color: p.isUp
+                                                    ? kAccent
+                                                    : kGreen,
+                                              ),
+                                              const SizedBox(width: 3),
+                                              Text(
+                                                '${p.changePercent.abs().toInt()}%',
+                                                style: AppTypography.labelSmall
+                                                    .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: p.isUp
+                                                          ? kAccent
+                                                          : kGreen,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
-                                      const SizedBox(width: 3),
+                                      const SizedBox(height: 4),
+                                      ProgressBar(
+                                        (p.predicted /
+                                                (pred.nextMonthExpense > 0
+                                                    ? pred.nextMonthExpense
+                                                    : 1))
+                                            .clamp(0, 1),
+                                        p.isUp
+                                            ? kAccent.withOpacity(0.8)
+                                            : kGreen.withOpacity(0.8),
+                                        height: 5,
+                                        clip: 3,
+                                      ),
+                                      const SizedBox(height: 2),
                                       Text(
-                                        '${p.changePercent.abs().toInt()}%',
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w700,
-                                          color: p.isUp ? kAccent : kGreen,
+                                        '${fmt(p.predicted)} predicted (was ${fmt(p.lastMonth)})',
+                                        style: AppTypography.caption.copyWith(
+                                          color: c.textMuted,
                                         ),
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              ProgressBar(
-                                (p.predicted /
-                                        (pred.nextMonthExpense > 0
-                                            ? pred.nextMonthExpense
-                                            : 1))
-                                    .clamp(0, 1),
-                                p.isUp
-                                    ? kAccent.withOpacity(0.8)
-                                    : kGreen.withOpacity(0.8),
-                                height: 5,
-                                clip: 3,
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                '${fmt(p.predicted)} predicted (was ${fmt(p.lastMonth)})',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: c.textMuted,
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        )
+                        .toList(),
                   ),
                 ),
             ],
@@ -280,6 +381,8 @@ class PredictTab extends ConsumerWidget {
         ),
 
         const SizedBox(height: 14),
+
+        const AdSlot(),
 
         // ── Upcoming bills impact ────────────────────────────────────────────
         if (billHealth.dueSoonList.isNotEmpty ||
@@ -290,7 +393,7 @@ class PredictTab extends ConsumerWidget {
               children: [
                 Text(
                   l.upcomingBillImpact,
-                  style: const TextStyle(
+                  style: AppTypography.labelLarge.copyWith(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                   ),
@@ -330,7 +433,7 @@ class PredictTab extends ConsumerWidget {
                 children: [
                   Text(
                     l.incomeGrowth,
-                    style: const TextStyle(
+                    style: AppTypography.labelLarge.copyWith(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                     ),
@@ -342,7 +445,10 @@ class PredictTab extends ConsumerWidget {
               if (history.values.every((v) => v == 0))
                 Text(
                   l.logIncome,
-                  style: TextStyle(fontSize: 12, color: c.textMuted),
+                  style: AppTypography.labelSmall.copyWith(
+                    fontSize: 12,
+                    color: c.textMuted,
+                  ),
                 )
               else
                 SizedBox(height: 100, child: _IncomeChart(data: history)),
@@ -370,7 +476,7 @@ class _FlowRow extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: AppTypography.labelSmall.copyWith(
             fontSize: 12,
             fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
             color: bold ? null : context.c.textMuted,
@@ -378,7 +484,7 @@ class _FlowRow extends StatelessWidget {
         ),
         Text(
           value,
-          style: TextStyle(
+          style: AppTypography.labelSmall.copyWith(
             fontSize: 12,
             fontWeight: FontWeight.w700,
             color: color,
@@ -474,7 +580,13 @@ class _BarLegend extends StatelessWidget {
         ),
       ),
       const SizedBox(width: 4),
-      Text(label, style: TextStyle(fontSize: 9, color: context.c.textMuted)),
+      Text(
+        label,
+        style: AppTypography.caption.copyWith(
+          fontSize: 9,
+          color: context.c.textMuted,
+        ),
+      ),
     ],
   );
 }
@@ -504,7 +616,7 @@ class _BillImpactTile extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 18)),
+          Text(emoji, style: AppTypography.h3.copyWith(fontSize: 18)),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -512,23 +624,23 @@ class _BillImpactTile extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: TextStyle(
-                    fontSize: 11,
+                  style: AppTypography.labelSmall.copyWith(
                     fontWeight: FontWeight.w700,
                     color: color,
                   ),
                 ),
                 Text(
                   bills.take(2).map((b) => b.title as String).join(', '),
-                  style: TextStyle(fontSize: 10, color: context.c.textMuted),
+                  style: AppTypography.caption.copyWith(
+                    color: context.c.textMuted,
+                  ),
                 ),
               ],
             ),
           ),
           Text(
             fmt(total),
-            style: TextStyle(
-              fontSize: 13,
+            style: AppTypography.labelLarge.copyWith(
               fontWeight: FontWeight.w700,
               color: color,
             ),
@@ -551,8 +663,7 @@ class _GrowthPill extends StatelessWidget {
     ),
     child: Text(
       '${growth >= 0 ? '+' : ''}${growth.toStringAsFixed(1)}% MoM',
-      style: TextStyle(
-        fontSize: 11,
+      style: AppTypography.labelSmall.copyWith(
         fontWeight: FontWeight.w700,
         color: growth >= 0 ? kGreen : kAccent,
       ),
@@ -587,7 +698,10 @@ class _IncomeChart extends StatelessWidget {
               reservedSize: 22,
               getTitlesWidget: (v, _) => Text(
                 labels[v.toInt() < labels.length ? v.toInt() : 0],
-                style: TextStyle(fontSize: 9, color: context.c.textMuted),
+                style: AppTypography.caption.copyWith(
+                  fontSize: 9,
+                  color: context.c.textMuted,
+                ),
               ),
             ),
           ),

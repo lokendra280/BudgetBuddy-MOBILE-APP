@@ -21,9 +21,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ai => 'AI';
 
   @override
-  String get settings => '设置';
-
-  @override
   String get appearance => '外观';
 
   @override
@@ -46,15 +43,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get netSaving => '净储蓄';
-
-  @override
-  String get expense => '支出';
-
-  @override
-  String get income => '收入';
-
-  @override
-  String get transactions => '交易记录';
 
   @override
   String get last7Days => '最近7天';
@@ -93,9 +81,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get social => '社区';
 
   @override
-  String get aiInsight => 'AI 分析';
-
-  @override
   String get netDeficit => '净亏损';
 
   @override
@@ -115,6 +100,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get bankStyle => '银行风格账单 0 笔交易';
+
+  @override
+  String get transactions => '交易记录';
 
   @override
   String get items => '项目';
@@ -162,9 +150,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get health => '健康';
 
   @override
-  String get bill => '账单';
-
-  @override
   String get entertainment => '娱乐';
 
   @override
@@ -172,9 +157,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get food => '餐饮';
-
-  @override
-  String get other => '其他';
 
   @override
   String get welcomeBack => '欢迎回来';
@@ -255,9 +237,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get signIntoApply => '登录以使用推荐码并获得连续天数奖励';
 
   @override
-  String get shareReport => '分享我的报告';
-
-  @override
   String get shareMonthly => '以图片形式分享月度支出摘要';
 
   @override
@@ -291,7 +270,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addEntry => '添加记录';
 
   @override
-  String get category => '类别';
+  String get expense => '支出';
+
+  @override
+  String get income => '收入';
+
+  @override
+  String get other => '其他';
 
   @override
   String get row => '行';
@@ -307,6 +292,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get saveExpense => '保存支出';
+
+  @override
+  String get aiInsight => 'AI 分析';
 
   @override
   String get overView => '概览';
@@ -354,16 +342,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get wellAnalysisPatternOnce => '积累更多数据后将进行模式分析';
 
   @override
-  String get subscriptions => '订阅与定期支出';
-
-  @override
   String get thisMonth => '本月';
 
   @override
   String get spend => '支出';
-
-  @override
-  String get saved => '已储蓄';
 
   @override
   String get achieved => '已达成';
@@ -441,6 +423,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get insight => '分析';
 
   @override
+  String get shareReport => '分享我的报告';
+
+  @override
+  String get settings => '设置';
+
+  @override
   String get about => '关于';
 
   @override
@@ -450,6 +438,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get aiSpending => 'AI 支出分析';
 
   @override
+  String get subscriptions => '订阅与定期支出';
+
+  @override
   String get savingGoals => '储蓄目标';
 
   @override
@@ -457,6 +448,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get monthlyCommitments => '每月固定支出';
+
+  @override
+  String get bill => '账单';
 
   @override
   String get active => '有效';
@@ -480,9 +474,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addBillEmi => '添加账单 / 分期';
 
   @override
-  String get amount => '金额';
-
-  @override
   String get example => '账单名称（如：Netflix、房贷）';
 
   @override
@@ -495,9 +486,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get dueOnDayOfMonth => '每月到期日';
 
   @override
-  String get remindMeBefore => '提前提醒';
-
-  @override
   String get addSchedule => '添加并设置提醒';
 
   @override
@@ -505,21 +493,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get savingRate => '储蓄率';
-
-  @override
-  String get budgetControl => '预算控制';
-
-  @override
-  String get expenseBalance => '支出平衡';
-
-  @override
-  String get consistency => '稳定性';
-
-  @override
-  String get billLoad => '账单负担';
-
-  @override
-  String get goalProgress => '目标进度';
 
   @override
   String get burnRate => '消耗率与周期';
@@ -562,9 +535,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get ofIncome => '占收入比';
-
-  @override
-  String get overdue => '已逾期';
 
   @override
   String get monthlyBills => '每月账单';
@@ -672,9 +642,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get getRemindedToLog => '获取记录支出的提醒';
 
   @override
-  String get dayStreak => '天连续记录';
-
-  @override
   String get keepLoggingDaily => '坚持每天记录以维持连续天数';
 
   @override
@@ -691,12 +658,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get deleteAccountConfirm => '确定吗？此操作无法撤销。';
-
-  @override
-  String get cancel => '取消';
-
-  @override
-  String get delete => '删除';
 
   @override
   String get budgetUpdated => '预算已更新';
@@ -738,13 +699,28 @@ class AppLocalizationsZh extends AppLocalizations {
   String get targetAmount => '目标金额';
 
   @override
-  String get days => '天';
-
-  @override
   String get createGoal => '创建目标';
 
   @override
   String get savingsRate => '储蓄率';
+
+  @override
+  String get budgetControl => '预算控制';
+
+  @override
+  String get expenseBalance => '支出平衡';
+
+  @override
+  String get consistency => '稳定性';
+
+  @override
+  String get billLoad => '账单负担';
+
+  @override
+  String get goalProgress => '目标进度';
+
+  @override
+  String get saved => '已储蓄';
 
   @override
   String get ofLimitUsed => '已用限额';
@@ -774,6 +750,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get inProgress => '进行中';
 
   @override
+  String get dayStreak => '天连续记录';
+
+  @override
   String get top => '顶部';
 
   @override
@@ -797,6 +776,12 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get cancel => '取消';
+
+  @override
+  String get delete => '删除';
+
+  @override
   String get yourLoans => '您的贷款';
 
   @override
@@ -804,6 +789,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get monthlyEmis => '月度还款';
+
+  @override
+  String get overdue => '已逾期';
 
   @override
   String get missed => '已错过';
@@ -821,15 +809,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addBillLabel => '添加账单';
 
   @override
-  String get addLoan => '添加贷款';
-
-  @override
   String get recordPayment => '记录还款';
 
   @override
   String emiPaymentHint(Object amount, Object title) {
     return '$title · 月供 $amount';
   }
+
+  @override
+  String get amount => '金额';
 
   @override
   String get noteOptional => '备注（可选）';
@@ -839,9 +827,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get reducesPrincipal => '直接减少本金余额';
-
-  @override
-  String get saving => '保存中…';
 
   @override
   String get recordExtraPayment => '记录额外还款';
@@ -863,6 +848,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get lenderUnknown => '未知';
+
+  @override
+  String get category => '类别';
 
   @override
   String get principalAmount => '贷款本金';
@@ -891,13 +879,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get emiDueDay => '还款日';
 
   @override
+  String get remindMeBefore => '提前提醒';
+
+  @override
   String get day => '天';
+
+  @override
+  String get days => '天';
 
   @override
   String get notesOptional => '备注（可选）';
 
   @override
+  String get saving => '保存中…';
+
+  @override
   String get updateLoan => '更新贷款';
+
+  @override
+  String get addLoan => '添加贷款';
 
   @override
   String get addHomeWidget => '添加主屏幕小组件';

@@ -9,6 +9,8 @@ import 'package:budgetbuddy/common/common_widget.dart';
 import 'package:budgetbuddy/features/ai_screen/services/goal_service.dart';
 import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetbuddy/l10n/app_localizations.dart';
+import 'package:budgetbuddy/common/widgets/brand_widgets.dart';
+import 'package:budgetbuddy/common/constant/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -58,7 +60,10 @@ class _GoalsState extends ConsumerState<GoalsTab> {
               const SizedBox(height: 16),
               Text(
                 AppLocalizations.of(context)!.newSavingGoal,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                style: AppTypography.h4.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 16),
               _Field(name, ctx, AppLocalizations.of(context)!.goalNam),
@@ -141,10 +146,7 @@ class _GoalsState extends ConsumerState<GoalsTab> {
               children: [
                 Text(
                   'Add to "${g.name}"',
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: AppTypography.h4.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 14),
                 _Field(
@@ -183,7 +185,7 @@ class _GoalsState extends ConsumerState<GoalsTab> {
     final c = context.c;
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(18, 16, 18, 40),
+      padding: const EdgeInsets.fromLTRB(18, 8, 18, 120),
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -207,8 +209,7 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                     SizedBox(width: 4),
                     Text(
                       AppLocalizations.of(context)!.newGoal,
-                      style: TextStyle(
-                        fontSize: 11,
+                      style: AppTypography.labelSmall.copyWith(
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
                       ),
@@ -230,12 +231,15 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                 const SizedBox(height: 12),
                 Text(
                   AppLocalizations.of(context)!.noSaving,
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                  style: AppTypography.h4.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   AppLocalizations.of(context)!.createAGoal,
-                  style: TextStyle(fontSize: 12, color: c.textMuted),
+                  style: AppTypography.labelSmall.copyWith(
+                    fontSize: 12,
+                    color: c.textMuted,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
@@ -275,7 +279,7 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                           child: Center(
                             child: Text(
                               g.emoji,
-                              style: const TextStyle(fontSize: 22),
+                              style: AppTypography.h2.copyWith(fontSize: 22),
                             ),
                           ),
                         ),
@@ -286,15 +290,14 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                             children: [
                               Text(
                                 g.name,
-                                style: const TextStyle(
+                                style: AppTypography.labelLarge.copyWith(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
                               Text(
                                 '${g.daysLeft} days · Save $sym${g.dailySuggestion.toStringAsFixed(0)}/day',
-                                style: TextStyle(
-                                  fontSize: 11,
+                                style: AppTypography.labelSmall.copyWith(
                                   color: c.textMuted,
                                 ),
                               ),
@@ -319,14 +322,17 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                       children: [
                         Text(
                           '$sym${g.saved.toStringAsFixed(0)} saved',
-                          style: const TextStyle(
+                          style: AppTypography.labelSmall.copyWith(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         Text(
                           'Target: $sym${g.target.toStringAsFixed(0)}',
-                          style: TextStyle(fontSize: 12, color: c.textMuted),
+                          style: AppTypography.labelSmall.copyWith(
+                            fontSize: 12,
+                            color: c.textMuted,
+                          ),
                         ),
                       ],
                     ),
@@ -343,8 +349,7 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                       children: [
                         Text(
                           '${(g.progress * 100).toInt()}% complete',
-                          style: TextStyle(
-                            fontSize: 11,
+                          style: AppTypography.labelSmall.copyWith(
                             color: g.progress >= 1 ? kGreen : c.textMuted,
                             fontWeight: g.progress >= 1
                                 ? FontWeight.w700
@@ -363,10 +368,9 @@ class _GoalsState extends ConsumerState<GoalsTab> {
                                 color: AppColors.primaryColor.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              child: const Text(
+                              child: Text(
                                 '+ Add savings',
-                                style: TextStyle(
-                                  fontSize: 11,
+                                style: AppTypography.labelSmall.copyWith(
                                   fontWeight: FontWeight.w700,
                                   color: AppColors.primaryColor,
                                 ),
@@ -380,6 +384,8 @@ class _GoalsState extends ConsumerState<GoalsTab> {
               ),
             ),
           ),
+        const SizedBox(height: 14),
+        const AdSlot(),
       ],
     );
   }

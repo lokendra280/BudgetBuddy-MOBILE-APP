@@ -81,7 +81,22 @@
       <intent-filter>
         <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
       </intent-filter>
-      
+      <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/quick_add_widget_info"/>
+    </receiver>
+
+    <!-- Daily Streak home screen widget (piggy mascot + streak + budget) -->
+    <receiver
+        android:name=".StreakWidgetProvider"
+        android:exported="true"
+        android:label="Daily Streak">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+      </intent-filter>
+      <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/streak_widget_info"/>
     </receiver>
 
     <receiver
@@ -100,14 +115,14 @@
     </receiver>
 
     <!-- SMS Receiver -->
-    <receiver
+    <!-- <receiver
         android:name="com.shounakmulay.telephony.sms.IncomingSmsReceiver"
         android:permission="android.permission.BROADCAST_SMS"
         android:exported="true">
       <intent-filter>
         <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
       </intent-filter>
-    </receiver>
+    </receiver> -->
 
   </application>
 

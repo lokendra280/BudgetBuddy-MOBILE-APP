@@ -1,6 +1,7 @@
 import 'package:budgetbuddy/common/widgets/custom_appbar.dart';
 import 'package:budgetbuddy/features/ai_screen/models/goals_transaction.dart';
 import 'package:budgetbuddy/features/ai_screen/pages/widget/goal_transaction_card.dart';
+import 'package:budgetbuddy/common/constant/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -60,8 +61,7 @@ class _DateHeader extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 6),
       child: Text(
         date,
-        style: const TextStyle(
-          fontSize: 13,
+        style: AppTypography.labelLarge.copyWith(
           fontWeight: FontWeight.w600,
           color: Colors.grey,
         ),

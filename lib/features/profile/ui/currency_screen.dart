@@ -1,6 +1,8 @@
 import 'package:budgetbuddy/common/app_theme.dart';
-import 'package:budgetbuddy/common/common_widget.dart';
 import 'package:budgetbuddy/common/constant/app_typography.dart';
+import 'package:budgetbuddy/common/language_screen.dart';
+import 'package:budgetbuddy/common/widgets/brand_widgets.dart';
+import 'package:budgetbuddy/common/widgets/piggy_mascot.dart';
 import 'package:budgetbuddy/features/auth/services/user_profile_service.dart';
 import 'package:budgetbuddy/features/dashboard/pages/dashboard_page.dart';
 import 'package:budgetbuddy/features/expense/models/expense.dart';
@@ -8,9 +10,10 @@ import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Onboarding Step 2 — Currency Screen
+// Onboarding step 2 — choose currency, then go to the dashboard.
 // ─────────────────────────────────────────────────────────────────────────────
 
 class CurrencyScreen extends ConsumerStatefulWidget {
@@ -21,360 +24,343 @@ class CurrencyScreen extends ConsumerStatefulWidget {
 }
 
 class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
-  late String _sel;
-
-  @override
-  void initState() {
-    super.initState();
-    final stored = ref.read(currencyProvider);
-    _sel = stored.isNotEmpty ? stored : widget.suggestedCurrency;
-  }
+  late String _sel = widget.suggestedCurrency;
+  bool _saving = false;
 
   Future<void> _confirm() async {
     HapticFeedback.mediumImpact();
+    setState(() => _saving = true);
     await ref.read(expenseProvider.notifier).updateBudget(currency: _sel);
     UserProfileService.saveProfile(currency: _sel);
     if (!mounted) return;
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => const DashboardPage()),
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) => const DashboardPage(),
+        transitionsBuilder: (_, a, __, child) =>
+            FadeTransition(opacity: a, child: child),
+        transitionDuration: const Duration(milliseconds: 420),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final c = context.c;
-    final selInfo = currencyOf(_sel);
-
     return Scaffold(
-      backgroundColor: c.bg,
-      resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              _StepBar(step: 2, total: 2),
-              const SizedBox(height: 24),
-
-              const Text('💱', style: TextStyle(fontSize: 40)),
-              const SizedBox(height: 12),
-              Text('Choose your currency', style: context.t.h1),
-              const SizedBox(height: 6),
-              Text(
-                'All amounts will be shown in your preferred currency.',
-                style: context.t.bodySub,
-              ),
-
-              const SizedBox(height: 20),
-
-              // ── Currency grid ─────────────────────────────────────────────
-              Expanded(
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    childAspectRatio: 1.65,
-                  ),
-                  itemCount: kCurrencies.length,
-                  itemBuilder: (_, i) {
-                    final cur = kCurrencies[i];
-                    final isSel = _sel == cur.code;
-                    return GestureDetector(
-                      onTap: () {
-                        HapticFeedback.selectionClick();
-                        setState(() => _sel = cur.code);
-                      },
-                      child: _CurrencyCard(info: cur, selected: isSel),
-                    );
-                  },
-                ),
-              ),
-
-              const SizedBox(height: 14),
-
-              // ── Preview banner ─────────────────────────────────────────────
-              _CurrencyPreviewBanner(info: selInfo),
-
-              const SizedBox(height: 14),
-
-              AppButton(
-                label: 'Get Started',
-                onTap: _confirm,
-                icon: Icons.arrow_forward_rounded,
-              ),
-            ],
-          ),
+      backgroundColor: context.c.bg,
+      resizeToAvoidBottomInset: true,
+      body: _CurrencyBody(
+        selected: _sel,
+        suggested: widget.suggestedCurrency,
+        header: OnboardingStepHeader(
+          step: 2,
+          total: 2,
+          mascot: PiggyMascot(size: 54),
+          bubble: '${currencyOf(_sel).symbol} ready!',
+          title: 'Pick your currency',
+          subtitle: 'Every amount in the app will use it.',
         ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Settings — Currency Picker Page
-// ─────────────────────────────────────────────────────────────────────────────
-
-class CurrencyPickerPage extends ConsumerWidget {
-  const CurrencyPickerPage({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final c = context.c;
-    final selectedCode = ref.watch(currencyProvider);
-
-    return Scaffold(
-      backgroundColor: c.bg,
-      appBar: AppBar(
-        backgroundColor: c.surface,
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text('Select Currency', style: context.t.appBarTitle),
-        centerTitle: true,
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(18),
-        itemCount: kCurrencies.length,
-        itemBuilder: (_, i) {
-          final cur = kCurrencies[i];
-          final selected = cur.code == selectedCode;
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: GestureDetector(
-              onTap: () async {
-                HapticFeedback.selectionClick();
-                await ref
-                    .read(expenseProvider.notifier)
-                    .updateBudget(currency: cur.code);
-                UserProfileService.saveProfile(currency: cur.code);
-                if (context.mounted) Navigator.pop(context);
-              },
-              child: _CurrencyListTile(info: cur, selected: selected),
-            ),
-          );
+        onSelect: (code) {
+          HapticFeedback.selectionClick();
+          setState(() => _sel = code);
         },
+        cta: BottomCta(label: 'Get Started', busy: _saving, onTap: _confirm),
       ),
     );
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Shared private widgets — reused by both screens
+// Settings — same design; picking a currency saves and closes.
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// Grid card used in onboarding CurrencyScreen.
-class _CurrencyCard extends StatelessWidget {
-  final CurrencyInfo info;
-  final bool selected;
-  const _CurrencyCard({required this.info, required this.selected});
+class CurrencyPickerPage extends ConsumerStatefulWidget {
+  const CurrencyPickerPage({super.key});
+  @override
+  ConsumerState<CurrencyPickerPage> createState() => _CurrencyPickerState();
+}
+
+class _CurrencyPickerState extends ConsumerState<CurrencyPickerPage> {
+  late String _sel = ref.read(currencyProvider);
+  bool _saving = false;
+
+  Future<void> _save() async {
+    HapticFeedback.mediumImpact();
+    setState(() => _saving = true);
+    await ref.read(expenseProvider.notifier).updateBudget(currency: _sel);
+    UserProfileService.saveProfile(currency: _sel);
+    if (mounted) Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final c = context.c;
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: selected ? AppColors.primaryColor.withOpacity(0.08) : c.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: selected ? AppColors.primaryColor : c.border,
-          width: selected ? 2 : 1,
+    final current = ref.watch(currencyProvider);
+    return Scaffold(
+      backgroundColor: context.c.bg,
+      body: _CurrencyBody(
+        selected: _sel,
+        suggested: current,
+        suggestedLabel: 'Current',
+        header: OnboardingStepHeader(
+          step: 1,
+          total: 1,
+          showSteps: false,
+          onBack: () => Navigator.pop(context),
+          mascot: PiggyMascot(size: 50),
+          bubble: '${currencyOf(_sel).symbol} it is!',
+          title: 'Currency',
+          subtitle: 'New entries use this currency. Past entries keep theirs.',
         ),
-        boxShadow: !context.isDark && !selected
-            ? [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ]
-            : null,
+        onSelect: (code) {
+          HapticFeedback.selectionClick();
+          setState(() => _sel = code);
+        },
+        cta: BottomCta(
+          label: _sel == current ? 'Done' : 'Save',
+          busy: _saving,
+          onTap: _sel == current ? () => Navigator.pop(context) : _save,
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared body: header · search · suggested · list · preview · CTA
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _CurrencyBody extends StatefulWidget {
+  final String selected;
+  final String suggested;
+  final String suggestedLabel;
+  final Widget header;
+  final Widget cta;
+  final ValueChanged<String> onSelect;
+
+  const _CurrencyBody({
+    required this.selected,
+    required this.suggested,
+    required this.header,
+    required this.cta,
+    required this.onSelect,
+    this.suggestedLabel = 'Suggested for you',
+  });
+
+  @override
+  State<_CurrencyBody> createState() => _CurrencyBodyState();
+}
+
+class _CurrencyBodyState extends State<_CurrencyBody> {
+  String _q = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final q = _q.trim().toLowerCase();
+    final filtered = kCurrencies.where((c) {
+      if (q.isEmpty) return c.code != widget.suggested;
+      return c.code.toLowerCase().contains(q) ||
+          c.name.toLowerCase().contains(q) ||
+          c.symbol.toLowerCase().contains(q);
+    }).toList();
+    final suggestedInfo = kCurrencies
+        .where((c) => c.code == widget.suggested)
+        .firstOrNull;
+
+    return Column(
+      children: [
+        widget.header,
+        Padding(
+          padding: const EdgeInsets.fromLTRB(18, 6, 18, 8),
+          child: _SearchField(onChanged: (v) => setState(() => _q = v)),
+        ),
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(18, 4, 18, 16),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             children: [
-              Text(info.flag, style: const TextStyle(fontSize: 20)),
-              const Spacer(),
-              if (selected)
-                Container(
-                  width: 18,
-                  height: 18,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primaryColor,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.check_rounded,
-                    size: 12,
-                    color: Colors.white,
+              _PreviewCard(info: currencyOf(widget.selected)),
+              const SizedBox(height: 18),
+              if (q.isEmpty && suggestedInfo != null) ...[
+                SectionHeader(widget.suggestedLabel),
+                _CurrencyTile(
+                  info: suggestedInfo,
+                  selected: widget.selected == suggestedInfo.code,
+                  onTap: () => widget.onSelect(suggestedInfo.code),
+                ),
+                const SizedBox(height: 18),
+                const SectionHeader('All currencies'),
+              ],
+              if (filtered.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 32),
+                  child: Center(
+                    child: Text(
+                      'No currency matches "$_q"',
+                      style: context.t.bodySub,
+                    ),
                   ),
                 ),
+              for (final cur in filtered) ...[
+                _CurrencyTile(
+                  info: cur,
+                  selected: widget.selected == cur.code,
+                  onTap: () => widget.onSelect(cur.code),
+                ),
+                const SizedBox(height: 8),
+              ],
             ],
           ),
-          const SizedBox(height: 6),
-          Text(
-            '${info.name} (${info.code})',
-            style: context.t.caption.colored(
-              selected ? AppColors.primaryColor : context.c.textSub,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+        ),
+        widget.cta,
+      ],
+    );
+  }
+}
+
+class _SearchField extends StatelessWidget {
+  final ValueChanged<String> onChanged;
+  const _SearchField({required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return TextField(
+      onChanged: onChanged,
+      textInputAction: TextInputAction.search,
+      style: context.t.bodyMedium,
+      decoration: InputDecoration(
+        hintText: 'Search currency or code',
+        hintStyle: context.t.bodySub,
+        prefixIcon: Icon(Icons.search_rounded, color: c.textMuted),
+        filled: true,
+        fillColor: c.card,
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(vertical: 13),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: c.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: c.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: kMidGreen, width: 1.4),
+        ),
       ),
     );
   }
 }
 
-/// List row used in settings CurrencyPickerPage.
-class _CurrencyListTile extends StatelessWidget {
+class _CurrencyTile extends StatelessWidget {
   final CurrencyInfo info;
   final bool selected;
-  const _CurrencyListTile({required this.info, required this.selected});
+  final VoidCallback onTap;
+  const _CurrencyTile({
+    required this.info,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final c = context.c;
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: selected ? AppColors.primaryColor.withOpacity(0.08) : c.card,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: selected ? AppColors.primaryColor : c.border,
-          width: selected ? 1.5 : 1,
-        ),
-      ),
+    return SelectableCard(
+      selected: selected,
+      onTap: onTap,
       child: Row(
         children: [
           Text(info.flag, style: const TextStyle(fontSize: 26)),
-          const SizedBox(width: 14),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${info.name} (${info.code})',
-                  style: context.t.labelLarge.colored(
-                    selected ? AppColors.primaryColor : context.textPrimary,
-                  ),
+                  info.name,
+                  style: context.t.labelLarge.weighted(FontWeight.w700),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 2),
-                Text('Symbol: ${info.symbol}', style: context.t.labelMuted),
+                Text(info.code, style: context.t.labelMuted),
               ],
             ),
           ),
-          _SelectionDot(selected: selected),
-        ],
-      ),
-    );
-  }
-}
-
-/// Green check dot / empty circle indicator.
-class _SelectionDot extends StatelessWidget {
-  final bool selected;
-  const _SelectionDot({required this.selected});
-
-  @override
-  Widget build(BuildContext context) {
-    if (selected) {
-      return Container(
-        width: 22,
-        height: 22,
-        decoration: const BoxDecoration(
-          color: AppColors.primaryColor,
-          shape: BoxShape.circle,
-        ),
-        child: const Icon(Icons.check_rounded, size: 14, color: Colors.white),
-      );
-    }
-    return Container(
-      width: 22,
-      height: 22,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: context.c.border, width: 1.5),
-      ),
-    );
-  }
-}
-
-/// Bottom preview banner showing selected currency.
-class _CurrencyPreviewBanner extends StatelessWidget {
-  final CurrencyInfo info;
-  const _CurrencyPreviewBanner({required this.info});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: kGreen.withOpacity(0.07),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: kGreen.withOpacity(0.2)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.check_circle_rounded, color: kGreen, size: 16),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              '${info.flag} ${info.name} · Amounts shown as ${info.symbol}1,000',
-              style: context.t.labelLarge.colored(kGreen),
+          Container(
+            constraints: const BoxConstraints(minWidth: 40),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+            margin: const EdgeInsets.only(right: 10),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: selected
+                  ? kMidGreen
+                  : (context.isDark ? context.c.cardElevated : kMint),
+              borderRadius: BorderRadius.circular(10),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Step progress bar (shared with language_screen.dart)
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _StepBar extends StatelessWidget {
-  final int step, total;
-  const _StepBar({required this.step, required this.total});
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.c;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: List.generate(
-            total,
-            (i) => Expanded(
-              child: Container(
-                height: 3,
-                margin: EdgeInsets.only(right: i < total - 1 ? 6 : 0),
-                decoration: BoxDecoration(
-                  color: i < step ? AppColors.primaryColor : c.border,
-                  borderRadius: BorderRadius.circular(2),
-                ),
+            child: Text(
+              info.symbol,
+              style: context.t.labelLarge.copyWith(
+                fontWeight: FontWeight.w800,
+                color: selected ? Colors.white : kMidGreen,
               ),
             ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text('Step $step of $total', style: context.t.overline),
-      ],
+          SelectionCheck(selected: selected),
+        ],
+      ),
+    );
+  }
+}
+
+/// Mini balance card that shows how amounts will look.
+class _PreviewCard extends StatelessWidget {
+  final CurrencyInfo info;
+  const _PreviewCard({required this.info});
+
+  @override
+  Widget build(BuildContext context) {
+    final n = NumberFormat('#,##0');
+    return BrandHeroCard(
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Preview', style: context.heroLabel),
+                const SizedBox(height: 4),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: FittedBox(
+                    key: ValueKey(info.code),
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '${info.symbol}${n.format(24580)}',
+                      style: context.heroValue,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Spent today ${info.symbol}${n.format(450)}',
+                  style: context.heroBody,
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 52,
+            height: 52,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.14),
+              shape: BoxShape.circle,
+            ),
+            child: Text(info.flag, style: const TextStyle(fontSize: 26)),
+          ),
+        ],
+      ),
     );
   }
 }

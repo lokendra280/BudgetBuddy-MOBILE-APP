@@ -6,7 +6,7 @@ import 'package:budgetbuddy/common/constant/constant_assets.dart';
 import 'package:budgetbuddy/common/localization/category_localization.dart';
 import 'package:budgetbuddy/common/navigation_service.dart';
 import 'package:budgetbuddy/common/services/ads_service.dart';
-import 'package:budgetbuddy/common/widgets/custom_appbar.dart';
+import 'package:budgetbuddy/common/widgets/brand_widgets.dart';
 import 'package:budgetbuddy/features/expense/models/expense.dart';
 import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
 import 'package:budgetbuddy/features/expense/services/excel_service.dart';
@@ -215,7 +215,10 @@ class _StatementsScreenState extends ConsumerState<StatementsScreen> {
               const SizedBox(height: 16),
               Text(
                 'Export statement',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
@@ -297,269 +300,276 @@ class _StatementsScreenState extends ConsumerState<StatementsScreen> {
 
     return Scaffold(
       backgroundColor: context.c.bg,
-      appBar: CustomAppBar(
-        appElevation: 0,
-        backgroundColor: context.c.surface,
-        showBackButton: false,
-        title: l10n.statements,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: IconButton(
-              icon: _exporting
+      body: Column(
+        children: [
+          TabHeader(
+            title: l10n.statements,
+            subtitle: 'Where your money went',
+            trailing: HeaderIconButton(
+              icon: Icons.file_download_outlined,
+              tooltip: 'Export',
+              onTap: _exporting ? null : () => _chooseExport(period),
+              child: _exporting
                   ? const SizedBox(
                       width: 18,
                       height: 18,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: AppColors.primaryColor,
+                        color: kMidGreen,
                       ),
                     )
-                  : const Icon(
-                      Icons.file_download_outlined,
-                      color: kMidGreen,
-                      size: 26,
-                    ),
-              tooltip: 'Export',
-              onPressed: _exporting ? null : () => _chooseExport(period),
+                  : null,
             ),
           ),
-        ],
-      ),
-      body: ListView(
-        controller: _scrollController,
-        padding: const EdgeInsets.fromLTRB(18, 14, 18, 40),
-        children: [
-          // ── Mode toggle ────────────────────────────────────────────────
-          _ModeToggle(
-            mode: _mode,
-            onMonth: () => setState(() => _mode = _Mode.month),
-            onDateRange: _pickRange,
-          ),
-          const SizedBox(height: 12),
-
-          // ── Month nav / date range display ─────────────────────────────
-          if (_mode == _Mode.month)
-            MonthNav(
-              month: _month,
-              onPrev: () =>
-                  _onMonthChanged(DateTime(_month.year, _month.month - 1)),
-              onNext:
-                  _month.month == DateTime.now().month &&
-                      _month.year == DateTime.now().year
-                  ? null
-                  : () => _onMonthChanged(
-                      DateTime(_month.year, _month.month + 1),
-                    ),
-              onTap: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: _month,
-                  firstDate: DateTime(2020),
-                  lastDate: DateTime.now(),
-                  initialDatePickerMode: DatePickerMode.year,
-                );
-                if (picked != null) {
-                  _onMonthChanged(DateTime(picked.year, picked.month));
-                }
-              },
-            )
-          else
-            DateRange(from: _fromDate, to: _toDate, onTap: _pickRange),
-
-          const SizedBox(height: 14),
-
-          // ── Summary ────────────────────────────────────────────────────
-          _SummaryCard(
-            net: net,
-            income: totalInc,
-            expense: totalExp,
-            count: period.length,
-            fmt: fmt,
-          ),
-          const SizedBox(height: 14),
-
-          // ── Pie chart ──────────────────────────────────────────────────
-          if (cats.isNotEmpty) ...[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Expanded(
+            child: ListView(
+              controller: _scrollController,
+              padding: const EdgeInsets.fromLTRB(18, 6, 18, 120),
               children: [
-                SectionLabel(l10n.byCategory),
-                GestureDetector(
-                  onTap: () => NavigationService.push(target: HeatmapScreen()),
-                  child: const SectionLabel('HeatMap'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            _PieCard(
-              cats: cats,
-              totalExp: totalExp,
-              touchedIndex: _touchedPie,
-              onTouch: (i) => setState(() => _touchedPie = i),
-            ),
-            const SizedBox(height: 14),
-          ],
-
-          // ── Daily bar chart ────────────────────────────────────────────
-          SectionLabel(l10n.dailyOverview),
-          const SizedBox(height: 10),
-          AppCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    _Leg(kGreen, l10n.income),
-                    const SizedBox(width: 12),
-                    _Leg(kAccent, l10n.expense),
-                  ],
+                // ── Mode toggle ────────────────────────────────────────────────
+                _ModeToggle(
+                  mode: _mode,
+                  onMonth: () => setState(() => _mode = _Mode.month),
+                  onDateRange: _pickRange,
                 ),
                 const SizedBox(height: 12),
-                _BarChart(expenses: period),
+
+                // ── Month nav / date range display ─────────────────────────────
+                if (_mode == _Mode.month)
+                  MonthNav(
+                    month: _month,
+                    onPrev: () => _onMonthChanged(
+                      DateTime(_month.year, _month.month - 1),
+                    ),
+                    onNext:
+                        _month.month == DateTime.now().month &&
+                            _month.year == DateTime.now().year
+                        ? null
+                        : () => _onMonthChanged(
+                            DateTime(_month.year, _month.month + 1),
+                          ),
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: _month,
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime.now(),
+                        initialDatePickerMode: DatePickerMode.year,
+                      );
+                      if (picked != null) {
+                        _onMonthChanged(DateTime(picked.year, picked.month));
+                      }
+                    },
+                  )
+                else
+                  DateRange(from: _fromDate, to: _toDate, onTap: _pickRange),
+
+                const SizedBox(height: 14),
+
+                // ── Summary ────────────────────────────────────────────────────
+                _SummaryCard(
+                  net: net,
+                  income: totalInc,
+                  expense: totalExp,
+                  count: period.length,
+                  fmt: fmt,
+                ),
+                const SizedBox(height: 14),
+
+                // ── Pie chart ──────────────────────────────────────────────────
+                if (cats.isNotEmpty) ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SectionLabel(l10n.byCategory),
+                      GestureDetector(
+                        onTap: () =>
+                            NavigationService.push(target: HeatmapScreen()),
+                        child: const SectionLabel('HeatMap'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  _PieCard(
+                    cats: cats,
+                    totalExp: totalExp,
+                    touchedIndex: _touchedPie,
+                    onTouch: (i) => setState(() => _touchedPie = i),
+                  ),
+                  const SizedBox(height: 14),
+                ],
+
+                // ── Daily bar chart ────────────────────────────────────────────
+                SectionLabel(l10n.dailyOverview),
+                const SizedBox(height: 10),
+                AppCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          _Leg(kGreen, l10n.income),
+                          const SizedBox(width: 12),
+                          _Leg(kAccent, l10n.expense),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      _BarChart(expenses: period),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 14),
+
+                // ── Chip filters ───────────────────────────────────────────────
+                SectionLabel(l10n.filter),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    FiChip(
+                      l10n.income,
+                      _showIncome,
+                      kGreen,
+                      () => setState(() => _showIncome = !_showIncome),
+                    ),
+                    FiChip(
+                      l10n.expense,
+                      _showExpense,
+                      kAccent,
+                      () => setState(() => _showExpense = !_showExpense),
+                    ),
+                    ...usedCats.map(
+                      (cat) => FiChip(
+                        CategoryLocalization.getName(l10n, cat),
+                        _filterCat == cat,
+                        kMidGreen,
+                        () => setState(
+                          () => _filterCat = _filterCat == cat ? null : cat,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+
+                // ── Export ─────────────────────────────────────────────────────
+                SectionLabel(l10n.export),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _ExportTile(
+                        icon: Icons.picture_as_pdf_rounded,
+                        title: 'PDF',
+                        subtitle: '${filtered.length} ${l10n.transactions}',
+                        color: kAccent,
+                        busy: _exporting,
+                        onTap: () => _export(filtered),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _ExportTile(
+                        icon: Icons.table_chart_rounded,
+                        title: 'Excel',
+                        subtitle: '${filtered.length} ${l10n.transactions}',
+                        color: kMidGreen,
+                        busy: _exporting,
+                        onTap: () =>
+                            _export(filtered, format: _ExportFormat.excel),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+
+                const AdSlot(),
+
+                // ── Transactions list (paginated) ──────────────────────────────
+                SectionLabel(
+                  l10n.transactions,
+                  trailing: Text(
+                    '${filtered.length} ${l10n.items}',
+                    style: TextStyle(fontSize: 11, color: context.c.textMuted),
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                if (filtered.isEmpty)
+                  AppCard(
+                    padding: const EdgeInsets.symmetric(vertical: 28),
+                    child: Column(
+                      children: [
+                        CommonSvgWidget(
+                          svgName: Assets.nodata,
+                          color: AppColors.primaryColor,
+                          height: 48,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.noTransaction,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: context.c.textMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                else ...[
+                  // Paginated rows, grouped in one card like Home
+                  AppCard(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Column(
+                      children: [
+                        for (var i = 0; i < paginatedFiltered.length; i++) ...[
+                          TransactionWidget(expense: paginatedFiltered[i]),
+                          if (i != paginatedFiltered.length - 1)
+                            Divider(
+                              height: 1,
+                              indent: 70,
+                              endIndent: 16,
+                              color: context.c.border,
+                            ),
+                        ],
+                      ],
+                    ),
+                  ),
+
+                  // Load more indicator
+                  if (paginated.isLoading)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: kMidGreen,
+                          ),
+                        ),
+                      ),
+                    )
+                  else if (!paginated.hasMore &&
+                      paginatedFiltered.length > kPageSize)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Center(
+                        child: Text(
+                          'All ${paginatedFiltered.length} transactions shown',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: context.c.textMuted,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ],
             ),
           ),
-          const SizedBox(height: 14),
-
-          // ── Chip filters ───────────────────────────────────────────────
-          SectionLabel(l10n.filter),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              FiChip(
-                l10n.income,
-                _showIncome,
-                kGreen,
-                () => setState(() => _showIncome = !_showIncome),
-              ),
-              FiChip(
-                l10n.expense,
-                _showExpense,
-                kAccent,
-                () => setState(() => _showExpense = !_showExpense),
-              ),
-              ...usedCats.map(
-                (cat) => FiChip(
-                  CategoryLocalization.getName(l10n, cat),
-                  _filterCat == cat,
-                  kMidGreen,
-                  () => setState(
-                    () => _filterCat = _filterCat == cat ? null : cat,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-
-          // ── Export ─────────────────────────────────────────────────────
-          SectionLabel(l10n.export),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: _ExportTile(
-                  icon: Icons.picture_as_pdf_rounded,
-                  title: 'PDF',
-                  subtitle: '${filtered.length} ${l10n.transactions}',
-                  color: kAccent,
-                  busy: _exporting,
-                  onTap: () => _export(filtered),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _ExportTile(
-                  icon: Icons.table_chart_rounded,
-                  title: 'Excel',
-                  subtitle: '${filtered.length} ${l10n.transactions}',
-                  color: kMidGreen,
-                  busy: _exporting,
-                  onTap: () =>
-                      _export(filtered, format: _ExportFormat.excel),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-
-          // ── Transactions list (paginated) ──────────────────────────────
-          SectionLabel(
-            l10n.transactions,
-            trailing: Text(
-              '${filtered.length} ${l10n.items}',
-              style: TextStyle(fontSize: 11, color: context.c.textMuted),
-            ),
-          ),
-          const SizedBox(height: 10),
-
-          if (filtered.isEmpty)
-            AppCard(
-              padding: const EdgeInsets.symmetric(vertical: 28),
-              child: Column(
-                children: [
-                  CommonSvgWidget(
-                    svgName: Assets.nodata,
-                    color: AppColors.primaryColor,
-                    height: 48,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.noTransaction,
-                    style: TextStyle(fontSize: 13, color: context.c.textMuted),
-                  ),
-                ],
-              ),
-            )
-          else ...[
-            // Paginated rows, grouped in one card like Home
-            AppCard(
-              padding: const EdgeInsets.symmetric(vertical: 6),
-              child: Column(
-                children: [
-                  for (var i = 0; i < paginatedFiltered.length; i++) ...[
-                    TransactionWidget(expense: paginatedFiltered[i]),
-                    if (i != paginatedFiltered.length - 1)
-                      Divider(
-                        height: 1,
-                        indent: 70,
-                        endIndent: 16,
-                        color: context.c.border,
-                      ),
-                  ],
-                ],
-              ),
-            ),
-
-            // Load more indicator
-            if (paginated.isLoading)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Center(
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: kMidGreen,
-                    ),
-                  ),
-                ),
-              )
-            else if (!paginated.hasMore && paginatedFiltered.length > kPageSize)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Center(
-                  child: Text(
-                    'All ${paginatedFiltered.length} transactions shown',
-                    style: TextStyle(fontSize: 12, color: context.c.textMuted),
-                  ),
-                ),
-              ),
-          ],
         ],
       ),
     );

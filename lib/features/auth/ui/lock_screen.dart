@@ -1,7 +1,19 @@
-import 'package:budgetbuddy/features/auth/services/biometric_service.dart';
 import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/constant/app_typography.dart';
+import 'package:budgetbuddy/common/widgets/piggy_mascot.dart';
+import 'package:budgetbuddy/features/auth/services/biometric_service.dart';
 import 'package:flutter/material.dart';
+import 'package:local_auth/local_auth.dart';
 
+/// Wraps the app when Face ID / biometric lock is on.
+///
+///  • Prompts on launch, and again when returning after > [_relockAfter]
+///    in the background (so quick trips to the camera / share sheet don't
+///    re-prompt every time).
+///  • No "skip" — the system prompt already falls back to the device
+///    passcode/PIN. If the device has no passcode or biometrics at all
+///    (e.g. they were removed), the lock switches itself off instead of
+///    locking the user out of their own data.
 class LockScreen extends StatefulWidget {
   final Widget child; // shown after successful auth
   const LockScreen({super.key, required this.child});
@@ -10,8 +22,13 @@ class LockScreen extends StatefulWidget {
 }
 
 class _State extends State<LockScreen> with WidgetsBindingObserver {
+  static const _relockAfter = Duration(seconds: 30);
+
   bool _unlocked = false;
   bool _checking = true;
+  bool _authRunning = false;
+  DateTime? _backgroundedAt;
+  BiometricKind? _kind;
 
   @override
   void initState() {
@@ -26,33 +43,30 @@ class _State extends State<LockScreen> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  // Re-lock when app goes to background
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
-      _unlocked = false;
+      _backgroundedAt = DateTime.now();
     }
-
-    if (state == AppLifecycleState.resumed && !_unlocked) {
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (mounted && !_unlocked) {
-          _tryAuth();
-        }
-      });
+    if (state == AppLifecycleState.resumed) {
+      final away = _backgroundedAt == null
+          ? Duration.zero
+          : DateTime.now().difference(_backgroundedAt!);
+      _backgroundedAt = null;
+      if (_unlocked && away > _relockAfter) {
+        setState(() => _unlocked = false);
+      }
+      if (!_unlocked) {
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted && !_unlocked) _tryAuth();
+        });
+      }
     }
   }
 
   Future<void> _init() async {
-    bool enabled = false;
-
-    try {
-      enabled = await BiometricService.isEnabled;
-    } catch (_) {
-      enabled = false;
-    }
-
+    final enabled = await BiometricService.isEnabled;
     if (!mounted) return;
-
     if (!enabled) {
       setState(() {
         _unlocked = true;
@@ -60,114 +74,107 @@ class _State extends State<LockScreen> with WidgetsBindingObserver {
       });
       return;
     }
-
-    setState(() => _checking = false);
-
+    final kind = await BiometricService.kind();
+    if (!mounted) return;
+    setState(() {
+      _kind = kind;
+      _checking = false;
+    });
     await _tryAuth();
   }
-
-  bool _authRunning = false;
 
   Future<void> _tryAuth() async {
     if (_authRunning) return;
     _authRunning = true;
-
     try {
-      final ok = await BiometricService.authenticate();
+      final ok = await BiometricService.authenticate(
+        reason: 'Unlock BudgetBuddy',
+      );
       if (!mounted) return;
-      setState(() => _unlocked = ok);
-    } catch (_) {}
-
-    _authRunning = false;
+      if (ok) {
+        setState(() => _unlocked = true);
+        return;
+      }
+      // Device has no passcode/biometrics any more → don't trap the user.
+      final supported = await LocalAuthentication().isDeviceSupported();
+      if (!supported) {
+        await BiometricService.setEnabled(false);
+        if (mounted) setState(() => _unlocked = true);
+      }
+    } catch (_) {
+    } finally {
+      _authRunning = false;
+    }
   }
-
-  void _skip() => setState(() => _unlocked = true);
 
   @override
   Widget build(BuildContext context) {
     if (_checking) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(backgroundColor: context.c.bg);
     }
     if (_unlocked) return widget.child;
 
-    final c = context.c;
+    final kind = _kind;
+    final icon = kind?.icon ?? Icons.lock_outline_rounded;
+    final method = kind?.title ?? 'passcode';
+
     return Scaffold(
-      backgroundColor: c.bg,
-      body: SafeArea(
-        child: Center(
+      backgroundColor: context.c.bg,
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: context.isDark
+                ? [kDeepGreen.withValues(alpha: 0.4), context.c.bg]
+                : [kMint, context.c.bg],
+          ),
+        ),
+        child: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 88,
-                height: 88,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [AppColors.primaryColor, Color(0xFF9D8FFF)],
-                  ),
-                  borderRadius: BorderRadius.circular(28),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primaryColor.withOpacity(0.4),
-                      blurRadius: 28,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: const Center(
-                  child: Text('💸', style: TextStyle(fontSize: 40)),
-                ),
-              ),
-              const SizedBox(height: 32),
-              const Text(
-                'SpendSense',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 8),
+              const Spacer(flex: 2),
+              const PiggyMascot(size: 110),
+              const SizedBox(height: 20),
+              Text('BudgetBuddy is locked', style: context.t.h2),
+              const SizedBox(height: 6),
               Text(
-                'Verify your identity to continue',
-                style: TextStyle(fontSize: 14, color: c.textMuted),
+                'Your finances stay private.',
+                style: context.t.bodySub,
               ),
-              const SizedBox(height: 48),
-              // Biometric button
+              const Spacer(flex: 2),
               GestureDetector(
                 onTap: _tryAuth,
                 child: Container(
-                  width: 72,
-                  height: 72,
+                  width: 84,
+                  height: 84,
                   decoration: BoxDecoration(
-                    color: AppColors.primaryColor.withOpacity(0.12),
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: AppColors.primaryColor.withOpacity(0.4),
-                      width: 2,
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [kDeepGreen, kMidGreen],
                     ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: kDeepGreen.withValues(alpha: 0.35),
+                        blurRadius: 22,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
                   ),
-                  child: const Icon(
-                    Icons.fingerprint_rounded,
-                    size: 38,
-                    color: AppColors.primaryColor,
-                  ),
+                  child: Icon(icon, size: 40, color: Colors.white),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
+              Text('Unlock with $method', style: context.t.labelLarge),
+              const SizedBox(height: 4),
               Text(
-                'Touch to authenticate',
-                style: TextStyle(fontSize: 13, color: c.textMuted),
+                'Your device passcode works too',
+                style: context.t.labelMuted,
               ),
-              const SizedBox(height: 40),
-              TextButton(
-                onPressed: _skip,
-                child: Text(
-                  'Skip for now',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: c.textMuted,
-                    decoration: TextDecoration.underline,
-                    decorationColor: c.textMuted,
-                  ),
-                ),
-              ),
+              const Spacer(),
             ],
           ),
         ),

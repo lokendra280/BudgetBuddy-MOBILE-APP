@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'budgetbuddy';
+  String get appName => 'BudgetBuddy';
 
   @override
   String get home => 'Home';
@@ -19,9 +19,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ai => 'AI';
-
-  @override
-  String get settings => 'Settings';
 
   @override
   String get appearance => 'Appearance';
@@ -46,15 +43,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get netSaving => 'Net Savings';
-
-  @override
-  String get expense => 'Expense';
-
-  @override
-  String get income => 'Income';
-
-  @override
-  String get transactions => 'Transactions';
 
   @override
   String get last7Days => 'Last 7 Days';
@@ -93,9 +81,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get social => 'Social';
 
   @override
-  String get aiInsight => 'Ai Insights';
-
-  @override
   String get netDeficit => 'Net Deficit';
 
   @override
@@ -115,6 +100,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bankStyle => 'Bank-Style Statements 0 Transactions';
+
+  @override
+  String get transactions => 'Transactions';
 
   @override
   String get items => 'Items';
@@ -162,9 +150,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get health => 'Health';
 
   @override
-  String get bill => 'Bill';
-
-  @override
   String get entertainment => 'Entertainment';
 
   @override
@@ -172,9 +157,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get food => 'Food';
-
-  @override
-  String get other => 'Other';
 
   @override
   String get welcomeBack => 'Welcome back';
@@ -255,9 +237,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signIntoApply => 'Sing in to apply a referral code and earn streak days';
 
   @override
-  String get shareReport => 'Share Report';
-
-  @override
   String get shareMonthly => 'Share monthly spending a summary as image';
 
   @override
@@ -291,7 +270,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addEntry => 'Add Entry';
 
   @override
-  String get category => 'Category';
+  String get expense => 'Expense';
+
+  @override
+  String get income => 'Income';
+
+  @override
+  String get other => 'Other';
 
   @override
   String get row => 'Row';
@@ -307,6 +292,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveExpense => 'Save Expense';
+
+  @override
+  String get aiInsight => 'Ai Insights';
 
   @override
   String get overView => 'OverView';
@@ -354,16 +342,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wellAnalysisPatternOnce => 'We Will analyses pattern once you have more data';
 
   @override
-  String get subscriptions => 'Subscriptions & Recurring';
-
-  @override
   String get thisMonth => 'This Month';
 
   @override
   String get spend => 'Spend';
-
-  @override
-  String get saved => 'saved';
 
   @override
   String get achieved => 'Achieved';
@@ -441,6 +423,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get insight => 'Insights';
 
   @override
+  String get shareReport => 'Share Report';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
   String get about => 'About';
 
   @override
@@ -450,6 +438,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aiSpending => 'AI Spending Insights';
 
   @override
+  String get subscriptions => 'Subscriptions & Recurring';
+
+  @override
   String get savingGoals => 'Saving Goals';
 
   @override
@@ -457,6 +448,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get monthlyCommitments => 'Monthly Commitments';
+
+  @override
+  String get bill => 'Bill';
 
   @override
   String get active => 'Active';
@@ -480,9 +474,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addBillEmi => 'Add Bill / EMI';
 
   @override
-  String get amount => 'Amount';
-
-  @override
   String get example => 'Bill name (e.g. Netflix, Home EMI)';
 
   @override
@@ -495,9 +486,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dueOnDayOfMonth => 'Due on day of month';
 
   @override
-  String get remindMeBefore => 'Remind me before';
-
-  @override
   String get addSchedule => 'Add & Schedule Reminder';
 
   @override
@@ -505,21 +493,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get savingRate => 'Saving Rate';
-
-  @override
-  String get budgetControl => 'Budget Control';
-
-  @override
-  String get expenseBalance => 'Expense Balance';
-
-  @override
-  String get consistency => 'Consistency';
-
-  @override
-  String get billLoad => 'Bill Load';
-
-  @override
-  String get goalProgress => 'Goal Progress';
 
   @override
   String get burnRate => 'Burn Rate & Runway';
@@ -562,9 +535,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ofIncome => 'of income';
-
-  @override
-  String get overdue => 'Overdue';
 
   @override
   String get monthlyBills => 'Monthly Bills';
@@ -672,9 +642,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get getRemindedToLog => 'Get reminded to log expenses';
 
   @override
-  String get dayStreak => 'day streak';
-
-  @override
   String get keepLoggingDaily => 'Keep logging daily to maintain it';
 
   @override
@@ -691,12 +658,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteAccountConfirm => 'Are you sure? This action cannot be undone.';
-
-  @override
-  String get cancel => 'Cancel';
-
-  @override
-  String get delete => 'Delete';
 
   @override
   String get budgetUpdated => 'Budget updated';
@@ -738,13 +699,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get targetAmount => 'Target Amount';
 
   @override
-  String get days => 'days';
-
-  @override
   String get createGoal => 'Create Goal';
 
   @override
   String get savingsRate => 'Savings Rate';
+
+  @override
+  String get budgetControl => 'Budget Control';
+
+  @override
+  String get expenseBalance => 'Expense Balance';
+
+  @override
+  String get consistency => 'Consistency';
+
+  @override
+  String get billLoad => 'Bill Load';
+
+  @override
+  String get goalProgress => 'Goal Progress';
+
+  @override
+  String get saved => 'saved';
 
   @override
   String get ofLimitUsed => 'of limit used';
@@ -774,6 +750,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inProgress => 'in progress';
 
   @override
+  String get dayStreak => 'day streak';
+
+  @override
   String get top => 'Top';
 
   @override
@@ -797,6 +776,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
   String get yourLoans => 'Your Loans';
 
   @override
@@ -804,6 +789,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get monthlyEmis => 'Monthly EMIs';
+
+  @override
+  String get overdue => 'Overdue';
 
   @override
   String get missed => 'Missed';
@@ -821,15 +809,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addBillLabel => 'Add Bill';
 
   @override
-  String get addLoan => 'Add Loan';
-
-  @override
   String get recordPayment => 'Record Payment';
 
   @override
   String emiPaymentHint(Object amount, Object title) {
     return '$title · EMI $amount';
   }
+
+  @override
+  String get amount => 'Amount';
 
   @override
   String get noteOptional => 'Note (optional)';
@@ -839,9 +827,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reducesPrincipal => 'Reduces principal balance';
-
-  @override
-  String get saving => 'Saving…';
 
   @override
   String get recordExtraPayment => 'Record Extra Payment';
@@ -863,6 +848,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lenderUnknown => 'Unknown';
+
+  @override
+  String get category => 'Category';
 
   @override
   String get principalAmount => 'Principal Amount';
@@ -891,13 +879,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emiDueDay => 'EMI Due Day';
 
   @override
+  String get remindMeBefore => 'Remind me before';
+
+  @override
   String get day => 'day';
+
+  @override
+  String get days => 'days';
 
   @override
   String get notesOptional => 'Notes (optional)';
 
   @override
+  String get saving => 'Saving…';
+
+  @override
   String get updateLoan => 'Update Loan';
+
+  @override
+  String get addLoan => 'Add Loan';
 
   @override
   String get addHomeWidget => 'Add Home Screen Widget';

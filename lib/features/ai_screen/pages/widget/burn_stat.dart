@@ -1,4 +1,5 @@
 import 'package:budgetbuddy/common/app_theme.dart';
+import 'package:budgetbuddy/common/constant/app_typography.dart';
 import 'package:flutter/material.dart';
 
 class BurnStatWidget extends StatelessWidget {
@@ -11,14 +12,17 @@ class BurnStatWidget extends StatelessWidget {
       children: [
         Text(
           value,
-          style: TextStyle(
+          style: AppTypography.h4.copyWith(
             fontSize: 16,
             fontWeight: FontWeight.w800,
             color: color,
           ),
         ),
         const SizedBox(height: 3),
-        Text(label, style: TextStyle(fontSize: 10, color: context.c.textMuted)),
+        Text(
+          label,
+          style: AppTypography.caption.copyWith(color: context.c.textMuted),
+        ),
       ],
     ),
   );

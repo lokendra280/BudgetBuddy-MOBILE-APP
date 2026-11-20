@@ -104,7 +104,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In en, this message translates to:
-  /// **'budgetbuddy'**
+  /// **'BudgetBuddy'**
   String get appName;
 
   /// No description provided for @home.
@@ -124,12 +124,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'AI'**
   String get ai;
-
-  /// No description provided for @settings.
-  ///
-  /// In en, this message translates to:
-  /// **'Settings'**
-  String get settings;
 
   /// No description provided for @appearance.
   ///
@@ -178,24 +172,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Net Savings'**
   String get netSaving;
-
-  /// No description provided for @expense.
-  ///
-  /// In en, this message translates to:
-  /// **'Expense'**
-  String get expense;
-
-  /// No description provided for @income.
-  ///
-  /// In en, this message translates to:
-  /// **'Income'**
-  String get income;
-
-  /// No description provided for @transactions.
-  ///
-  /// In en, this message translates to:
-  /// **'Transactions'**
-  String get transactions;
 
   /// No description provided for @last7Days.
   ///
@@ -269,12 +245,6 @@ abstract class AppLocalizations {
   /// **'Social'**
   String get social;
 
-  /// No description provided for @aiInsight.
-  ///
-  /// In en, this message translates to:
-  /// **'Ai Insights'**
-  String get aiInsight;
-
   /// No description provided for @netDeficit.
   ///
   /// In en, this message translates to:
@@ -316,6 +286,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Bank-Style Statements 0 Transactions'**
   String get bankStyle;
+
+  /// No description provided for @transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
+  String get transactions;
 
   /// No description provided for @items.
   ///
@@ -407,12 +383,6 @@ abstract class AppLocalizations {
   /// **'Health'**
   String get health;
 
-  /// No description provided for @bill.
-  ///
-  /// In en, this message translates to:
-  /// **'Bill'**
-  String get bill;
-
   /// No description provided for @entertainment.
   ///
   /// In en, this message translates to:
@@ -430,12 +400,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Food'**
   String get food;
-
-  /// No description provided for @other.
-  ///
-  /// In en, this message translates to:
-  /// **'Other'**
-  String get other;
 
   /// No description provided for @welcomeBack.
   ///
@@ -593,12 +557,6 @@ abstract class AppLocalizations {
   /// **'Sing in to apply a referral code and earn streak days'**
   String get signIntoApply;
 
-  /// No description provided for @shareReport.
-  ///
-  /// In en, this message translates to:
-  /// **'Share Report'**
-  String get shareReport;
-
   /// No description provided for @shareMonthly.
   ///
   /// In en, this message translates to:
@@ -665,11 +623,23 @@ abstract class AppLocalizations {
   /// **'Add Entry'**
   String get addEntry;
 
-  /// No description provided for @category.
+  /// No description provided for @expense.
   ///
   /// In en, this message translates to:
-  /// **'Category'**
-  String get category;
+  /// **'Expense'**
+  String get expense;
+
+  /// No description provided for @income.
+  ///
+  /// In en, this message translates to:
+  /// **'Income'**
+  String get income;
+
+  /// No description provided for @other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
 
   /// No description provided for @row.
   ///
@@ -700,6 +670,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save Expense'**
   String get saveExpense;
+
+  /// No description provided for @aiInsight.
+  ///
+  /// In en, this message translates to:
+  /// **'Ai Insights'**
+  String get aiInsight;
 
   /// No description provided for @overView.
   ///
@@ -791,12 +767,6 @@ abstract class AppLocalizations {
   /// **'We Will analyses pattern once you have more data'**
   String get wellAnalysisPatternOnce;
 
-  /// No description provided for @subscriptions.
-  ///
-  /// In en, this message translates to:
-  /// **'Subscriptions & Recurring'**
-  String get subscriptions;
-
   /// No description provided for @thisMonth.
   ///
   /// In en, this message translates to:
@@ -808,12 +778,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Spend'**
   String get spend;
-
-  /// No description provided for @saved.
-  ///
-  /// In en, this message translates to:
-  /// **'saved'**
-  String get saved;
 
   /// No description provided for @achieved.
   ///
@@ -965,6 +929,18 @@ abstract class AppLocalizations {
   /// **'Insights'**
   String get insight;
 
+  /// No description provided for @shareReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Report'**
+  String get shareReport;
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
   /// No description provided for @about.
   ///
   /// In en, this message translates to:
@@ -983,6 +959,12 @@ abstract class AppLocalizations {
   /// **'AI Spending Insights'**
   String get aiSpending;
 
+  /// No description provided for @subscriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscriptions & Recurring'**
+  String get subscriptions;
+
   /// No description provided for @savingGoals.
   ///
   /// In en, this message translates to:
@@ -1000,6 +982,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Monthly Commitments'**
   String get monthlyCommitments;
+
+  /// No description provided for @bill.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill'**
+  String get bill;
 
   /// No description provided for @active.
   ///
@@ -1043,12 +1031,6 @@ abstract class AppLocalizations {
   /// **'Add Bill / EMI'**
   String get addBillEmi;
 
-  /// No description provided for @amount.
-  ///
-  /// In en, this message translates to:
-  /// **'Amount'**
-  String get amount;
-
   /// No description provided for @example.
   ///
   /// In en, this message translates to:
@@ -1073,12 +1055,6 @@ abstract class AppLocalizations {
   /// **'Due on day of month'**
   String get dueOnDayOfMonth;
 
-  /// No description provided for @remindMeBefore.
-  ///
-  /// In en, this message translates to:
-  /// **'Remind me before'**
-  String get remindMeBefore;
-
   /// No description provided for @addSchedule.
   ///
   /// In en, this message translates to:
@@ -1096,36 +1072,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saving Rate'**
   String get savingRate;
-
-  /// No description provided for @budgetControl.
-  ///
-  /// In en, this message translates to:
-  /// **'Budget Control'**
-  String get budgetControl;
-
-  /// No description provided for @expenseBalance.
-  ///
-  /// In en, this message translates to:
-  /// **'Expense Balance'**
-  String get expenseBalance;
-
-  /// No description provided for @consistency.
-  ///
-  /// In en, this message translates to:
-  /// **'Consistency'**
-  String get consistency;
-
-  /// No description provided for @billLoad.
-  ///
-  /// In en, this message translates to:
-  /// **'Bill Load'**
-  String get billLoad;
-
-  /// No description provided for @goalProgress.
-  ///
-  /// In en, this message translates to:
-  /// **'Goal Progress'**
-  String get goalProgress;
 
   /// No description provided for @burnRate.
   ///
@@ -1210,12 +1156,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'of income'**
   String get ofIncome;
-
-  /// No description provided for @overdue.
-  ///
-  /// In en, this message translates to:
-  /// **'Overdue'**
-  String get overdue;
 
   /// No description provided for @monthlyBills.
   ///
@@ -1427,12 +1367,6 @@ abstract class AppLocalizations {
   /// **'Get reminded to log expenses'**
   String get getRemindedToLog;
 
-  /// No description provided for @dayStreak.
-  ///
-  /// In en, this message translates to:
-  /// **'day streak'**
-  String get dayStreak;
-
   /// No description provided for @keepLoggingDaily.
   ///
   /// In en, this message translates to:
@@ -1468,18 +1402,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure? This action cannot be undone.'**
   String get deleteAccountConfirm;
-
-  /// No description provided for @cancel.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel'**
-  String get cancel;
-
-  /// No description provided for @delete.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete'**
-  String get delete;
 
   /// No description provided for @budgetUpdated.
   ///
@@ -1559,12 +1481,6 @@ abstract class AppLocalizations {
   /// **'Target Amount'**
   String get targetAmount;
 
-  /// No description provided for @days.
-  ///
-  /// In en, this message translates to:
-  /// **'days'**
-  String get days;
-
   /// No description provided for @createGoal.
   ///
   /// In en, this message translates to:
@@ -1576,6 +1492,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Savings Rate'**
   String get savingsRate;
+
+  /// No description provided for @budgetControl.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget Control'**
+  String get budgetControl;
+
+  /// No description provided for @expenseBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense Balance'**
+  String get expenseBalance;
+
+  /// No description provided for @consistency.
+  ///
+  /// In en, this message translates to:
+  /// **'Consistency'**
+  String get consistency;
+
+  /// No description provided for @billLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill Load'**
+  String get billLoad;
+
+  /// No description provided for @goalProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal Progress'**
+  String get goalProgress;
+
+  /// No description provided for @saved.
+  ///
+  /// In en, this message translates to:
+  /// **'saved'**
+  String get saved;
 
   /// No description provided for @ofLimitUsed.
   ///
@@ -1631,6 +1583,12 @@ abstract class AppLocalizations {
   /// **'in progress'**
   String get inProgress;
 
+  /// No description provided for @dayStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'day streak'**
+  String get dayStreak;
+
   /// No description provided for @top.
   ///
   /// In en, this message translates to:
@@ -1673,6 +1631,18 @@ abstract class AppLocalizations {
   /// **'{title} will be removed.'**
   String willBeRemoved(Object title);
 
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
   /// No description provided for @yourLoans.
   ///
   /// In en, this message translates to:
@@ -1690,6 +1660,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Monthly EMIs'**
   String get monthlyEmis;
+
+  /// No description provided for @overdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get overdue;
 
   /// No description provided for @missed.
   ///
@@ -1721,12 +1697,6 @@ abstract class AppLocalizations {
   /// **'Add Bill'**
   String get addBillLabel;
 
-  /// No description provided for @addLoan.
-  ///
-  /// In en, this message translates to:
-  /// **'Add Loan'**
-  String get addLoan;
-
   /// No description provided for @recordPayment.
   ///
   /// In en, this message translates to:
@@ -1738,6 +1708,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{title} · EMI {amount}'**
   String emiPaymentHint(Object amount, Object title);
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amount;
 
   /// No description provided for @noteOptional.
   ///
@@ -1756,12 +1732,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reduces principal balance'**
   String get reducesPrincipal;
-
-  /// No description provided for @saving.
-  ///
-  /// In en, this message translates to:
-  /// **'Saving…'**
-  String get saving;
 
   /// No description provided for @recordExtraPayment.
   ///
@@ -1804,6 +1774,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown'**
   String get lenderUnknown;
+
+  /// No description provided for @category.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get category;
 
   /// No description provided for @principalAmount.
   ///
@@ -1853,11 +1829,23 @@ abstract class AppLocalizations {
   /// **'EMI Due Day'**
   String get emiDueDay;
 
+  /// No description provided for @remindMeBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me before'**
+  String get remindMeBefore;
+
   /// No description provided for @day.
   ///
   /// In en, this message translates to:
   /// **'day'**
   String get day;
+
+  /// No description provided for @days.
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get days;
 
   /// No description provided for @notesOptional.
   ///
@@ -1865,11 +1853,23 @@ abstract class AppLocalizations {
   /// **'Notes (optional)'**
   String get notesOptional;
 
+  /// No description provided for @saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get saving;
+
   /// No description provided for @updateLoan.
   ///
   /// In en, this message translates to:
   /// **'Update Loan'**
   String get updateLoan;
+
+  /// No description provided for @addLoan.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Loan'**
+  String get addLoan;
 
   /// No description provided for @addHomeWidget.
   ///

@@ -4,6 +4,7 @@ library;
 
 import 'package:budgetbuddy/common/app_theme.dart';
 import 'package:budgetbuddy/common/common_svg_widget.dart';
+import 'package:budgetbuddy/common/constant/app_typography.dart';
 import 'package:flutter/material.dart';
 
 // ── Progress bar ─────────────────────────────────────────────────────────────
@@ -81,12 +82,16 @@ class IconLabel extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+              style: AppTypography.labelLarge.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
             ),
             if (sub != null)
               Text(
                 sub!,
-                style: TextStyle(fontSize: 11, color: context.c.textMuted),
+                style: AppTypography.labelSmall.copyWith(
+                  color: context.c.textMuted,
+                ),
               ),
           ],
         ),
@@ -109,12 +114,18 @@ class EmptyCard extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           title,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          style: AppTypography.labelLarge.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 4),
         Text(
           sub,
-          style: TextStyle(fontSize: 12, color: context.c.textMuted),
+          style: AppTypography.labelSmall.copyWith(
+            fontSize: 12,
+            color: context.c.textMuted,
+          ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -133,10 +144,17 @@ class StatCol extends StatelessWidget {
       children: [
         Text(
           v,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c),
+          style: AppTypography.h4.copyWith(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: c,
+          ),
         ),
         const SizedBox(height: 3),
-        Text(l, style: TextStyle(fontSize: 10, color: context.c.textMuted)),
+        Text(
+          l,
+          style: AppTypography.caption.copyWith(color: context.c.textMuted),
+        ),
       ],
     ),
   );
@@ -167,12 +185,14 @@ class BudgetBar extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+              style: AppTypography.labelSmall.copyWith(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
             ),
             Text(
               '$sym${spent.toStringAsFixed(0)} / $sym${budget.toStringAsFixed(0)}',
-              style: TextStyle(
-                fontSize: 11,
+              style: AppTypography.labelSmall.copyWith(
                 fontWeight: FontWeight.w700,
                 color: color,
               ),
@@ -182,7 +202,10 @@ class BudgetBar extends StatelessWidget {
         const SizedBox(height: 4),
         ProgressBar(pct, pct > 1 ? kAccent : color, height: 8, clip: 5),
         const SizedBox(height: 3),
-        Text(hint, style: TextStyle(fontSize: 10, color: context.c.textMuted)),
+        Text(
+          hint,
+          style: AppTypography.caption.copyWith(color: context.c.textMuted),
+        ),
       ],
     );
   }
@@ -199,10 +222,16 @@ class IncomeStat extends StatelessWidget {
       children: [
         Text(
           v,
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: c),
+          style: AppTypography.h4.copyWith(
+            fontWeight: FontWeight.w800,
+            color: c,
+          ),
         ),
         const SizedBox(height: 3),
-        Text(l, style: TextStyle(fontSize: 10, color: context.c.textMuted)),
+        Text(
+          l,
+          style: AppTypography.caption.copyWith(color: context.c.textMuted),
+        ),
       ],
     ),
   );
@@ -220,9 +249,12 @@ class PredStat extends StatelessWidget {
     children: [
       Text(
         '$prefix$v',
-        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: c),
+        style: AppTypography.h4.copyWith(fontWeight: FontWeight.w800, color: c),
       ),
-      Text(l, style: TextStyle(fontSize: 10, color: context.c.textMuted)),
+      Text(
+        l,
+        style: AppTypography.caption.copyWith(color: context.c.textMuted),
+      ),
     ],
   );
 }

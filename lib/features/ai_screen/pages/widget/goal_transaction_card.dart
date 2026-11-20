@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:budgetbuddy/features/ai_screen/models/goals_transaction.dart';
 import 'package:budgetbuddy/features/expense/providers/expense_provider.dart';
+import 'package:budgetbuddy/common/constant/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -38,7 +39,7 @@ class GoalTransactionCard extends ConsumerWidget {
               children: [
                 Text(
                   t.amount >= 0 ? "Added to Goal" : "Withdrawal",
-                  style: const TextStyle(
+                  style: AppTypography.labelLarge.copyWith(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
                   ),
@@ -46,7 +47,10 @@ class GoalTransactionCard extends ConsumerWidget {
                 const SizedBox(height: 4),
                 Text(
                   DateFormat('hh:mm a dd MMM').format(t.date),
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  style: AppTypography.labelSmall.copyWith(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
                 ),
               ],
             ),
@@ -54,10 +58,9 @@ class GoalTransactionCard extends ConsumerWidget {
 
           Text(
             "$sym${t.amount.toStringAsFixed(0)}",
-            style: const TextStyle(
+            style: AppTypography.h4.copyWith(
               fontWeight: FontWeight.bold,
               color: Colors.green,
-              fontSize: 15,
             ),
           ),
         ],

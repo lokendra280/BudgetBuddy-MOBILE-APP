@@ -6,6 +6,7 @@ import 'package:budgetbuddy/common/constant/app_typography.dart';
 import 'package:budgetbuddy/common/constant/constant_assets.dart';
 import 'package:budgetbuddy/common/navigation_service.dart';
 import 'package:budgetbuddy/common/services/ads_service.dart';
+import 'package:budgetbuddy/common/services/home_service.dart';
 import 'package:budgetbuddy/common/services/notification_service.dart';
 import 'package:budgetbuddy/features/auth/providers/auth_provider.dart';
 import 'package:budgetbuddy/features/auth/ui/login_screen.dart';
@@ -24,6 +25,7 @@ import 'package:budgetbuddy/features/expense/ui/statemet_screen.dart';
 import 'package:budgetbuddy/features/feedback/services/feedback_promt_services.dart';
 import 'package:budgetbuddy/features/feedback/ui/feedback_sheet.dart';
 import 'package:budgetbuddy/features/home/providers/sync_provider.dart';
+import 'package:budgetbuddy/features/home/services/widget_sync_service.dart';
 import 'package:budgetbuddy/features/home/ui/widgets/app_drawer.dart';
 import 'package:budgetbuddy/features/home/ui/widgets/chat_card.dart';
 import 'package:budgetbuddy/features/home/ui/widgets/header_widget.dart';
@@ -53,20 +55,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _init();
-      Future.delayed(const Duration(seconds: 2), () {
-        if (!mounted) return;
-        if (FeedbackPromptService.shouldShowToday) {
-          showFeedbackSheet(context, isDailyPrompt: true);
-        }
-      });
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _init());
   }
 
   Future<void> _init() async {
     // Core app services
-    ref.read(expenseProvider.notifier).updateStreak();
+    await ref.read(expenseProvider.notifier).updateStreak();
+    _syncWidget();
     ref.read(syncProvider.notifier).sync();
     ref.read(adServiceProvider).preloadRewarded();
     // Ask for notification permission once the UI is on screen (iOS only
@@ -75,8 +70,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     NotificationService.scheduleDailyReminder();
     CategoryService.init();
 
+    // One prompt per launch, in order: permission (above) → widget intro
+    // (once per install) → otherwise the daily feedback prompt.
+    _showLaunchPrompts();
+
     if (!Platform.isIOS) {
       await _runSmsSync(ignoreThrottle: false); // ← throttled
+    }
+  }
+
+  Future<void> _showLaunchPrompts() async {
+    await Future.delayed(const Duration(milliseconds: 1200));
+    if (!mounted) return;
+    if (await WidgetIntro.maybeShow(context)) return;
+
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (!mounted) return;
+    if (FeedbackPromptService.shouldShowToday) {
+      showFeedbackSheet(context, isDailyPrompt: true);
     }
   }
 
@@ -125,6 +136,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     // );
   }
 
+  /// Push today's streak / spend / budget to the home-screen widgets.
+  void _syncWidget() {
+    if (!mounted) return;
+    WidgetSyncService.schedule(
+      all: ref.read(expenseProvider).all,
+      budget: ref.read(budgetProvider),
+      fmt: ref.read(fmtProvider),
+      hideAmounts: ref.read(hideBalanceProvider),
+    );
+  }
+
   void _push(Widget s) =>
       Navigator.push(context, MaterialPageRoute(builder: (_) => s));
 
@@ -136,6 +158,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final hasBillAlert = overdueBills.isNotEmpty || dueSoonBills.isNotEmpty;
     final fmt = ref.watch(fmtProvider);
     final syncStatus = ref.watch(syncProvider);
+
+    // Keep the home-screen widgets fresh whenever the data behind them changes.
+    ref.listen(expenseProvider, (_, __) => _syncWidget());
+    ref.listen(budgetProvider, (_, __) => _syncWidget());
+    ref.listen(fmtProvider, (_, __) => _syncWidget());
+    ref.listen(hideBalanceProvider, (_, __) => _syncWidget());
 
     return Scaffold(
       key: _scaffoldKey,

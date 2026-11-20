@@ -42,7 +42,7 @@ class HomeWidgetService {
   /// and the widget extension. Not required for this click-only widget,
   /// but set it now so future data-carrying widgets (balance, budget) work
   /// without another round of native setup.
-  static const String iosAppGroupId = 'group.com.yourcompany.budgetbuddy';
+  static const String iosAppGroupId = 'group.com.hamrobudget';
 
   /// Call once in main(), before runApp(), or right after your Riverpod
   /// ProviderScope is mounted.

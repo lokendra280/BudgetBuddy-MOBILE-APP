@@ -21,9 +21,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get ai => 'IA';
 
   @override
-  String get settings => 'Configurações';
-
-  @override
   String get appearance => 'Aparência';
 
   @override
@@ -46,15 +43,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get netSaving => 'Economia Líquida';
-
-  @override
-  String get expense => 'Despesa';
-
-  @override
-  String get income => 'Receita';
-
-  @override
-  String get transactions => 'Transações';
 
   @override
   String get last7Days => 'Últimos 7 Dias';
@@ -93,9 +81,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get social => 'Social';
 
   @override
-  String get aiInsight => 'Análises de IA';
-
-  @override
   String get netDeficit => 'Déficit Líquido';
 
   @override
@@ -115,6 +100,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get bankStyle => 'Extratos Estilo Bancário 0 Transações';
+
+  @override
+  String get transactions => 'Transações';
 
   @override
   String get items => 'Itens';
@@ -162,9 +150,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get health => 'Saúde';
 
   @override
-  String get bill => 'Conta';
-
-  @override
   String get entertainment => 'Entretenimento';
 
   @override
@@ -172,9 +157,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get food => 'Alimentação';
-
-  @override
-  String get other => 'Outro';
 
   @override
   String get welcomeBack => 'Bem-vindo de volta';
@@ -255,9 +237,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get signIntoApply => 'Entre para aplicar um código de indicação e ganhar dias de sequência';
 
   @override
-  String get shareReport => 'Compartilhar meu relatório';
-
-  @override
   String get shareMonthly => 'Compartilhar resumo mensal de gastos como imagem';
 
   @override
@@ -291,7 +270,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get addEntry => 'Adicionar Registro';
 
   @override
-  String get category => 'Categoria';
+  String get expense => 'Despesa';
+
+  @override
+  String get income => 'Receita';
+
+  @override
+  String get other => 'Outro';
 
   @override
   String get row => 'Linha';
@@ -307,6 +292,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get saveExpense => 'Salvar Despesa';
+
+  @override
+  String get aiInsight => 'Análises de IA';
 
   @override
   String get overView => 'Visão Geral';
@@ -354,16 +342,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get wellAnalysisPatternOnce => 'Analisaremos padrões quando você tiver mais dados';
 
   @override
-  String get subscriptions => 'Assinaturas e Recorrentes';
-
-  @override
   String get thisMonth => 'Este Mês';
 
   @override
   String get spend => 'Gasto';
-
-  @override
-  String get saved => 'economizado';
 
   @override
   String get achieved => 'Conquistado';
@@ -441,6 +423,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get insight => 'Análises';
 
   @override
+  String get shareReport => 'Compartilhar meu relatório';
+
+  @override
+  String get settings => 'Configurações';
+
+  @override
   String get about => 'Sobre';
 
   @override
@@ -450,6 +438,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get aiSpending => 'Análises de Gastos por IA';
 
   @override
+  String get subscriptions => 'Assinaturas e Recorrentes';
+
+  @override
   String get savingGoals => 'Metas de Economia';
 
   @override
@@ -457,6 +448,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get monthlyCommitments => 'Compromissos Mensais';
+
+  @override
+  String get bill => 'Conta';
 
   @override
   String get active => 'Ativo';
@@ -480,9 +474,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get addBillEmi => 'Adicionar Conta / Parcela';
 
   @override
-  String get amount => 'Valor';
-
-  @override
   String get example => 'Nome da conta (ex: Netflix, Financiamento)';
 
   @override
@@ -495,9 +486,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get dueOnDayOfMonth => 'Vence no dia do mês';
 
   @override
-  String get remindMeBefore => 'Lembrar-me antes';
-
-  @override
   String get addSchedule => 'Adicionar e Agendar Lembrete';
 
   @override
@@ -505,21 +493,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get savingRate => 'Taxa de Economia';
-
-  @override
-  String get budgetControl => 'Controle de Orçamento';
-
-  @override
-  String get expenseBalance => 'Equilíbrio de Despesas';
-
-  @override
-  String get consistency => 'Consistência';
-
-  @override
-  String get billLoad => 'Carga de Contas';
-
-  @override
-  String get goalProgress => 'Progresso das Metas';
 
   @override
   String get burnRate => 'Taxa de Gasto e Prazo';
@@ -562,9 +535,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get ofIncome => 'da receita';
-
-  @override
-  String get overdue => 'Vencido';
 
   @override
   String get monthlyBills => 'Contas Mensais';
@@ -672,9 +642,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get getRemindedToLog => 'Receba lembretes para registrar despesas';
 
   @override
-  String get dayStreak => 'dias de sequência';
-
-  @override
   String get keepLoggingDaily => 'Continue registrando diariamente para manter';
 
   @override
@@ -691,12 +658,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get deleteAccountConfirm => 'Tem certeza? Esta ação não pode ser desfeita.';
-
-  @override
-  String get cancel => 'Cancelar';
-
-  @override
-  String get delete => 'Excluir';
 
   @override
   String get budgetUpdated => 'Orçamento atualizado';
@@ -738,13 +699,28 @@ class AppLocalizationsPt extends AppLocalizations {
   String get targetAmount => 'Valor Alvo';
 
   @override
-  String get days => 'dias';
-
-  @override
   String get createGoal => 'Criar Meta';
 
   @override
   String get savingsRate => 'Taxa de Economia';
+
+  @override
+  String get budgetControl => 'Controle de Orçamento';
+
+  @override
+  String get expenseBalance => 'Equilíbrio de Despesas';
+
+  @override
+  String get consistency => 'Consistência';
+
+  @override
+  String get billLoad => 'Carga de Contas';
+
+  @override
+  String get goalProgress => 'Progresso das Metas';
+
+  @override
+  String get saved => 'economizado';
 
   @override
   String get ofLimitUsed => 'do limite usado';
@@ -774,6 +750,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get inProgress => 'em andamento';
 
   @override
+  String get dayStreak => 'dias de sequência';
+
+  @override
   String get top => 'Top';
 
   @override
@@ -797,6 +776,12 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get cancel => 'Cancelar';
+
+  @override
+  String get delete => 'Excluir';
+
+  @override
   String get yourLoans => 'Seus Empréstimos';
 
   @override
@@ -804,6 +789,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get monthlyEmis => 'Parcelas Mensais';
+
+  @override
+  String get overdue => 'Vencido';
 
   @override
   String get missed => 'Perdido';
@@ -821,15 +809,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get addBillLabel => 'Adicionar Conta';
 
   @override
-  String get addLoan => 'Adicionar Empréstimo';
-
-  @override
   String get recordPayment => 'Registrar Pagamento';
 
   @override
   String emiPaymentHint(Object amount, Object title) {
     return '$title · Parcela $amount';
   }
+
+  @override
+  String get amount => 'Valor';
 
   @override
   String get noteOptional => 'Nota (opcional)';
@@ -839,9 +827,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get reducesPrincipal => 'Reduz o saldo principal';
-
-  @override
-  String get saving => 'Salvando…';
 
   @override
   String get recordExtraPayment => 'Registrar Pagamento Extra';
@@ -863,6 +848,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get lenderUnknown => 'Desconhecido';
+
+  @override
+  String get category => 'Categoria';
 
   @override
   String get principalAmount => 'Valor Principal';
@@ -891,13 +879,25 @@ class AppLocalizationsPt extends AppLocalizations {
   String get emiDueDay => 'Dia de Vencimento da Parcela';
 
   @override
+  String get remindMeBefore => 'Lembrar-me antes';
+
+  @override
   String get day => 'dia';
+
+  @override
+  String get days => 'dias';
 
   @override
   String get notesOptional => 'Notas (opcional)';
 
   @override
+  String get saving => 'Salvando…';
+
+  @override
   String get updateLoan => 'Atualizar Empréstimo';
+
+  @override
+  String get addLoan => 'Adicionar Empréstimo';
 
   @override
   String get addHomeWidget => 'Adicionar Widget à Tela Inicial';
